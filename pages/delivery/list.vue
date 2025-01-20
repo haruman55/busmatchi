@@ -90,6 +90,9 @@ const keyUserId = userInfo.value.companyId
 const { actionInfo } = useAction()
 const act = actionInfo.value.act
 
+// 画面入力(設定)された申込情報を保持
+const { orderInfo, editOrderInfo, clearOrderInfo } = useOrderInfo()
+
 /**
    * 運送引受会社情報取得
    */
@@ -102,7 +105,7 @@ const { orderDeliveryUserInfo, editOrderDeliveryUserInfo, clearOrderDeliveryUser
 const deliveryChoice = ref(false)
 
 // 画面入力-配車場所
-const deliveryLocation = ref(orderDeliveryUserInfo.value.deliveryLocation)
+const deliveryLocation = ref(orderInfo.value.deliveryLocation)
 
 // 運送引受会社のデータテーブルヘッダ定義
 const deliveryUserHeaders = [

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container fluid class="bg-teal-accent-2 mb-6">
+    <v-container fluid class="bg-grey-lighten-4 mb-6">
       <v-row justify="center">
         <v-col>
           <v-sheet>
@@ -23,10 +23,10 @@
           <v-card
 elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
             :color="$Const.ORDER_STATUS_DISP[order.state].color" @click="selectOrder(order)">
-            <v-card-text> {{ $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-text>
+            <v-card-text class="text-h6"> {{ $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-text>
             <v-card-text class="text-h5">{{ order.tourOrganization }}</v-card-text>
 
-            <v-card-text>日程:未入力</v-card-text>
+            <v-card-text>日程:{{ order.dispatchDate }} {{ order.dispatchTime }}</v-card-text>
             <v-card-text>申込者:{{ order.applicant }}</v-card-text>
           </v-card>
 
@@ -63,7 +63,7 @@ const orderList = await userData.getOrderList(keyUserId);
  */
 const addOrder = () => {
   // 画面遷移
-  router.push('/user/order/entryCustomerInfo')
+  router.push('/user/order/entryBaseInfo')
 }
 
 /**
@@ -83,17 +83,28 @@ const selectOrder = async (order) => {
     emergencyContact: order.emergencyContact,
     tourOrganization: order.tourOrganization,
     remarks: order.remarks,
+    passengers: order.passengers,
+    vehicleTypeLiftAmount: order.vehicleTypeLiftAmount,
+    vehicleTypeMediumAmount: order.vehicleTypeMediumAmount,
+    vehicleTypeSmallAmount: order.vehicleTypeSmallAmount,
+    vehicleTypeMicroAmount: order.vehicleTypeMicroAmount,
+    dispatchDate: order.dispatchDate,
+    dispatchTime: order.dispatchTime,
+    departureTime: order.departureTime,
+    deliveryLocation: order.deliveryLocation,
     customerId: order.customerId,
     deliveryCompanyId: order.deliveryCompanyId,
   }
   editOrderInfo(orderInfo)
 
+
   // 申込顧客情報があれば設定
   const { editApplicantCustomerInfo } = useApplicantCustomerInfo()
   if (order.customerId != null && order.customerId != '') {
-    const userCustomer = await userData.getUserCustomer(keyUserId, order.customerId)
+    // const userCustomer = await userData.getUserCustomer(keyUserId, order.customerId)
+    const userCustomer = await userData.getCustomerData(order.customerId)
     const userCustomerInfo = {
-      id: userCustomer.id,
+      id: order.customerId,
       customerId: userCustomer.customerId,
       customerName: userCustomer.customerName,
       customerAddr: userCustomer.customerAddr,
@@ -124,9 +135,32 @@ const selectOrder = async (order) => {
     }
     editOrderDeliveryUserInfo(deliveryUser)
   }
+  // 運行情報の設定
+  // 入力された運行情報(当該画面での入力情報)
+  const { editOrderOperationInfo } = useOrderOperationInfo()
+  const orderOperationInfoObject = {
+    itinerary1Top: order.itinerary1Top,
+    itinerary1Bottom: order.itinerary1Bottom,
+    timeschedule1Top: order.timeschedule1Top,
+    timeschedule1Bottom: order.timeschedule1Bottom,
+    accommodations1: order.accommodations1,
+    accommodationsTel1: order.accommodationsTel1,
+    accommodationsAddr1: order.accommodationsAddr1,
+    endDate: order.endDate,
+    endingTime: order.endingTime,
+    terminalLocation: order.terminalLocation,
+  }
+  editOrderOperationInfo(orderOperationInfoObject)
 
+  if (order.state == $Const.STATUS_DRAFT){
+    router.push('/user/order/entryBaseInfo')
 
-  router.push('/user/order/entryCustomerInfo')
+  }else if (order.state == $Const.STATUS_REQUEST) {
+    router.push('/user/order/entryOrderConfirm')
+  } else {
+    console.log('想定外のステータス')
+  }
+
 }
 
 

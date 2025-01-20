@@ -1,7 +1,7 @@
 // 案件の状況定義
 export const ORDER_STATUS_DISP = {
   1: { text: '案件登録中', icon: 'mdi-note-plus-outline', color: 'green' },
-  2: { text: '運送依頼中(申込書送付済み)', icon: 'mdi-note-plus-outline', color: '#bae6fd' },
+  2: { text: '運送依頼中', icon: 'mdi-note-plus-outline', color: '#bae6fd' },
   3: { text: '運送手配完了', icon: 'mdi-bus', color: 'yellow-lighten-2' },
   4: { text: '運送手配完了(支払完了)', icon: 'mdi-bus', color: 'grey' },
   9: { text: '案件完了', icon: 'mdi-check-circle-outline', color: 'grey' },

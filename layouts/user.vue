@@ -3,6 +3,7 @@
     <TheUserHeader />
 
     <v-main  class="black-background">
+      <TheMenu />
       <slot />
     </v-main>
 

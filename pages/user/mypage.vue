@@ -1,87 +1,92 @@
 <template>
   <div>
+    <br>
     <v-container class="fill-height align-center" fluid>
-      <v-card color="teal-accent-2" class="mx-auto" width="600" height="210" elevation="15">
-        <v-card-item class="text-center text-h4">
-          {{ userInfo.companyName }}
-        </v-card-item>
-        <br>
-        <v-card-item class="text-right text-h5">
-          {{ $Const.USER_CATEGORY_DISP[userInfo.category].text }}
-        </v-card-item>
-        <v-card-item class="text-right text-h5">
-          ID：{{ userInfo.companyId }}
-        </v-card-item>
-        <br>
-
-      </v-card>
-    </v-container>
-
-
-
+      <v-row><v-col><v-card-title class="text-h5"  >マイページ</v-card-title></v-col></v-row>
+      </v-container>
 
     <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-          <v-toolbar-title class="font-weight-bold">
-            <v-divider />
-          </v-toolbar-title>
+      <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-card class="mx-auto" width="300" height="420" elevation="15" color="indigo" dark @click="showOrder">
+            <v-card-item title="案件" />
+
+            <v-card-text class="py-0">
+              <v-row align="center" no-gutters>
+                <v-col class="text-h2" align="center" cols="6">
+                  {{ orderList.length }}件
+                </v-col>
+                <v-col class="text-right" cols="6">
+                  <v-icon  icon="mdi-note-plus-outline" size="70" />
+                </v-col>
+
+              </v-row>
+            </v-card-text>
+          </v-card>
+
+        </v-col>
+        <v-col cols="12" sm="4" md="4">
+          <v-card class="mx-auto" width="300" height="420" elevation="15">
+            <v-card-item title="契約管理" />
+
+            <v-card-text class="py-0">
+              <v-row align="center" no-gutters>
+                <v-col class="text-h2" align="center" cols="6">
+                  1件
+                </v-col>
+                <v-col class="text-right" cols="6">
+                  <v-icon color="green" icon="mdi-check-circle-outline" size="70" />
+                </v-col>
+
+              </v-row>
+            </v-card-text>
+          </v-card>
+
+        </v-col>
+          <v-divider thickness="1" vertical/>
+
+        <v-col cols="12" sm="4" md="4">
+          <v-card class="mx-auto" width="300" height="200" elevation="15" @click="showCustomer">
+            <v-card-item title="ご利用顧客" />
+
+            <v-card-text class="py-0">
+              <v-row align="center" no-gutters>
+                <v-col class="text-h2" align="center" cols="6">
+                  {{ customerList.length }}社
+                </v-col>
+                <v-icon color="yellow" icon="mdi-card-account-details-outline" size="70" />
+
+              </v-row>
+            </v-card-text>
+          </v-card>
+          <br>
+
+          <v-card class="mx-auto" width="300" height="200" elevation="15">
+            <v-card-item title="運送引受会社" />
+
+            <v-card-text class="py-0">
+              <v-row align="center" no-gutters>
+                <v-col class="text-h2" align="center" cols="6">
+                  {{ deliveryUserList.length }}社
+                </v-col>
+                <v-icon color="red" icon="mdi-bus" size="70" />
+
+              </v-row>
+            </v-card-text>
+          </v-card>
+
         </v-col>
       </v-row>
     </v-container>
 
-    <v-container class="fill-height align-center" fluid>
-      <v-card class="mx-auto" width="300" height="150" elevation="15" @click="showOrder">
-        <v-card-item title="案件" />
 
-        <v-card-text class="py-0">
-          <v-row align="center" no-gutters>
-            <v-col class="text-h2" align="center" cols="6">
-              {{ orderList.length }}社
-            </v-col>
-            <v-col class="text-right" cols="6">
-              <v-icon color="indigo" icon="mdi-note-plus-outline" size="70" />
-            </v-col>
-
-          </v-row>
-        </v-card-text>
-      </v-card>
-      <v-card class="mx-auto" width="300" height="150" elevation="15" @click="showCustomer">
-        <v-card-item title="ご利用顧客" />
-
-        <v-card-text class="py-0">
-          <v-row align="center" no-gutters>
-            <v-col class="text-h2" align="center" cols="6">
-              {{ customerList.length }}社
-            </v-col>
-            <v-icon color="yellow" icon="mdi-card-account-details-outline" size="70" />
-
-          </v-row>
-        </v-card-text>
-      </v-card>
-
-      <v-card class="mx-auto" width="300" height="150" elevation="15">
-        <v-card-item title="契約履歴" />
-
-        <v-card-text class="py-0">
-          <v-row align="center" no-gutters>
-            <v-col class="text-h2" align="center" cols="6">
-              10件
-            </v-col>
-            <v-col class="text-right" cols="6">
-              <v-icon color="green" icon="mdi-check-circle-outline" size="70" />
-            </v-col>
-
-          </v-row>
-        </v-card-text>
-      </v-card>
-
-    </v-container>
     <br>
     <v-divider />
-    <v-container class="fill-height align-center" fluid>
+    <!-- <v-container class="fill-height align-center" fluid>
+      <v-row align="center">
+      <v-col >
 
-      <v-card class="mx-auto" width="300" height="150" elevation="15">
+      <v-card class="mx-auto" width="400" height="150" elevation="15">
         <v-card-item title="運送引受会社" />
 
         <v-card-text class="py-0">
@@ -94,9 +99,12 @@
           </v-row>
         </v-card-text>
       </v-card>
+      </v-col>
+      </v-row>
 
 
-    </v-container>
+
+    </v-container> -->
     <v-divider />
 
 

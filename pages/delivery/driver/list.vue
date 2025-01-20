@@ -129,14 +129,14 @@ const selectDriver = async (item) => {
   editApplicantCustomerInfo(selectCustomer)
 
   // 画面遷移
-  router.push('/user/order/entryCustomerInfo')
+  router.push('/user/order/entryBaseInfo')
 
 }
 /** 前の画面へ戻る */
 const back = () => {
   // if (act == $Const.USER_ACTION_ORDER) {
   // 画面遷移
-  // router.push('/user/order/entryCustomerInfo')
+  // router.push('/user/order/entryBaseInfo')
   router.push('/delivery/mypage')
 
   // } else {

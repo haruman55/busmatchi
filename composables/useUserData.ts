@@ -14,6 +14,7 @@ import {
   startAt,
   endAt,
   serverTimestamp,
+  setDoc,
   updateDoc,
   deleteDoc,
   Timestamp
@@ -52,15 +53,32 @@ type Customer = {
 type Order = {
   id: string;
   state: string;
+  // 申込会社ID(ログインユーザのIDと一緒)
   companyId: string;
   applicant: string;
   emergencyContact: string;
   tourOrganization: string;
   remarks: string;
+  passengers: number;
+  vehicleTypeLiftAmount:number;
+  vehicleTypeMediumAmount: number;
+  vehicleTypeSmallAmount: number;
+  vehicleTypeMicroAmount: number;
   deliveryLocation: string;
   dispatchDate: string;
   dispatchTime: string;
   departureTime: string;
+  itinerary1Top: string;
+  itinerary1Bottom: string;
+  timeschedule1Top: string;
+  timeschedule1Bottom: string;
+  accommodations1: string;
+  accommodationsTel1: string;
+  accommodationsAddr1: string;
+  endDate: string;
+  endingTime: string;
+  terminalLocation: string;
+  // 申込対象の顧客のdocid
   customerId: string;
   // 申込対象の運送引受会社のdocid
   deliveryCompanyId: string;
@@ -341,6 +359,7 @@ export const useUserData = () => {
 
   };
 
+
   /**
    * 指定ユーザの指定顧客情報を取得する
    * @param supervisor_id 
@@ -441,6 +460,7 @@ export const useUserData = () => {
       q = query(
         collection(db, "order"),
         where("companyId", "==", companyId),
+        orderBy("state", "asc")
       );
     }
     const querySnapshot = await getDocs(q);
@@ -483,6 +503,35 @@ export const useUserData = () => {
 
   };
 
+/**
+* 運送引受会社へ依頼された案件情報を取得する
+* @param deliveryCompanyId : 運送引受会社のcompanyId(運送引受会社で利用する際の機能)
+* @returns 
+*/
+const getOrderDeliveryList = async (companyId: string | "") => {
+  const order: Order[] = [];
+  let q = null;
+  if (companyId == "") {
+    return null
+  } else {
+    q = query(
+      collection(db, "order"),
+      where("deliveryCompanyId", "==", companyId),
+      orderBy("state", "asc")
+    );
+  }
+  const querySnapshot = await getDocs(q);
+  let index = 0
+  querySnapshot.docs.map((doc) => {
+    order.push(doc.data() as Order);
+    order[index]["id"] = doc.id;
+    index++;
+  });
+
+  return order;
+};
+
+
   /**
 * 案件情報を更新する
 * @param user 
@@ -493,23 +542,7 @@ export const useUserData = () => {
       return null;
     }
     const userRef = doc(db, "order", order.id as string);
-    // statusを更新（
-    const update = {
-      state: order.state,
-      companyId: order.companyId,
-      applicant: order.applicant,
-      emergencyContact: order.emergencyContact,
-      tourOrganization: order.tourOrganization,
-      remarks: order.remarks,
-      deliveryLocation: order.deliveryLocation,
-      dispatchDate: order.dispatchDate,
-      dispatchTime: order.dispatchTime,
-      departureTime: order.departureTime,
-      customerId: order.customerId,
-      deliveryCompanyId: order.deliveryCompanyId,
-    
-    };
-    await updateDoc(userRef, update);
+    await setDoc(userRef, order, { merge: true });
   };
 
 
@@ -594,13 +627,8 @@ export const useUserData = () => {
       return null;
     }
     const userRef = doc(db, "parking", parking.id as string);
-    // statusを更新（
-    const update = {
-      parking: parking.parking,
-      parkingAddr: parking.parkingAddr,
-      remarks: parking.remarks,
-    };
-    await updateDoc(userRef, update);
+    await setDoc(userRef, parking, { merge: true });
+
   };
 
 
@@ -683,14 +711,8 @@ export const useUserData = () => {
       return null;
     }
     const userRef = doc(db, "guide", guide.id as string);
-    // statusを更新（
-    const update = {
-      guideName: guide.guideName,
-      guideNameKana: guide.guideNameKana,
-      contact: guide.contact,
-      remarks: guide.remarks,
-    };
-    await updateDoc(userRef, update);
+    await setDoc(userRef, guide, { merge: true });
+
   };
 
 
@@ -773,14 +795,7 @@ export const useUserData = () => {
       return null;
     }
     const userRef = doc(db, "driver", driver.id as string);
-    // statusを更新（
-    const update = {
-      driverName: driver.driverName,
-      driverNameKana: driver.driverNameKana,
-      contact: driver.contact,
-      remarks: driver.remarks,
-    };
-    await updateDoc(userRef, update);
+    await setDoc(userRef, driver, { merge: true });
   };
 
   /**
@@ -862,13 +877,8 @@ export const useUserData = () => {
       return null;
     }
     const userRef = doc(db, "bus", bus.id as string);
-    // statusを更新（
-    const update = {
-      vehicleNo: bus.vehicleNo,
-      vehicleType: bus.vehicleType,
-      remarks: bus.remarks,
-    };
-    await updateDoc(userRef, update);
+    await setDoc(userRef, bus, { merge: true });
+
   };
 
 
@@ -992,6 +1002,7 @@ export const useUserData = () => {
     getDeliveryUser,
     getOrderList,
     getOrderData,
+    getOrderDeliveryList,
     addOrder,
     updateOrder,
     getParkingList,

@@ -194,12 +194,24 @@ const clearApplicantCustomerInfo = (applicantCustomerInfo: Ref<ApplicantCustomer
 type OrderInfo = {
   id: string;
   state: string;
+  // 申込会社ID(ログインIDと一緒)
   companyId: string;
   applicant: string;
   emergencyContact: string;
   tourOrganization: string;
   remarks: string;
+  passengers: number;
+  vehicleTypeLiftAmount: number;
+  vehicleTypeMediumAmount: number;
+  vehicleTypeSmallAmount: number;
+  vehicleTypeMicroAmount: number;
+  dispatchDate: string;
+  dispatchTime: string;
+  departureTime: string;
+  deliveryLocation: string;
+  // 顧客ID(docid)
   customerId: string;
+  // 運送引受会社ID(docid)
   deliveryCompanyId: string;
 };
 
@@ -213,7 +225,18 @@ export const useOrderInfo = () => {
     emergencyContact: '',
     tourOrganization: '',
     remarks: '',
+    passengers: 0,
+    vehicleTypeLiftAmount: 0,
+    vehicleTypeMediumAmount: 0,
+    vehicleTypeSmallAmount: 0,
+    vehicleTypeMicroAmount: 0,
+    dispatchDate: '',
+    dispatchTime: '',
+    departureTime: '',
+    deliveryLocation: '',
+    // 顧客ID
     customerId: '',
+    // 運送引受会社ID
     deliveryCompanyId: '',
   }))
 
@@ -243,6 +266,15 @@ const clearOrderInfo = (orderInfo: Ref<OrderInfo>) => () => {
     emergencyContact: '',
     tourOrganization: '',
     remarks: '',
+    passengers: 0,
+    vehicleTypeLiftAmount: 0,
+    vehicleTypeMediumAmount: 0,
+    vehicleTypeSmallAmount: 0,
+    vehicleTypeMicroAmount: 0,
+    dispatchDate: '',
+    dispatchTime: '',
+    departureTime: '',
+    deliveryLocation: '',
     customerId: '',
     deliveryCompanyId: '',
 
@@ -261,10 +293,6 @@ type OrderDeliveryUserInfo = {
   companyTel: string;
   companyFax: string;
   companyEmail: string;
-  dispatchDate: string;
-  dispatchTime: string;
-  departureTime : string;
-  deliveryLocation: string;
   deliveryChoice: string;
 
 };
@@ -278,12 +306,8 @@ export const useOrderDeliveryUserInfo = () => {
     companyAddr: "",
     companyTel: "",
     companyFax: "",
-    companyEmail: "",  
-    dispatchDate:  '',
-    dispatchTime:  '',
-    departureTime :  '',
-    deliveryLocation: '',
-    deliveryChoice:  '',
+    companyEmail: "",
+    deliveryChoice: '',
 
   }));
 
@@ -312,16 +336,85 @@ const clearOrderDeliveryUserInfo = (orderDeliveryUserInfo: Ref<OrderDeliveryUser
     companyAddr: "",
     companyTel: "",
     companyFax: "",
-    companyEmail: "",  
-    dispatchDate:  '',
-    dispatchTime:  '',
-    departureTime :  '',
-    deliveryLocation: '',
-    deliveryChoice:  '',
+    companyEmail: "",
+    deliveryChoice: '',
 
   };
   return {
     orderDeliveryUserInfo,
+  };
+};
+
+// 案件情報-運行情報情報オブジェクト
+type OrderOperationInfo = {
+  id: string;
+  operatingDate: string;
+  itinerary1Top: string;
+  itinerary1Bottom: string;
+  timeschedule1Top: string;
+  timeschedule1Bottom: string;
+  accommodations1: string;
+  accommodationsTel1: string;
+  accommodationsAddr1: string;
+  endDate: string;
+  endingTime: string;
+  terminalLocation: string;
+
+}
+
+/** 案件情報-運行情報を扱うState */
+export const useOrderOperationInfo = () => {
+  const orderOperationInfo = useState<OrderOperationInfo>("orderOperationInfo", () => ({
+    id: '',
+    operatingDate: '',
+    itinerary1Top: '',
+    itinerary1Bottom: '',
+    timeschedule1Top: '',
+    timeschedule1Bottom: '',
+    accommodations1: '',
+    accommodationsTel1: '',
+    accommodationsAddr1: '',
+    endDate: '',
+    endingTime: '',
+    terminalLocation: '',
+
+  }));
+
+  return {
+    orderOperationInfo,
+    editOrderOperationInfo: editOrderOperationInfo(orderOperationInfo),
+    clearOrderOperationInfo: clearOrderOperationInfo(orderOperationInfo),
+  };
+};
+
+/** 案件情報-運行情報情報の編集を行うSetter */
+const editOrderOperationInfo =
+  (orderOperationInfo: Ref<OrderOperationInfo>) => (editOrderOperationInfo: OrderOperationInfo) => {
+    orderOperationInfo.value = editOrderOperationInfo;
+    return {
+      orderOperationInfo,
+    };
+  };
+
+/** 案件情報-運行情報情報の内容を初期化する */
+const clearOrderOperationInfo = (orderOperationInfo: Ref<OrderOperationInfo>) => () => {
+  orderOperationInfo.value = {
+    id: '',
+    operatingDate: '',
+    itinerary1Top: '',
+    itinerary1Bottom: '',
+    timeschedule1Top: '',
+    timeschedule1Bottom: '',
+    accommodations1: '',
+    accommodationsTel1: '',
+    accommodationsAddr1: '',
+    endDate: '',
+    endingTime: '',
+    terminalLocation: '',
+
+  };
+  return {
+    orderOperationInfo,
   };
 };
 
@@ -330,9 +423,9 @@ const clearOrderDeliveryUserInfo = (orderDeliveryUserInfo: Ref<OrderDeliveryUser
 /**
  * ユーザ操作情報オブジェクト
  * いろんなフラグ持たせる汎用state 
- * */ 
+ * */
 type ActionInfo = {
-  // マイページから選択した操作(導線入口)：案件(1)、利用顧客(2)、契約(3)、運送引受会社(4)
+  // マイページから選択した操作(導線入口)：1
   act: string;
 };
 /** ユーザーの操作情報を扱うState */
