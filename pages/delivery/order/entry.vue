@@ -7,7 +7,7 @@
             <v-icon left x-large @click="back">
               mdi-close
             </v-icon>
-            案件登録-運送引受会社への申込確認
+            申込確認
           </v-card-text>
         </v-col>
       </v-row>
@@ -32,28 +32,28 @@
           </v-table>
           <v-table class="table-border">
             <tbody>
-              <tr  align="center">
-                <td rowspan="4" >申込者</td>
-                <td rowspan="2" >名称</td>
-                <td colspan="2"  rowspan="2">{{ userInfo.companyName }}</td>
-                <td rowspan="2" >申込者</td>
-                <td colspan="2" rowspan="2" >{{ orderInfo.applicant }}</td>
-                <td >電話</td>
-                <td colspan="2" >{{ userInfo.companyTel }}</td>
+              <tr align="center">
+                <td rowspan="4">申込者</td>
+                <td rowspan="2">名称</td>
+                <td colspan="2" rowspan="2">{{ orderInfo.applicantCompanyName }}</td>
+                <td rowspan="2">申込者</td>
+                <td colspan="2" rowspan="2">{{ orderInfo.applicant }}</td>
+                <td>電話</td>
+                <td colspan="2">{{ orderInfo.applicantCompanyTel }}</td>
               </tr>
               <tr align="center">
                 <td>FAX</td>
-                <td colspan="2">{{ userInfo.companyFax }}</td>
+                <td colspan="2">{{ orderInfo.applicantCompanyFax }}</td>
               </tr>
               <tr align="center">
                 <td rowspan="2">住所</td>
-                <td colspan="5" rowspan="2">{{ userInfo.companyAddr }}</td>
+                <td colspan="5" rowspan="2">{{ orderInfo.applicantCompanyAddr }}</td>
                 <td>緊急連絡先</td>
                 <td>{{ orderInfo.emergencyContact }}</td>
               </tr>
               <tr align="center">
                 <td>e-mail</td>
-                <td>{{ userInfo.companyEmail }}</td>
+                <td>{{ orderInfo.applicantCompanyEmail }}</td>
               </tr>
             </tbody>
             <!-- </v-table>
@@ -126,6 +126,26 @@
                 <td class="text-h4">{{ orderInfo.departureTime }}</td>
               </tr>
             </tbody>
+          </v-table>
+          <v-table class="table-border">
+
+            <tbody>
+              <tr>
+                <td>有料道路</td>
+                <td colspan="3">利用なし(TODO:入力項目なし)</td>
+                <td rowspan="2">座席</td>
+                <td rowspan="2">前向き(TODO:入力項目なし)</td>
+                <td rowspan="2">ガイド</td>
+                <td rowspan="2">無(TODO:入力項目なし)</td>
+              </tr>
+              <tr>
+                <td>駐車場</td>
+                <td>立替(TODO:入力項目なし)</td>
+                <td>駐車場の手配</td>
+                <td>有(TODO:入力項目なし)</td>
+              </tr>
+            </tbody>
+
 
           </v-table>
         </v-col>
@@ -176,47 +196,35 @@
         <tbody>
           <tr class="dashed-border" align="center">
             <td>終着</td>
-            <td class="text-h4">{{ orderOperationInfo.endDate }} 時間 {{ orderOperationInfo.endingTime }}</td>
+            <td class="text-h4">{{ orderOperationInfo.endDate }} {{ orderOperationInfo.endingTime }}</td>
             <td>場所</td>
             <td>{{ orderOperationInfo.terminalLocation }}</td>
           </tr>
         </tbody>
-
       </v-table>
     </v-container>
     <v-divider />
-    <!-- TODO:運送引受会社-申込書に合わせたが、申込のタイミングだと会社の名称と電話番号のみの表示となるか？ -->
+
     <v-container>
+      <v-btn rounded dark size="x-large" color="yellow" class="mb-2 pr-8 pl-8" @click="entry">
+        配車情報を登録する
+      </v-btn>
+
       <v-table class="table-border">
-        <tbody>
-          <tr>
-            <td>有料道路</td>
-            <td colspan="3">利用なし(TODO:入力項目なし)</td>
-            <td rowspan="2">座席</td>
-            <td rowspan="2">前向き(TODO:入力項目なし)</td>
-            <td rowspan="2">ガイド</td>
-            <td rowspan="2">無(TODO:入力項目なし)</td>
-          </tr>
-          <tr>
-            <td>駐車場</td>
-            <td>立替(TODO:入力項目なし)</td>
-            <td>駐車場の手配</td>
-            <td>有(TODO:入力項目なし)</td>
-          </tr>
-        </tbody>
         <tbody>
           <tr>
             <td rowspan="6">運送引受会社</td>
             <td>名称</td>
-            <td class="text-h5" colspan="3">{{ orderDeliveryUserInfo.companyName }} {{ orderDeliveryUserInfo.companyTel }}</td>
+            <td class="text-h5" colspan="3">{{ orderDeliveryUserInfo.companyName }} {{ orderDeliveryUserInfo.companyTel
+              }}</td>
             <td>ご担当者様</td>
-            <td colspan="2">様</td>
+            <td colspan="2"><v-text-field v-model="counterPersonMain" class="mt-4" outlined /></td>
           </tr>
           <tr>
             <td>住所</td>
             <td colspan="3">{{ orderDeliveryUserInfo.companyAddr }}</td>
             <td>ご担当者様</td>
-            <td colspan="2">様</td>
+            <td colspan="2"><v-text-field v-model="counterPersonSub" class="mt-4" outlined /></td>
           </tr>
           <tr>
             <td rowspan="2" />
@@ -241,7 +249,7 @@
           </tr>
         </tbody>
       </v-table>
-      <v-table>
+      <!-- <v-table>
         <tbody>
           <tr>
             <td rowspan="2">乗務員</td>
@@ -261,6 +269,27 @@
             <td />
           </tr>
         </tbody>
+      </v-table> -->
+      <v-table v-if="dispatchInfo.busList.length > 0">
+        <thead>
+          <tr align="center">
+            <th colspan="5" class="text-center">
+              乗務員
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(driver) in dispatchInfo.driverList" :key="driver.id">
+            <td>ドライバー</td>
+            <td colspan="2"> {{ driver.driverName }}</td>
+            <td>連絡先</td>
+            <td colspan="2">{{ driver.contact }}</td>
+          </tr>
+          <tr>
+            <td>ガイド</td>
+            <td v-for="(guide) in dispatchInfo.guideList" :key="guide.id" colspan="2"> {{ guide.guideName }}</td>
+          </tr>
+        </tbody>
       </v-table>
     </v-container>
     <br>
@@ -274,9 +303,18 @@
         </v-col>
         <v-spacer />
 
-        <v-col v-if="orderInfo.state == $Const.STATUS_DRAFT" align="center">
-          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="entry">
-            運送引受会社へ依頼する
+        <v-col v-if="orderInfo.state == $Const.STATUS_REQUEST" align="center">
+          <v-btn
+rounded dark size="x-large" color="indigo darken-4"
+             class="mb-2 pr-8 pl-8" @click="undertake">
+            運送手配を引き受ける
+          </v-btn>
+        </v-col>
+
+        <v-spacer />
+        <v-col align="center">
+          <v-btn rounded dark size="x-large" color="red" class="mb-2 pr-8 pl-8" @click="deny">
+            運送手配を断る
           </v-btn>
         </v-col>
         <v-spacer />
@@ -288,6 +326,7 @@
 <script setup>
 const { $Const } = useNuxtApp()
 const { $swal } = useNuxtApp()
+const { $dayjs } = useNuxtApp();
 const router = useRouter()
 // 共通関数の呼び出し
 const utils = useUtils();
@@ -295,7 +334,7 @@ const utils = useUtils();
 const userData = useUserData();
 
 // state保持情報 //
-// ログインユーザー(申込会社)のキーID
+// ログインユーザーのキーID
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
 
@@ -303,17 +342,18 @@ const { orderInfo, clearOrderInfo } = useOrderInfo()
 // 既にDB登録済みの案件の場合のid情報
 const keyOrderId = orderInfo.value.id
 
-// 選択された申込顧客情報（他画面からの引継ぎ情報）
+// 選択された申込顧客情報
 const { applicantCustomerInfo, clearApplicantCustomerInfo } = useApplicantCustomerInfo()
-const applicantCustomerId = applicantCustomerInfo.value.id
 
-// 選択された申込運送引受会社情報（他画面からの引継ぎ情報）
-const { orderDeliveryUserInfo, clearOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
+// 選択された申込運送引受会社情報
+const { orderDeliveryUserInfo, editOrderDeliveryUserInfo, clearOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
 
-// 入力された運行情報
+// 選択された配車情報を保持
+const { dispatchInfo, clearDispatchInfo } = useDispatchInfo()
+const keydispatchId = ref(dispatchInfo.value.id)
+
+// 入力(選択)された運行情報
 const { orderOperationInfo, clearOrderOperationInfo } = useOrderOperationInfo()
-
-
 //-----------------------//
 
 
@@ -322,26 +362,154 @@ const totalvehicleAmount = computed(() => {
   return (orderInfo.value.vehicleTypeLiftAmount || 0) + (orderInfo.value.vehicleTypeMediumAmount || 0) + (orderInfo.value.vehicleTypeSmallAmount || 0) + (orderInfo.value.vehicleTypeMicroAmount || 0);
 });
 
+// 画面入力項目
+// TODO:一旦帳票と合わせて可変ではなく固定変数定義
+const counterPersonMain = ref(orderDeliveryUserInfo.value.counterPersonMain)
+const counterPersonSub = ref(orderDeliveryUserInfo.value.counterPersonSub)
+
 /**
  * 画面初期処理
  */
 onMounted(async () => {
-  // TODO:運送引受会社が選択済みの場合の情報取得:運送引受会社の情報をDBから取得する
-  // const selectDeliveryUser = orderDeliveryUserInfo.value.companyId
-  // if (selectDeliveryUser != null && utils.toBlank(selectDeliveryUser) != '') {
-  // }
+  //手配情報を画面表示用に生成
+
+
 })
 
+/**
+ * 運送手配情報を登録する
+ */
+const entry = () => {
+  const deliveryUser = {
+    id: orderDeliveryUserInfo.value.id,
+    companyId: orderDeliveryUserInfo.value.companyId,
+    companyName: orderDeliveryUserInfo.value.companyName,
+    companyAddr: orderDeliveryUserInfo.value.companyAddr,
+    companyTel: orderDeliveryUserInfo.value.companyTel,
+    companyFax: orderDeliveryUserInfo.value.companyFax,
+    companyEmail: orderDeliveryUserInfo.value.companyEmail,
+    // 以下本画面入力情報
+    counterPersonMain: counterPersonMain.value,
+    counterPersonSub: counterPersonSub.value
+  }
+  editOrderDeliveryUserInfo(deliveryUser)
+
+
+  // 画面遷移
+  router.push('/delivery/dispatch/list')
+
+
+}
 
 
 
-/** 運送引受会社へ依頼する */
-const entry = async () => {
+/** 運送依頼を引き受ける */
+const undertake = async () => {
+  // 必須選択チェック
+  if (dispatchInfo.value.busList.length == 0) {
+    $swal.fire({
+      text: '配車情報を登録してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning'
+    })
+    return
+  }
+  if (utils.toBlank(counterPersonMain.value) == '') {
+    $swal.fire({
+      text: 'ご担当者様を入力してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning'
+    })
+    return
+  }
+  
+
+  // 案件情報を保存
+  let confirmRes = false
+  await $swal.fire({
+    text: '運送手配完了を申込会社へ通知します。よろしいですか？',
+    showCancelButton: true,
+    confirmButtonColor: "#00BCD4",
+    cancelButtonColor: "#CFD8DC",
+    confirmButtonText: 'はい。',
+    cancelButtonText: 'キャンセル',
+    icon: 'info'
+  }).then((res) => {
+    confirmRes = res.isConfirmed
+  })
+  if (!confirmRes) {
+    return
+  }
+  // 配車情報の登録
+  if (keydispatchId.value != null && keydispatchId.value != '') {
+    // 更新
+    const updateDispatchObj = {
+      id: keydispatchId.value,
+      orderId: dispatchInfo.value.orderId,
+      busList: dispatchInfo.value.busList,
+      driverList: dispatchInfo.value.driverList,
+      guideList: dispatchInfo.value.guideList,
+      termFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+      termTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+      updatedAt: new Date(),
+    }
+    // console.log("更新")
+    // console.log(updateDispatchObj)
+    await userData.updateDispatch(updateDispatchObj)
+
+    //バス情報、運転手情報、ガイド情報に配車の期間を追加する
+
+  } else {
+    // 新規で登録
+    const insertDispatchObj = {
+      orderId: dispatchInfo.value.orderId,
+      busList: dispatchInfo.value.busList,
+      driverList: dispatchInfo.value.driverList,
+      guideList: dispatchInfo.value.guideList,
+      termFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+      termTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    keydispatchId.value = await userData.addDispatch(insertDispatchObj)
+    //バス情報、運転手情報、ガイド情報に配車の期間を追加更新する
+  }
+
+  // 運送引受会社の追加情報(配車情報のdocIdとの紐付けも)とステータス更新
+  const updateObject = {
+    id: keyOrderId,
+    // 運送手配完了：3
+    state: $Const.STATUS_ARRANGEMENTS_COMPLETED,
+    counterPersonMain: counterPersonMain.value,
+    counterPersonSub: counterPersonSub.value,
+    dispatchId: keydispatchId.value,
+    updatedAt: new Date(),
+  }
+  await userData.updateOrder(updateObject)
+
+
+
+  // stateのクリア
+  clearOrderInfo(orderInfo)
+  clearApplicantCustomerInfo(applicantCustomerInfo)
+  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+  clearOrderOperationInfo(orderOperationInfo)
+  clearDispatchInfo(dispatchInfo)
+
+  // 画面遷移
+  router.push('/delivery/order/list')
+}
+
+
+/** 運送手配を断る */
+const deny = async () => {
   // 必須選択チェック
   // 案件情報を保存
   let confirmRes = false
   await $swal.fire({
-    text: '登録した内容で運送引受会社へ依頼します。よろしいですか？',
+    text: '運送手配を断ります。よろしいですか？',
     showCancelButton: true,
     confirmButtonColor: "#00BCD4",
     cancelButtonColor: "#CFD8DC",
@@ -355,105 +523,42 @@ const entry = async () => {
     return
   }
 
-  // 新規登録 or 更新処理
-  if (keyOrderId != null && keyOrderId != '') {
-    // 更新
-    const updateObject = {
-      id: keyOrderId,
-      // 運送引受会社へ申込中：2
-      state: $Const.STATUS_REQUEST,
-      companyId: keyUserId,
-      applicant: orderInfo.value.applicant,
-      emergencyContact: orderInfo.value.emergencyContact,
-      tourOrganization: orderInfo.value.tourOrganization,
-      remarks: orderInfo.value.remarks,
-      passengers: utils.toZero(orderInfo.value.passengers),
-      vehicleTypeLiftAmount: utils.toZero(orderInfo.value.vehicleTypeLiftAmount),
-      vehicleTypeMediumAmount: utils.toZero(orderInfo.value.vehicleTypeMediumAmount),
-      vehicleTypeSmallAmount: utils.toZero(orderInfo.value.vehicleTypeSmallAmount),
-      vehicleTypeMicroAmount: utils.toZero(orderInfo.value.vehicleTypeMicroAmount),
-      dispatchDate: orderInfo.value.dispatchDate,
-      dispatchTime: orderInfo.value.dispatchTime,
-      departureTime: orderInfo.value.departureTime,
-      deliveryLocation: orderInfo.value.deliveryLocation,
-      itinerary1Top: utils.toBlank(orderOperationInfo.value.itinerary1Top),
-      itinerary1Bottom: utils.toBlank(orderOperationInfo.value.itinerary1Bottom),
-      timeschedule1Top: utils.toBlank(orderOperationInfo.value.timeschedule1Top),
-      timeschedule1Bottom: utils.toBlank(orderOperationInfo.value.timeschedule1Bottom),
-      accommodations1: utils.toBlank(orderOperationInfo.value.accommodations1),
-      accommodationsTel1: utils.toBlank(orderOperationInfo.value.accommodationsTel1),
-      accommodationsAddr1: utils.toBlank(orderOperationInfo.value.accommodationsAddr1),
-      endDate: utils.toBlank(orderOperationInfo.value.endDate),
-      endingTime: utils.toBlank(orderOperationInfo.value.endingTime),
-      terminalLocation: utils.toBlank(orderOperationInfo.value.terminalLocation),
-      deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
-      customerId: utils.toBlank(applicantCustomerId),
-      updatedAt: new Date(),
-    }
-    await userData.updateOrder(updateObject)
-
-  } else {
-    // 新規登録
-    const insertObject = {
-      // 運送引受会社へ申込中：2
-      state: $Const.STATUS_REQUEST,
-      companyId: keyUserId,
-      applicant: orderInfo.value.applicant,
-      emergencyContact: orderInfo.value.emergencyContact,
-      tourOrganization: orderInfo.value.tourOrganization,
-      remarks: orderInfo.value.remarks,
-      passengers: utils.toZero(orderInfo.value.passengers),
-      vehicleTypeLiftAmount: utils.toZero(orderInfo.value.vehicleTypeLiftAmount),
-      vehicleTypeMediumAmount: utils.toZero(orderInfo.value.vehicleTypeMediumAmount),
-      vehicleTypeSmallAmount: utils.toZero(orderInfo.value.vehicleTypeSmallAmount),
-      vehicleTypeMicroAmount: utils.toZero(orderInfo.value.vehicleTypeMicroAmount),
-      dispatchDate: orderInfo.value.dispatchDate,
-      dispatchTime: orderInfo.value.dispatchTime,
-      departureTime: orderInfo.value.departureTime,
-      deliveryLocation: orderInfo.value.deliveryLocation,
-      itinerary1Top: utils.toBlank(orderOperationInfo.value.itinerary1Top),
-      itinerary1Bottom: utils.toBlank(orderOperationInfo.value.itinerary1Bottom),
-      timeschedule1Top: utils.toBlank(orderOperationInfo.value.timeschedule1Top),
-      timeschedule1Bottom: utils.toBlank(orderOperationInfo.value.timeschedule1Bottom),
-      accommodations1: utils.toBlank(orderOperationInfo.value.accommodations1),
-      accommodationsTel1: utils.toBlank(orderOperationInfo.value.accommodationsTel1),
-      accommodationsAddr1: utils.toBlank(orderOperationInfo.value.accommodationsAddr1),
-      endDate: utils.toBlank(orderOperationInfo.value.endDate),
-      endingTime: utils.toBlank(orderOperationInfo.value.endingTime),
-      terminalLocation: utils.toBlank(orderOperationInfo.value.terminalLocation),
-      deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
-      customerId: utils.toBlank(applicantCustomerId),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    // console.log(orderInfo)
-    await userData.addOrder(insertObject)
+  // 運送引受会社の追加情報(配車情報のdocIdとの紐付けも)とステータス更新
+  const updateObject = {
+    id: keyOrderId,
+    // 運送手配引受不可：8
+    state: $Const.ORDER_DENY,
+    counterPersonMain: counterPersonMain.value,
+    counterPersonSub: counterPersonSub.value,
+    updatedAt: new Date(),
   }
+  await userData.updateOrder(updateObject)
 
   // stateのクリア
   clearOrderInfo(orderInfo)
   clearApplicantCustomerInfo(applicantCustomerInfo)
   clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
   clearOrderOperationInfo(orderOperationInfo)
-
+  clearDispatchInfo(dispatchInfo)
 
   // 画面遷移
-  router.push('/user/order/list')
+  router.push('/delivery/order/list')
 
 
 }
+
+
 /** 前の画面へ戻る */
 const back = () => {
+  // stateのクリア
+  clearOrderInfo(orderInfo)
+  clearApplicantCustomerInfo(applicantCustomerInfo)
+  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+  clearOrderOperationInfo(orderOperationInfo)
+  clearDispatchInfo(dispatchInfo)
 
   // 画面遷移
-  if (orderInfo.value.state == $Const.STATUS_DRAFT){
-    router.push('/user/order/entryDeliveryInfo')
-
-  }else if (orderInfo.value.state == $Const.STATUS_REQUEST) {
-    router.push('/user/order/list')
-  } else {
-    console.log('想定外のステータス')
-  }
+  router.push('/delivery/order/list')
 
 }
 

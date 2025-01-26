@@ -208,7 +208,6 @@ const selectDeliveryUser = async (item) => {
     return
   }
   const selectObject = {
-    // id: item.raw.id,
     id: item.id,
     companyId: item.companyId,
     companyName: item.companyName,
@@ -231,14 +230,14 @@ const selectDeliveryUser = async (item) => {
   editOrderDeliveryUserInfo(selectObject)
 
   // 画面遷移
-  router.push('/user/order/entryDeliveryInfo')
+  router.push('/user/order/entry')
 
 }
 /** 前の画面へ戻る */
 const back = () => {
 
   // 画面遷移
-  router.push('/user/order/entryDeliveryInfo')
+  router.push('/user/order/entry')
 
 }
 

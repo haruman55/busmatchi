@@ -1,6 +1,34 @@
 <template>
   <div>
     <br>
+    <!-- <v-container class="fill-height align-center" fluid>
+      <v-row><v-col><v-card-title class="text-h5">マイページ</v-card-title></v-col></v-row>
+    </v-container> -->
+    <v-container class="fill-height align-center" fluid>
+      <v-row>
+        <v-col cols="12" >
+          <v-card-title ><v-icon color="red">mdi-chat-outline</v-icon>インフォメーション</v-card-title>
+          <v-card class="overflow-y-auto overflow-x-hidden">
+            <v-row>
+              <v-col>
+                <a href="" @click.prevent.stop="showInformation()">XXXXX社から運送申込書が届いています。</a>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <a href="" @click.prevent.stop="showInformation()">XXXXX社との運送手配が完了しました。</a>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <a href="" @click.prevent.stop="showInformation()">XXXXX社から運送申込書の修正通知が届いています。</a>
+              </v-col>
+            </v-row>
+
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
     <v-container class="fill-height align-center" fluid>
       <v-row>
@@ -23,7 +51,7 @@
         </v-col>
         <v-col cols="12" sm="3" md="3">
           <v-card class="mx-auto" width="300" height="420" elevation="15">
-            <v-card-item title="運行状況" />
+            <v-card-item title="運行管理" />
 
             <v-card-text class="py-0">
               <v-row align="center" no-gutters>
@@ -118,7 +146,7 @@
   </div>
 </template>
 <script setup>
-// const { $swal } = useNuxtApp()
+const { $swal } = useNuxtApp()
 const router = useRouter()
 const { $Const } = useNuxtApp()
 // user情報の状態管理
@@ -132,7 +160,9 @@ const { editActionInfo } = useAction()
 // DB操作
 const userData = useUserData();
 // 登録案件情報取得
-const orderList = await userData.getOrderDeliveryList(keyUserDocId);
+const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_RESERVATION, $Const.STATUS_APPLICATION, $Const.STATUS_ARRANGEMENTS_COMPLETED, $Const.STATUS_PATMENT_COMPLETED, $Const.ORDER_COMPLETED]
+const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
+
 // 保有駐車地情報取得
 const parkingList = await userData.getParkingList(keyUserId);
 // 保有バス情報取得
@@ -155,6 +185,7 @@ onMounted(async () => {
 
 
 
+
 })
 
 
@@ -169,7 +200,7 @@ const showOrder = () => {
   editActionInfo(setAction)
 
   // 画面遷移
-  router.push('/user/order/list')
+  router.push('/delivery/order/list')
 }
 
 
@@ -224,6 +255,21 @@ const showBus = () => {
   // 画面遷移
   router.push('/delivery/bus/list')
 }
+
+
+const showInformation = () => {
+  $swal.fire({
+    text: '[未実装]インフォメーションの詳細がみれます',
+    showCancelButton: false,
+    confirmButtonText: 'OK',
+    icon: 'info'
+  })
+}
+
+
+
+
+
 
 
 

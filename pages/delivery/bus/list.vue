@@ -60,15 +60,42 @@ const userData = useUserData();
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
+// バス情報を保持
+const { editBusInfo } = useBusInfo()
+
 
 // ユーザ操作情報を保持
 const { actionInfo } = useAction()
 const act = actionInfo.value.act
 
+
 /**
-   * バス情報取得
-   */
-const busList = await userData.getBusList(keyUserId);
+ * バス情報取得の一覧を取得する。
+ */
+const getBusInfoList = async () => {
+  const busList = await userData.getBusList(keyUserId);
+  const busInfoListArray = []
+  for (let i = 0; i < busList.length; i++) {
+    // バスが配置されている駐車場のdocid
+    const parkingId = busList[i].parkingId
+    const parkingData = await userData.getParkingData(parkingId)
+    const busInfoObj = {
+      id: busList[i].id,
+      companyId: busList[i].companyId,
+      vehicleNo: busList[i].vehicleNo,
+      vehicleType: busList[i].vehicleType,
+      remarks: busList[i].remarks,
+      parkingId: parkingId,
+      parking: parkingData.parking,
+      parkingAddr: parkingData.parkingAddr,
+      parkingRemarks: parkingData.remarks,
+    }
+    busInfoListArray.push(busInfoObj)
+  }
+  return busInfoListArray
+}
+const busList = await getBusInfoList();
+
 
 
 // バス情報のデータテーブルヘッダ定義
@@ -84,8 +111,23 @@ const busListHeaders = [
     sortable: true
   },
   {
-    title: '備考',
+    title: 'バス備考',
     key: 'remarks',
+    sortable: false
+  },
+  {
+    title: '駐車場',
+    key: 'parking',
+    sortable: true
+  },
+  {
+    title: '駐車場住所',
+    key: 'parkingAddr',
+    sortable: true
+  },
+  {
+    title: '駐車場備考',
+    key: 'parkingRemarks',
     sortable: false
   },
 
@@ -115,19 +157,19 @@ const selectBus = async (item) => {
   if (!confirmRes) {
     return
   }
-  const selectCustomer = {
+  const selectBus = {
     id: item.id,
     companyId: item.companyId,
-    driverName: item.guideName,
-    driverNameKana: item.guideNameKana,
-    contact: item.contact,
-    remarks: item.remarks
+    vehicleNo: item.vehicleNo,
+    vehicleType: item.vehicleType,
+    remarks: item.remarks,
+    parkingId: item.parkingId,
   }
   // 画面設定値をStateへ情報保存
-  editApplicantCustomerInfo(selectCustomer)
+  editBusInfo(selectBus)
 
   // 画面遷移
-  router.push('/user/order/entryBaseInfo')
+  router.push('/delivery/order/entry')
 
 }
 /** 前の画面へ戻る */
@@ -155,19 +197,19 @@ const entry = () => {
  * バス情報編集画面を表示
  */
 const editItemInfo = (item) => {
-  const object = {
+  const selectBus = {
     id: item.id,
     companyId: item.companyId,
-    driverName: item.guideName,
-    driverNameKana: item.guideNameKana,
-    contact: item.contact,
-    remarks: item.remarks
+    vehicleNo: item.vehicleNo,
+    vehicleType: item.vehicleType,
+    remarks: item.remarks,
+    parkingId: item.parkingId,
   }
-  // 画面遷移
-  customerState.editCustomerInfo(object)
+  // 画面設定値をStateへ情報保存
+  editBusInfo(selectBus)
 
   // 画面遷移
-  router.push('/user/customer/update')
+  router.push('/delivery/bus/update')
 }
 
 

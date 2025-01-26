@@ -58,6 +58,8 @@ const userData = useUserData();
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
+// バスガイド情報を保持
+const { editGuideInfo } = useGuideInfo()
 
 // ユーザ操作情報を保持
 const { actionInfo } = useAction()
@@ -69,7 +71,7 @@ const act = actionInfo.value.act
 const guideList = await userData.getGuideList(keyUserId);
 
 
-// 駐車地のデータテーブルヘッダ定義
+// バスガイドのデータテーブルヘッダ定義
 const guideListHeaders = [
   {
     title: 'ガイド名',
@@ -118,7 +120,7 @@ const selectguide = async (item) => {
   if (!confirmRes) {
     return
   }
-  const selectCustomer = {
+  const selectGuide = {
     id: item.id,
     companyId: item.companyId,
     guideName: item.guideName,
@@ -127,10 +129,11 @@ const selectguide = async (item) => {
     remarks: item.remarks
   }
   // 画面設定値をStateへ情報保存
-  editApplicantCustomerInfo(selectCustomer)
+  editGuideInfo(selectGuide)
+
 
   // 画面遷移
-  router.push('/user/order/entryBaseInfo')
+  router.push('/delivery/order/entry')
 
 }
 /** 前の画面へ戻る */
@@ -155,7 +158,7 @@ const entry = () => {
 }
 
 /**
- * 顧客情報編集画面を表示
+ * バスガイド情報編集画面を表示
  */
 const editItemInfo = (item) => {
   const object = {
@@ -166,11 +169,11 @@ const editItemInfo = (item) => {
     contact: item.contact,
     remarks: item.remarks
   }
-  // 画面遷移
-  customerState.editCustomerInfo(object)
+  // 画面設定値をStateへ情報保存
+  editGuideInfo(object)
 
   // 画面遷移
-  router.push('/user/customer/update')
+  router.push('/delivery/guide/update')
 }
 
 

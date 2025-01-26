@@ -166,7 +166,6 @@ const orderState = utils.toBlank(orderInfo.value.state)
 // 選択された申込顧客情報（他画面からの引継ぎ情報）
 const { applicantCustomerInfo, clearApplicantCustomerInfo } = useApplicantCustomerInfo()
 const applicantCustomerId = applicantCustomerInfo.value.id
-console.log('applicantCustomerId:'+applicantCustomerId)
 
 // 選択された申込運送引受会社情報（他画面からの引継ぎ情報）
 const { orderDeliveryUserInfo, clearOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
@@ -289,9 +288,6 @@ const draft = async () => {
       deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
       updatedAt: new Date(),
     }
-    // console.log("updateOrderInfo")
-
-    // console.log(updateOrderInfo)
     await userData.updateOrder(updateObject)
 
   } else {
@@ -329,7 +325,6 @@ const draft = async () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     }
-    // console.log(orderInfo)
     await userData.addOrder(insertObject)
   }
 

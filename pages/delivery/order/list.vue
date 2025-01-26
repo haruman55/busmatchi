@@ -8,7 +8,7 @@
               <v-icon left x-large @click="back">
                 mdi-close
               </v-icon>
-              案件一覧
+              運送依頼一覧
             </v-card-text>
             <v-divider :thickness="2" class="border-opacity-100" />
           </v-sheet>
@@ -23,26 +23,16 @@
           <v-card
 elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
             :color="$Const.ORDER_STATUS_DISP[order.state].color" @click="selectOrder(order)">
-            <v-card-text class="text-h6"> {{ $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-text>
-            <v-card-text class="text-h5">{{ order.tourOrganization }}</v-card-text>
+            <v-card-text class="text-h5"> {{ order.applicantCompanyName }} {{ order.applicant }}</v-card-text>
 
-            <v-card-text>日程:{{ order.dispatchDate }} {{ order.dispatchTime }}</v-card-text>
-            <v-card-text>申込者:{{ order.applicant }}</v-card-text>
+            <v-card-text>配車日時:{{ order.dispatchDate }} {{ order.dispatchTime }}</v-card-text>
+            <v-card-text>配車場所:{{ order.deliveryLocation }}</v-card-text>
           </v-card>
 
         </v-col>
       </v-row>
 
 
-      <v-container class="fill-height align-center" fluid>
-        <v-row>
-          <v-col cols="12" sm="3" md="3">
-            <v-btn size="x-large" value="add" color="indigo" @click="addOrder">
-              <v-icon>mdi-plus</v-icon>新規登録
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
 
     </v-container>
   </div>
@@ -53,24 +43,74 @@ const { $Const } = useNuxtApp()
 const userData = useUserData();
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
+const keyUserDocId = userInfo.value.id
 const keyUserId = userInfo.value.companyId
 
-// 登録案件情報取得
-const orderList = await userData.getOrderList(keyUserId);
-
 /**
- * 案件登録画面表示
+ * 申込会社からの案件情報の一覧を取得する。
  */
-const addOrder = () => {
-  // 画面遷移
-  router.push('/user/order/entry')
+const getOrderDeliveryList = async () => {
+
+  const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_RESERVATION, $Const.STATUS_APPLICATION, $Const.STATUS_ARRANGEMENTS_COMPLETED, $Const.STATUS_PATMENT_COMPLETED, $Const.ORDER_COMPLETED]
+  const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
+  const orderListArray = []
+  for (let i = 0; i < orderList.length; i++) {
+
+    const companyId = orderList[i].companyId
+    // 申込会社の情報取得
+    const companyData = await userData.getUserCompanyKey(companyId)
+    const orderInfoObj = {
+      id: orderList[i].id,
+      state: orderList[i].state,
+      companyId: companyId,
+      // TODO:この申込会社情報がとりたい為にわざわざ getOrderDeliveryList()で実装した。
+      applicant: orderList[i].applicant,
+      applicantCompanyName: companyData.companyName,
+      applicantCompanyTel: companyData.companyTel,
+      applicantCompanyFax: companyData.companyFax,
+      applicantCompanyAddr: companyData.companyAddr,
+      applicantCompanyEmail: companyData.companyEmail,
+      emergencyContact: orderList[i].emergencyContact,
+      tourOrganization: orderList[i].tourOrganization,
+      remarks: orderList[i].remarks,
+      passengers: orderList[i].passengers,
+      vehicleTypeLiftAmount: orderList[i].vehicleTypeLiftAmount,
+      vehicleTypeMediumAmount: orderList[i].vehicleTypeMediumAmount,
+      vehicleTypeSmallAmount: orderList[i].vehicleTypeSmallAmount,
+      vehicleTypeMicroAmount: orderList[i].vehicleTypeMicroAmount,
+      dispatchDate: orderList[i].dispatchDate,
+      dispatchTime: orderList[i].dispatchTime,
+      departureTime: orderList[i].departureTime,
+      deliveryLocation: orderList[i].deliveryLocation,
+      itinerary1Top: orderList[i].itinerary1Top,
+      itinerary1Bottom: orderList[i].itinerary1Bottom,
+      timeschedule1Top: orderList[i].timeschedule1Top,
+      timeschedule1Bottom: orderList[i].timeschedule1Bottom,
+      accommodations1: orderList[i].accommodations1,
+      accommodationsTel1: orderList[i].accommodationsTel1,
+      accommodationsAddr1: orderList[i].accommodationsAddr1,
+      endDate: orderList[i].endDate,
+      endingTime: orderList[i].endingTime,
+      terminalLocation: orderList[i].terminalLocation,
+      customerId: orderList[i].customerId,
+      deliveryCompanyId: orderList[i].deliveryCompanyId,
+      dispatchId: orderList[i].dispatchId,
+      counterPersonMain: orderList[i].counterPersonMain,
+      counterPersonSub: orderList[i].counterPersonSub,
+
+    }
+    orderListArray.push(orderInfoObj)
+  }
+  return orderListArray
 }
+const orderList = await getOrderDeliveryList();
+
+
 
 /**
- * 一覧から選択した案件情報の登録画面を表示する
+ * 一覧から選択した案件情報を表示する
  */
 const selectOrder = async (order) => {
-
   // 一覧から選択した申込情報を保持
   const { editOrderInfo } = useOrderInfo()
   // stateへ保存
@@ -79,11 +119,11 @@ const selectOrder = async (order) => {
     state: order.state,
     companyId: keyUserId,
     applicant: order.applicant,
-    applicantCompanyName: userInfo.value.companyName,
-    applicantCompanyTel: userInfo.value.companyTel,
-    applicantCompanyFax: userInfo.value.companyFax,
-    applicantCompanyAddr: userInfo.value.companyAddr,
-    applicantCompanyEmail: userInfo.value.companyEmail,
+    applicantCompanyName: order.applicantCompanyName,
+    applicantCompanyTel: order.applicantCompanyTel,
+    applicantCompanyFax: order.applicantCompanyFax,
+    applicantCompanyAddr: order.applicantCompanyAddr,
+    applicantCompanyEmail: order.applicantCompanyEmail,
     emergencyContact: order.emergencyContact,
     tourOrganization: order.tourOrganization,
     remarks: order.remarks,
@@ -102,8 +142,8 @@ const selectOrder = async (order) => {
   }
   editOrderInfo(orderInfo)
 
-    // 配車情報があれば設定
-    const { editDispatchInfo } = useDispatchInfo()
+  // 配車情報があれば設定
+  const { editDispatchInfo } = useDispatchInfo()
   if (order.dispatchId != null && order.dispatchId != '') {
     const dispatchInfo = await userData.getDispatchData(order.dispatchId);
     const dispatchObj = {
@@ -116,7 +156,6 @@ const selectOrder = async (order) => {
     }
     editDispatchInfo(dispatchObj)
   }
-
 
   // 申込顧客情報があれば設定
   const { editApplicantCustomerInfo } = useApplicantCustomerInfo()
@@ -174,14 +213,8 @@ const selectOrder = async (order) => {
   }
   editOrderOperationInfo(orderOperationInfoObject)
 
-  if (order.state == $Const.STATUS_DRAFT) {
-    router.push('/user/order/entry')
 
-  } else if (order.state == $Const.STATUS_REQUEST) {
-    router.push('/user/order/entryConfirm')
-  } else {
-    router.push('/user/order/entryConfirm')
-  }
+  router.push('/delivery/order/entry')
 
 }
 
@@ -189,7 +222,7 @@ const selectOrder = async (order) => {
 /** 前の画面へ戻る */
 const back = () => {
   // 画面遷移
-  router.push('/user/mypage')
+  router.push('/delivery/mypage')
 }
 
 definePageMeta({

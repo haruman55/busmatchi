@@ -197,6 +197,11 @@ type OrderInfo = {
   // 申込会社ID(ログインIDと一緒)
   companyId: string;
   applicant: string;
+  applicantCompanyName: string;
+  applicantCompanyTel: string;
+  applicantCompanyFax: string;
+  applicantCompanyAddr: string;
+  applicantCompanyEmail: string;
   emergencyContact: string;
   tourOrganization: string;
   remarks: string;
@@ -222,6 +227,12 @@ export const useOrderInfo = () => {
     state: '',
     companyId: '',
     applicant: '',
+    applicantCompanyName: '',
+    applicantCompanyTel: '',
+    applicantCompanyFax: '',
+    applicantCompanyAddr: '',
+    applicantCompanyEmail: '',
+
     emergencyContact: '',
     tourOrganization: '',
     remarks: '',
@@ -263,6 +274,12 @@ const clearOrderInfo = (orderInfo: Ref<OrderInfo>) => () => {
     state: '',
     companyId: '',
     applicant: '',
+    applicantCompanyName: '',
+    applicantCompanyTel: '',
+    applicantCompanyFax: '',
+    applicantCompanyAddr: '',
+    applicantCompanyEmail: '',
+
     emergencyContact: '',
     tourOrganization: '',
     remarks: '',
@@ -293,7 +310,10 @@ type OrderDeliveryUserInfo = {
   companyTel: string;
   companyFax: string;
   companyEmail: string;
+  // TODO:(いらない？)運送引受会社の検索方法：画面入力 or Map選択可否
   deliveryChoice: string;
+  counterPersonMain: string;
+  counterPersonSub: string;
 
 };
 
@@ -308,6 +328,8 @@ export const useOrderDeliveryUserInfo = () => {
     companyFax: "",
     companyEmail: "",
     deliveryChoice: '',
+    counterPersonMain: '',
+    counterPersonSub: '',
 
   }));
 
@@ -338,6 +360,8 @@ const clearOrderDeliveryUserInfo = (orderDeliveryUserInfo: Ref<OrderDeliveryUser
     companyFax: "",
     companyEmail: "",
     deliveryChoice: '',
+    counterPersonMain: '',
+    counterPersonSub: '',
 
   };
   return {
@@ -419,6 +443,62 @@ const clearOrderOperationInfo = (orderOperationInfo: Ref<OrderOperationInfo>) =>
 };
 
 
+// 案件情報-配車情報オブジェクト
+type DispatchInfo = {
+  id: string;
+  // TODO:配車は案件に紐付くからcompanyIdはいらないかも
+  companyId: string;
+  orderId: string;
+  busList: []
+  driverList: []
+  guideList: []
+
+}
+
+/** 案件情報-配車情報を扱うState */
+export const useDispatchInfo = () => {
+  const dispatchInfo = useState<DispatchInfo>("dispatchInfo", () => ({
+    id: '',
+    companyId: '',
+    orderId: '',
+    busList: [],
+    driverList: [],
+    guideList: [],
+
+  }));
+
+  return {
+    dispatchInfo,
+    editDispatchInfo: editDispatchInfo(dispatchInfo),
+    clearDispatchInfo: clearDispatchInfo(dispatchInfo),
+  };
+};
+
+/** 案件情報-配車情報の編集を行うSetter */
+const editDispatchInfo =
+  (dispatchInfo: Ref<DispatchInfo>) => (editDispatchInfo: DispatchInfo) => {
+    dispatchInfo.value = editDispatchInfo;
+    return {
+      dispatchInfo,
+    };
+  };
+
+/** 案件情報-配車情報の内容を初期化する */
+const clearDispatchInfo = (dispatchInfo: Ref<DispatchInfo>) => () => {
+  dispatchInfo.value = {
+    id: '',
+    companyId: '',
+    orderId: '',
+    busList: [],
+    driverList: [],
+    guideList: [],
+  };
+  return {
+    dispatchInfo,
+  };
+};
+
+
 
 /**
  * ユーザ操作情報オブジェクト
@@ -460,5 +540,222 @@ const clearActionInfo = (actionInfo: Ref<ActionInfo>) => () => {
   };
 };
 
+// 運転手情報オブジェクト
+type DriverInfo = {
+  id: string;
+  companyId: string;
+  driverName: string;
+  driverNameKana: string;
+  contact: string;
+  remarks: string;
+  schedule: [{ orderId: string, termTo: string, termFrom: string }];
+};
+
+/** 運転手情報を扱うState */
+export const useDriverInfo = () => {
+  const driverInfo = useState<DriverInfo>('driver', () => ({
+    id: '',
+    companyId: '',
+    driverName: '',
+    driverNameKana: '',
+    contact: '',
+    remarks: '',
+    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+
+  }))
+
+  return {
+    driverInfo,
+    editDriverInfo: editDriverInfo(driverInfo),
+    clearDriverInfo: clearDriverInfo(driverInfo),
+  }
+};
+
+/** 運転手情報を編集を行うSetter */
+const editDriverInfo = (driverInfo: Ref<DriverInfo>) => (editDriverInfo: DriverInfo) => {
+  driverInfo.value = editDriverInfo
+  return {
+    driverInfo
+  }
+};
 
 
+/** 運転手情報の内容を初期化する */
+const clearDriverInfo = (driverInfo: Ref<DriverInfo>) => () => {
+  driverInfo.value = {
+    id: '',
+    companyId: '',
+    driverName: '',
+    driverNameKana: '',
+    contact: '',
+    remarks: '',
+    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+  }
+  return {
+    driverInfo
+  }
+};
+
+
+// バスガイド情報オブジェクト
+type GuideInfo = {
+  id: string;
+  companyId: string;
+  guideName: string;
+  guideNameKana: string;
+  contact: string;
+  remarks: string;
+  schedule: [{ orderId: string, termTo: string, termFrom: string }];
+};
+
+/** バスガイド情報を扱うState */
+export const useGuideInfo = () => {
+  const guideInfo = useState<GuideInfo>('guide', () => ({
+    id: '',
+    companyId: '',
+    guideName: '',
+    guideNameKana: '',
+    contact: '',
+    remarks: '',
+    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+  }))
+
+  return {
+    guideInfo,
+    editGuideInfo: editGuideInfo(guideInfo),
+    clearGuideInfo: clearGuideInfo(guideInfo),
+  }
+};
+
+/** バスガイド情報を編集を行うSetter */
+const editGuideInfo = (guideInfo: Ref<GuideInfo>) => (editGuideInfo: GuideInfo) => {
+  guideInfo.value = editGuideInfo
+  return {
+    guideInfo
+  }
+};
+
+
+/** バスガイド情報の内容を初期化する */
+const clearGuideInfo = (guideInfo: Ref<GuideInfo>) => () => {
+  guideInfo.value = {
+    id: '',
+    companyId: '',
+    guideName: '',
+    guideNameKana: '',
+    contact: '',
+    remarks: '',
+    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+  }
+  return {
+    guideInfo
+  }
+};
+
+// 駐車場情報オブジェクト
+type ParkingInfo = {
+  id: string;
+  companyId: string;
+  parking: string;
+  parkingAddr: string;
+  remarks: string;
+
+};
+
+/** 駐車場情報を扱うState */
+export const useParkingInfo = () => {
+  const parkingInfo = useState<ParkingInfo>('parking', () => ({
+    id: '',
+    companyId: '',
+    parking: '',
+    parkingAddr: '',
+    remarks: '',
+  }))
+
+  return {
+    parkingInfo,
+    editParkingInfo: editParkingInfo(parkingInfo),
+    clearParkingInfo: clearParkingInfo(parkingInfo),
+  }
+};
+
+/** 駐車場情報を編集を行うSetter */
+const editParkingInfo = (parkingInfo: Ref<ParkingInfo>) => (editParkingInfo: ParkingInfo) => {
+  parkingInfo.value = editParkingInfo
+  return {
+    parkingInfo
+  }
+};
+
+
+/** 駐車場情報の内容を初期化する */
+const clearParkingInfo = (parkingInfo: Ref<ParkingInfo>) => () => {
+  parkingInfo.value = {
+    id: '',
+    companyId: '',
+    parking: '',
+    parkingAddr: '',
+    remarks: '',
+  }
+  return {
+    parkingInfo
+  }
+};
+
+// バス情報オブジェクト
+type BusInfo = {
+  id: string;
+  companyId: string;
+  vehicleNo: string;
+  vehicleType: string;
+  remarks: string;
+  // バスが配置されている駐車場のdocid
+  parkingId: string;
+  schedule: [{ orderId: string, termTo: string, termFrom: string }];
+
+};
+
+/** バス情報を扱うState */
+export const useBusInfo = () => {
+  const busInfo = useState<BusInfo>('bus', () => ({
+    id: '',
+    companyId: '',
+    vehicleNo: '',
+    vehicleType: '',
+    remarks: '',
+    parkingId: '',
+    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+
+  }))
+
+  return {
+    busInfo,
+    editBusInfo: editBusInfo(busInfo),
+    clearBusInfo: clearBusInfo(busInfo),
+  }
+};
+
+/** バス情報を編集を行うSetter */
+const editBusInfo = (busInfo: Ref<BusInfo>) => (editBusInfo: BusInfo) => {
+  busInfo.value = editBusInfo
+  return {
+    busInfo
+  }
+};
+
+
+/** バス情報の内容を初期化する */
+const clearBusInfo = (busInfo: Ref<BusInfo>) => () => {
+  busInfo.value = {
+    id: '',
+    companyId: '',
+    vehicleNo: '',
+    vehicleType: '',
+    remarks: '',
+    parkingId: '',
+    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+  }
+  return {
+    busInfo
+  }
+};

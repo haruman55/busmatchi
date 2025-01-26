@@ -312,7 +312,7 @@ const confirm = async () => {
   }
   editOrderOperationInfo(object)
 
-  router.push('/user/order/entryOrderConfirm')
+  router.push('/user/order/entryConfirm')
 
 
 
@@ -407,7 +407,6 @@ const draft = async () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     }
-    // console.log(orderInfo)
     await userData.addOrder(insertObject)
   }
 

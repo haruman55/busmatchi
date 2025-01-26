@@ -62,6 +62,10 @@ const keyUserId = userInfo.value.companyId
 const { actionInfo } = useAction()
 const act = actionInfo.value.act
 
+// 運転手情報オブジェクトを保持
+const { editDriverInfo } = useDriverInfo()
+
+
 /**
    * バス運転手情報取得
    */
@@ -117,16 +121,16 @@ const selectDriver = async (item) => {
   if (!confirmRes) {
     return
   }
-  const selectCustomer = {
+  const selectDriver = {
     id: item.id,
     companyId: item.companyId,
-    driverName: item.guideName,
-    driverNameKana: item.guideNameKana,
+    driverName: item.driverName,
+    driverNameKana: item.driverNameKana,
     contact: item.contact,
     remarks: item.remarks
   }
   // 画面設定値をStateへ情報保存
-  editApplicantCustomerInfo(selectCustomer)
+  editDriverInfo(selectDriver)
 
   // 画面遷移
   router.push('/user/order/entryBaseInfo')
@@ -157,19 +161,20 @@ const entry = () => {
  * バス運転手情報編集画面を表示
  */
 const editItemInfo = (item) => {
-  const object = {
+  const selectDriver = {
     id: item.id,
     companyId: item.companyId,
-    driverName: item.guideName,
-    driverNameKana: item.guideNameKana,
+    driverName: item.driverName,
+    driverNameKana: item.driverNameKana,
     contact: item.contact,
     remarks: item.remarks
   }
-  // 画面遷移
-  customerState.editCustomerInfo(object)
+  // 画面設定値をStateへ情報保存
+  editDriverInfo(selectDriver)
+
 
   // 画面遷移
-  router.push('/user/customer/update')
+  router.push('/delivery/driver/update')
 }
 
 

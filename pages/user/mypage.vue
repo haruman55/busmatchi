@@ -1,9 +1,34 @@
 <template>
   <div>
     <br>
-    <v-container class="fill-height align-center" fluid>
+    <!-- <v-container class="fill-height align-center" fluid>
       <v-row><v-col><v-card-title class="text-h5"  >マイページ</v-card-title></v-col></v-row>
-      </v-container>
+      </v-container> -->
+    <v-container class="fill-height align-center" fluid>
+      <v-row>
+        <v-col cols="12">
+          <v-card-title><v-icon color="red">mdi-chat-outline</v-icon>インフォメーション</v-card-title>
+          <v-card class="overflow-y-auto overflow-x-hidden">
+            <v-row>
+              <v-col>
+                <a href="" @click.prevent.stop="showInformation()">XXXXX社が運送手配完了しました。</a>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <a href="" @click.prevent.stop="showInformation()">XXXXX社から運送手配が断られました。</a>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <a href="" @click.prevent.stop="showInformation()">XXXXX社との支払確認が完了しました。</a>
+              </v-col>
+            </v-row>
+
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
     <v-container class="fill-height align-center" fluid>
       <v-row>
@@ -17,7 +42,7 @@
                   {{ orderList.length }}件
                 </v-col>
                 <v-col class="text-right" cols="6">
-                  <v-icon  icon="mdi-note-plus-outline" size="70" />
+                  <v-icon icon="mdi-note-plus-outline" size="70" />
                 </v-col>
 
               </v-row>
@@ -43,7 +68,7 @@
           </v-card>
 
         </v-col>
-          <v-divider thickness="1" vertical/>
+        <v-divider thickness="1" vertical />
 
         <v-col cols="12" sm="4" md="4">
           <v-card class="mx-auto" width="300" height="200" elevation="15" @click="showCustomer">
@@ -111,7 +136,7 @@
   </div>
 </template>
 <script setup>
-// const { $swal } = useNuxtApp()
+const { $swal } = useNuxtApp()
 const router = useRouter()
 const { $Const } = useNuxtApp()
 // user情報の状態管理
@@ -171,7 +196,16 @@ const showCustomer = () => {
 
 }
 
+const showInformation = () => {
+  $swal.fire({
+    text: '[未実装]インフォメーションの詳細がみれます',
+    showCancelButton: false,
+    confirmButtonText: 'OK',
+    icon: 'info'
+  })
 
+
+}
 
 
 definePageMeta({

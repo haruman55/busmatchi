@@ -59,6 +59,10 @@ const userData = useUserData();
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
 
+// 登録駐車場情報の保持
+const {  editParkingInfo } = useParkingInfo()
+
+
 // ユーザ操作情報を保持
 const { actionInfo } = useAction()
 const act = actionInfo.value.act
@@ -113,14 +117,14 @@ const selectParking = async (item) => {
   if (!confirmRes) {
     return
   }
-  const selectCustomer = {
+  const selectParkingInfo = {
     id: item.id,
     parking: item.parking,
-    parkingAddr: item.parkingAddrAddr,
+    parkingAddr: item.parkingAddr,
     remarks: item.remarks,
   }
   // 画面設定値をStateへ情報保存
-  editApplicantCustomerInfo(selectCustomer)
+  editParkingInfo(selectParkingInfo)
 
   // 画面遷移
   router.push('/user/order/entryBaseInfo')
@@ -148,20 +152,22 @@ const entry = () => {
 }
 
 /**
- * 顧客情報編集画面を表示
+ * 駐車地編集画面を表示
  */
 const editItemInfo = (item) => {
   const object = {
     id: item.id,
     parking: item.parking,
-    parkingAddr: item.parkingAddrAddr,
+    parkingAddr: item.parkingAddr,
     remarks: item.remarks,
+    parkingId: item.parkingId
   }
-  // 画面遷移
-  customerState.editCustomerInfo(object)
+
+  // 画面設定値をStateへ情報保存 
+  editParkingInfo(object)
 
   // 画面遷移
-  router.push('/user/customer/update')
+  router.push('/delivery/parking/update')
 }
 
 

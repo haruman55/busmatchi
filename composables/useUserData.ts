@@ -1,5 +1,7 @@
 import type {
   FieldValue
+  ,
+  Timestamp
 } from "firebase/firestore";
 import {
   getFirestore,
@@ -16,8 +18,7 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
-  deleteDoc,
-  Timestamp
+  deleteDoc
 } from "firebase/firestore";
 
 import dayjs from 'dayjs';
@@ -60,7 +61,7 @@ type Order = {
   tourOrganization: string;
   remarks: string;
   passengers: number;
-  vehicleTypeLiftAmount:number;
+  vehicleTypeLiftAmount: number;
   vehicleTypeMediumAmount: number;
   vehicleTypeSmallAmount: number;
   vehicleTypeMicroAmount: number;
@@ -82,9 +83,29 @@ type Order = {
   customerId: string;
   // 申込対象の運送引受会社のdocid
   deliveryCompanyId: string;
+  // 運送引受会社の設定した配車情報のdocid
+  dispatchId: string;
+  // 運送引受会社の案件担当者
+  counterPersonMain: string;
+  counterPersonSub: string;
   createdAt: Timestamp | FieldValue;
   updatedAt: Timestamp | FieldValue;
 };
+
+// 案件情報-配車情報オブジェクト
+type Dispatch = {
+  id: string;
+  orderId: string;
+  busList: string[]
+  driverList: string[]
+  guideList: string[]
+  termTo: Timestamp | FieldValue;
+  termFrom: Timestamp | FieldValue;
+  createdAt: Timestamp | FieldValue;
+  updatedAt: Timestamp | FieldValue;
+
+}
+
 
 // 運送引受会社保有情報-駐車地情報オブジェクト
 type Parking = {
@@ -129,35 +150,11 @@ type Bus = {
   vehicleNo: string;
   vehicleType: string;
   remarks: string;
+  // バスが配置されている駐車場のdocid
+  parkingId: string;
   createdAt: Timestamp | FieldValue;
   updatedAt: Timestamp | FieldValue;
 };
-
-
-
-
-
-
-
-// ポイントやり取り情報
-type ExchangeInfo = {
-  id: string;
-  acceptUserId: string;
-  acceptUserName: string;
-  acceptUserHandleName: string;
-  operateUserId: string;
-  operateUserName: string;
-  operateUserHandleName: string;
-  exchangeCode: string;
-  exchangeComment: string;
-  exchangePoint: number;
-  exchangeDate: string;
-  myComment: boolean;
-  dispDate: string;
-  dispHour: string;
-  exchangeTimestamp: Timestamp | FieldValue;
-
-}
 
 
 
@@ -260,6 +257,32 @@ export const useUserData = () => {
 
   };
 
+  /**
+   * ユーザ情報の取得（companyId指定でのユニーク）
+   * @param companyId 
+   * @returns 
+   */
+  const getUserCompanyKey = async (companyId: string) => {
+    const user: User[] = [];
+    let q = null;
+    if (companyId == "") {
+      return null
+    } else {
+      q = query(
+        collection(db, "user"),
+        where("companyId", "==", companyId),
+      );
+    }
+    const querySnapshot = await getDocs(q);
+    let index = 0
+    querySnapshot.docs.map((doc) => {
+      user.push(doc.data() as User);
+      user[index]["id"] = doc.id;
+      index++
+    });
+    // 1件しか存在しない想定
+    return user[0];
+  };
 
 
   /**
@@ -279,11 +302,12 @@ export const useUserData = () => {
       companyTel: user.companyTel,
       companyFax: user.companyFax,
       companyEmail: user.companyEmail,
-      
+
 
     };
     await updateDoc(userRef, updateUser);
   };
+
 
 
 
@@ -322,9 +346,7 @@ export const useUserData = () => {
       user[index]["id"] = doc.id;
       index++
     });
-    console.log('getDeliveryUser')
 
-    console.log(user)
     return user;
   };
 
@@ -503,33 +525,35 @@ export const useUserData = () => {
 
   };
 
-/**
-* 運送引受会社へ依頼された案件情報を取得する
-* @param deliveryCompanyId : 運送引受会社のcompanyId(運送引受会社で利用する際の機能)
-* @returns 
-*/
-const getOrderDeliveryList = async (companyId: string | "") => {
-  const order: Order[] = [];
-  let q = null;
-  if (companyId == "") {
-    return null
-  } else {
-    q = query(
-      collection(db, "order"),
-      where("deliveryCompanyId", "==", companyId),
-      orderBy("state", "asc")
-    );
-  }
-  const querySnapshot = await getDocs(q);
-  let index = 0
-  querySnapshot.docs.map((doc) => {
-    order.push(doc.data() as Order);
-    order[index]["id"] = doc.id;
-    index++;
-  });
+  /**
+  * 運送引受会社へ依頼された案件情報を取得する
+  * @param deliveryCompanyId : 運送引受会社のcompanyId(運送引受会社で利用する際の機能)
+  * @param state : 取得対象の案件のステータス情報
+  * @returns 
+  */
+  const getOrderDeliveryList = async (companyId: string | "", state: string[]) => {
+    const order: Order[] = [];
+    let q = null;
+    if (companyId == "" ) {
+      return null
+    } else {
+      q = query(
+        collection(db, "order"),
+        where("deliveryCompanyId", "==", companyId),
+        where("state", "in", state),
+        orderBy("state", "asc")
+      );
+    }
+    const querySnapshot = await getDocs(q);
+    let index = 0
+    querySnapshot.docs.map((doc) => {
+      order.push(doc.data() as Order);
+      order[index]["id"] = doc.id;
+      index++;
+    });
 
-  return order;
-};
+    return order;
+  };
 
 
   /**
@@ -882,6 +906,89 @@ const getOrderDeliveryList = async (companyId: string | "") => {
   };
 
 
+  /**
+* 指定運送引受会社が請け負っている配車情報の一覧を取得する(TODO:未使用だと思う)
+* @param companyId 
+* @returns 
+*/
+  const getDispatchList = async (companyId: string | "") => {
+    const dispatch: Dispatch[] = [];
+    let q = null;
+    if (companyId == "") {
+      return null
+    } else {
+      q = query(
+        collection(db, "dispatch"),
+        where("companyId", "==", companyId),
+      );
+    }
+    const querySnapshot = await getDocs(q);
+    let index = 0
+    querySnapshot.docs.map((doc) => {
+      dispatch.push(doc.data() as Dispatch);
+      dispatch[index]["id"] = doc.id;
+      index++;
+    });
+    return dispatch;
+  };
+
+  /**
+  * 指定の配車情報(ユニーク)を取得する
+  * @param doc_id 
+  * @returns 
+  */
+  const getDispatchData = async (doc_id: string) => {
+    const docRef = doc(db, "dispatch", doc_id as string);
+
+    try {
+      // ドキュメントを取得
+      const docSnap = await getDoc(docRef);
+
+      // ドキュメントが存在するか確認
+      if (docSnap.exists()) {
+        // データを取得
+        return docSnap.data() as Bus;
+      } else {
+        // ドキュメントが存在しない場合の処理
+        console.log("No such document! bus");
+        return null;
+      }
+    } catch (error) {
+      // エラー処理
+      console.error("Error getting document bus :", error);
+      return null;
+    }
+
+  };
+
+  /**
+  * 配車情報を登録する
+  * @param dispatch
+  * @returns ドキュメントID
+  */
+  const addDispatch = async (dispatch: Dispatch) => {
+    if (dispatch == null) {
+      return null;
+    }
+    const docRef = await addDoc(collection(db, "dispatch"), dispatch);
+    return docRef.id
+
+  };
+
+  /**
+  * 配車情報を更新する
+  * @param dispatch 
+  * @returns 
+  */
+  const updateDispatch = async (dispatch: Dispatch) => {
+    if (dispatch == null) {
+      return null;
+    }
+    const userRef = doc(db, "dispatch", dispatch.id as string);
+    await setDoc(userRef, dispatch, { merge: true });
+
+  };
+
 
 
 
@@ -915,75 +1022,7 @@ const getOrderDeliveryList = async (companyId: string | "") => {
     return user;
   };
 
-  /**
-   * 指定ユーザのポイントのやり取り情報を取得
-   * @param operateUserId ：ポイントの受け渡しユーザ
-   * @param acceptUserId ：ポイントの受け取りユーザ
-   * @returns 
-   */
-  const getExchangeInfo = async (operateUserId: string, acceptUserId: string, myComment: boolean) => {
-    const exchangeInfo: ExchangeInfo[] = [];
 
-    let q = null;
-    q = query(collection(db, "exchangeInfo"), where("operateUserId", "==", operateUserId), where("acceptUserId", "==", acceptUserId), orderBy("exchangeTimestamp"));
-    const querySnapshot = await getDocs(q);
-    let index = 0;
-    querySnapshot.docs.map((doc) => {
-      exchangeInfo.push(doc.data() as ExchangeInfo);
-      exchangeInfo[index]["id"] = doc.id;
-      const date = doc.data().exchangeTimestamp.toDate();
-      const exchangeDate = dayjs(date).format(
-        "YYYY/MM/DD"
-      );
-      const exchangeHour = dayjs(date).format(
-        "HH:mm"
-      );
-
-      exchangeInfo[index]["dispDate"] = exchangeDate;
-      exchangeInfo[index]["dispHour"] = exchangeHour;
-      // ログイン(操作)ユーザのコメント(true)はLINEのように右端で表示するためのフラグ
-      exchangeInfo[index]["myComment"] = myComment;
-
-      index++;
-    });
-    return exchangeInfo;
-  };
-
-  /**
-   * AWSOMEの制限(1日1回まで)チェック
-   * @param operateUserId 
-   * @returns 
-   */
-  const isExchange = async (operateUserId: string) => {
-    const today = Timestamp.now().toDate()
-    const nowDate = dayjs(today).format("YYYY/MM/DD");
-    let isExchange = false;
-    let q = null;
-    q = query(collection(db, "exchangeInfo"), where("operateUserId", "==", operateUserId), where("exchangeDate", "==", nowDate));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.docs.map((doc) => {
-      const exchangeDate = doc.data().exchangeDate;
-      if (exchangeDate == nowDate) {
-        isExchange = true;
-        return;
-      }
-    });
-    return isExchange;
-  };
-
-  /**
- * ポイントのやり取り情報を登録する
- * @param exchangeInfo 
- * @returns ドキュメントID
- */
-  const addExchangeInfo = async (exchangeInfo: ExchangeInfo) => {
-    if (exchangeInfo == null) {
-      return null;
-    }
-    const docRef = await addDoc(collection(db, "exchangeInfo"), exchangeInfo);
-    return docRef.id
-
-  };
 
 
 
@@ -993,6 +1032,7 @@ const getOrderDeliveryList = async (companyId: string | "") => {
     getUser,
     getUserData,
     isUserExists,
+    getUserCompanyKey,
     updateUser,
     getCustomerData,
     getUserCustomer,
@@ -1021,9 +1061,10 @@ const getOrderDeliveryList = async (companyId: string | "") => {
     getBusData,
     addBus,
     updateBus,
+    getDispatchList,
+    getDispatchData,
+    addDispatch,
+    updateDispatch,
     searchUser,
-    getExchangeInfo,
-    isExchange,
-    addExchangeInfo,
   };
 };
