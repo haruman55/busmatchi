@@ -138,40 +138,6 @@ const busListHeaders = [
   },
 ]
 
-/**
- * バスを選択する
- */
-const selectBus = async (item) => {
-  let confirmRes = false
-  await $swal.fire({
-    text: 'バスを選択します。よろしいですか？',
-    showCancelButton: true,
-    confirmButtonColor: "#00BCD4",
-    cancelButtonColor: "#CFD8DC",
-    confirmButtonText: 'はい。',
-    cancelButtonText: 'キャンセル',
-    icon: 'info'
-  }).then((res) => {
-    confirmRes = res.isConfirmed
-  })
-  if (!confirmRes) {
-    return
-  }
-  const selectBus = {
-    id: item.id,
-    companyId: item.companyId,
-    vehicleNo: item.vehicleNo,
-    vehicleType: item.vehicleType,
-    remarks: item.remarks,
-    parkingId: item.parkingId,
-  }
-  // 画面設定値をStateへ情報保存
-  editBusInfo(selectBus)
-
-  // 画面遷移
-  router.push('/delivery/order/entry')
-
-}
 /** 前の画面へ戻る */
 const back = () => {
   // if (act == $Const.USER_ACTION_ORDER) {

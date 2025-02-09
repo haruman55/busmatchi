@@ -6,8 +6,8 @@
     </v-container> -->
     <v-container class="fill-height align-center" fluid>
       <v-row>
-        <v-col cols="12" >
-          <v-card-title ><v-icon color="red">mdi-chat-outline</v-icon>インフォメーション</v-card-title>
+        <v-col cols="12">
+          <v-card-title><v-icon color="red">mdi-chat-outline</v-icon>インフォメーション</v-card-title>
           <v-card class="overflow-y-auto overflow-x-hidden">
             <v-row>
               <v-col>
@@ -50,19 +50,21 @@
           </v-card>
         </v-col>
         <v-col cols="12" sm="3" md="3">
-          <v-card class="mx-auto" width="300" height="420" elevation="15">
+          <v-card class="mx-auto" width="300" height="420" elevation="15" @click="showReservation">
             <v-card-item title="運行管理" />
 
             <v-card-text class="py-0">
               <v-row align="center" no-gutters>
-                <v-col class="text-h2" align="center" cols="6">
-                  2台
-                </v-col>
                 <v-col class="text-right" cols="6">
-                  <v-icon color="indigo" icon="mdi-note-plus-outline" size="70" />
+                  <v-icon color="red" icon="mdi-bus" size="70" />
+                  <v-icon color="indigo" icon="mdi-card-account-details-outline" size="70" />
+                  <v-icon color="success" icon="mdi-human-female-dance" size="70" />
                 </v-col>
-
               </v-row>
+              <v-overlay :model-value="loading" class="align-center justify-center">
+                <v-progress-circular color="primary" size="150" width="20" indeterminate />
+              </v-overlay>
+
             </v-card-text>
           </v-card>
         </v-col>
@@ -153,14 +155,14 @@ const { $Const } = useNuxtApp()
 const { userInfo } = useUserInfo()
 const keyUserDocId = userInfo.value.id
 const keyUserId = userInfo.value.companyId
-
+const loading = ref(false)
 // ユーザ操作情報の状態管理
 const { editActionInfo } = useAction()
 
 // DB操作
 const userData = useUserData();
 // 登録案件情報取得
-const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_RESERVATION, $Const.STATUS_APPLICATION, $Const.STATUS_ARRANGEMENTS_COMPLETED, $Const.STATUS_PATMENT_COMPLETED, $Const.ORDER_COMPLETED]
+const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_RESERVATION, $Const.STATUS_APPLICATION, $Const.STATUS_ARRANGEMENTS_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
 const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
 
 // 保有駐車地情報取得
@@ -179,7 +181,7 @@ const busList = await userData.getBusList(keyUserId);
 onMounted(async () => {
   // 導線の初期化
   const initAction = {
-    act: ""
+    act: $Const.USER_ACTION_MYPAGE
   }
   editActionInfo(initAction)
 
@@ -195,7 +197,7 @@ onMounted(async () => {
  */
 const showOrder = () => {
   const setAction = {
-    act: "1"
+    act: $Const.USER_ACTION_ORDER
   }
   editActionInfo(setAction)
 
@@ -203,15 +205,21 @@ const showOrder = () => {
   router.push('/delivery/order/list')
 }
 
+/**
+ * 配車情報一覧を表示
+ */
+const showReservation = () => {
+  loading.value = true;
+
+  // 画面遷移
+  router.push('/delivery/reservation')
+
+}
 
 /**
  * 駐車地一覧画面を表示
  */
 const showParking = () => {
-  const setAction = {
-    act: "1"
-  }
-  editActionInfo(setAction)
 
   // 画面遷移
   router.push('/delivery/parking/list')
@@ -221,10 +229,6 @@ const showParking = () => {
  * バスガイド一覧画面を表示
  */
 const showGuide = () => {
-  const setAction = {
-    act: "1"
-  }
-  editActionInfo(setAction)
 
   // 画面遷移
   router.push('/delivery/guide/list')
@@ -234,10 +238,6 @@ const showGuide = () => {
  * バス運転手一覧画面を表示
  */
 const showDriver = () => {
-  const setAction = {
-    act: "1"
-  }
-  editActionInfo(setAction)
 
   // 画面遷移
   router.push('/delivery/driver/list')
@@ -247,10 +247,6 @@ const showDriver = () => {
  * バス一覧画面を表示
  */
 const showBus = () => {
-  const setAction = {
-    act: "1"
-  }
-  editActionInfo(setAction)
 
   // 画面遷移
   router.push('/delivery/bus/list')
@@ -265,10 +261,6 @@ const showInformation = () => {
     icon: 'info'
   })
 }
-
-
-
-
 
 
 

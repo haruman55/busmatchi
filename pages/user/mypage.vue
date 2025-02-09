@@ -162,7 +162,7 @@ const deliveryUserList = await userData.getDeliveryUser();
 onMounted(async () => {
   // 導線の初期化
   const initAction = {
-    act: ""
+    act: $Const.USER_ACTION_MYPAGE
   }
   editActionInfo(initAction)
 })
@@ -174,7 +174,7 @@ onMounted(async () => {
  */
 const showOrder = () => {
   const setAction = {
-    act: "1"
+    act: $Const.USER_ACTION_ORDER
   }
   editActionInfo(setAction)
 
@@ -186,10 +186,6 @@ const showOrder = () => {
  * 顧客一覧画面を表示
  */
 const showCustomer = () => {
-  const setAction = {
-    act: "2"
-  }
-  editActionInfo(setAction)
 
   // 画面遷移
   router.push('/user/customer/list')

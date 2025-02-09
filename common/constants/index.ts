@@ -21,12 +21,19 @@ export const STATUS_APPLICATION = '4'
 // 案件状況-手配確認完了
 export const STATUS_ARRANGEMENTS_COMPLETED = '5'
 // 案件状況-支払い完了
-export const STATUS_PATMENT_COMPLETED = '6'
+export const STATUS_PAYMENT_COMPLETED = '6'
 
 // 案件状況-運送手配引受不可
-export const ORDER_DENY = '8'
+export const STATUS_ORDER_DENY = '8'
 // 案件状況-案件完了
-export const ORDER_COMPLETED = '9'
+export const STATUS_ORDER_COMPLETED = '9'
+
+// 配車予約のカテゴリ-バス
+export const CATEGORY_BUS = '0'
+// 配車予約のカテゴリ-運転手
+export const CATEGORY_DRIVER = '1'
+// 配車予約のカテゴリ-バスガイド
+export const CATEGORY_GUIDE = '2'
 
 // 車両タイプ
 export const VEHICLE_TYPE = [
@@ -45,10 +52,106 @@ export const VEHICLE_TYPE_DISP = {
   4: { text: 'マイクロ' },
 }
 
+// 予約確認要の時間配列
+export const TIME_ARRAY = {
+  0: { index: 0 },
+  1: { index: 1 },
+  2: { index: 2 },
+  3: { index: 3 },
+  4: { index: 4 },
+  5: { index: 5 },
+  6: { index: 6 },
+  7: { index: 7 },
+  8: { index: 8 },
+  9: { index: 9 },
+  10: { index: 10 },
+  11: { index: 11 },
+  12: { index: 12 },
+  13: { index: 13 },
+  14: { index: 14 },
+  15: { index: 15 },
+  16: { index: 16 },
+  17: { index: 17 },
+  18: { index: 18 },
+  19: { index: 19 },
+  20: { index: 20 },
+  21: { index: 21 },
+  22: { index: 22 },
+  23: { index: 23 },
+}
 
 
+// 時間-選択肢
+export const TIME_LIST = [
+  { disp: '00:00', code: 0 },
+  { disp: '01:00', code: 1 },
+  { disp: '02:00', code: 2 },
+  { disp: '03:00', code: 3 },
+  { disp: '04:00', code: 4 },
+  { disp: '05:00', code: 5 },
+  { disp: '06:00', code: 6 },
+  { disp: '07:00', code: 7 },
+  { disp: '08:00', code: 8 },
+  { disp: '09:00', code: 9 },
+  { disp: '10:00', code: 10 },
+  { disp: '11:00', code: 11 },
+  { disp: '12:00', code: 12 },
+  { disp: '13:00', code: 13 },
+  { disp: '14:00', code: 14 },
+  { disp: '15:00', code: 15 },
+  { disp: '16:00', code: 16 },
+  { disp: '17:00', code: 17 },
+  { disp: '18:00', code: 18 },
+  { disp: '19:00', code: 19 },
+  { disp: '20:00', code: 20 },
+  { disp: '21:00', code: 21 },
+  { disp: '22:00', code: 22 },
+  { disp: '23:00', code: 23 },
+]
 
+// 時間-選択肢
+export const TIME_HOUR_LIST = [
+  { disp: '00', code: 0 },
+  { disp: '01', code: 1 },
+  { disp: '02', code: 2 },
+  { disp: '03', code: 3 },
+  { disp: '04', code: 4 },
+  { disp: '05', code: 5 },
+  { disp: '06', code: 6 },
+  { disp: '07', code: 7 },
+  { disp: '08', code: 8 },
+  { disp: '09', code: 9 },
+  { disp: '10', code: 10 },
+  { disp: '11', code: 11 },
+  { disp: '12', code: 12 },
+  { disp: '13', code: 13 },
+  { disp: '14', code: 14 },
+  { disp: '15', code: 15 },
+  { disp: '16', code: 16 },
+  { disp: '17', code: 17 },
+  { disp: '18', code: 18 },
+  { disp: '19', code: 19 },
+  { disp: '20', code: 20 },
+  { disp: '21', code: 21 },
+  { disp: '22', code: 22 },
+  { disp: '23', code: 23 },
+]
 
+// 分-選択肢
+export const TIME_MINUTE_LIST = [
+  { disp: '00', code: 0 },
+  { disp: '05', code: 5 },
+  { disp: '10', code: 10 },
+  { disp: '15', code: 15 },
+  { disp: '20', code: 20 },
+  { disp: '25', code: 25 },
+  { disp: '30', code: 30 },
+  { disp: '35', code: 35 },
+  { disp: '40', code: 40 },
+  { disp: '45', code: 45 },
+  { disp: '50', code: 50 },
+  { disp: '55', code: 55 },
+]
 
 
 
@@ -64,6 +167,8 @@ export const CATEGORY_APPLICANT = '1'
 // カテゴリ-運送引受会社
 export const CATEGORY_DELIVERY = '2'
 
+// 操作(導線入口)：マイページからの直接(0)
+export const USER_ACTION_MYPAGE = '0'
 // 操作(導線入口)：案件(1)
 export const USER_ACTION_ORDER = '1'
 // 操作(導線入口)：利用顧客(2)

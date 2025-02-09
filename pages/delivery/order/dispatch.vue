@@ -66,6 +66,10 @@
           <v-icon>mdi-apps</v-icon>
         </v-btn><v-divider />
       </v-toolbar-title>
+      <v-overlay :model-value="loading" class="align-center justify-center">
+        <v-progress-circular color="primary" size="150" width="20" indeterminate />
+      </v-overlay>
+
     </v-container>
     <v-container class="fill-height align-center" fluid>
       <v-row>
@@ -75,7 +79,8 @@
               <v-col>
                 <v-data-table :headers="busListHeaders" :items="busList" hide-default-footer class="text-pre-wrap">
                   <template #[`item.selectBus`]="{ item }">
-                    <v-checkbox-btn v-model="item.selectBus" />
+                    <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectBus" />
+                    <div v-else>予約中</div>
                   </template>
                   <template #[`item.vehicleType`]="{ item }">
                     {{ $Const.VEHICLE_TYPE_DISP[item.vehicleType].text }}
@@ -99,7 +104,8 @@
 :headers="driverListHeaders" :items="driverList" hide-default-footer
                   class="text-pre-wrap">
                   <template #[`item.selectDriver`]="{ item }">
-                    <v-checkbox-btn v-model="item.selectDriver" />
+                    <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectDriver" />
+                    <div v-else>予約中</div>
                   </template>
                 </v-data-table>
               </v-col>
@@ -117,7 +123,8 @@
               <v-col>
                 <v-data-table :headers="guideListHeaders" :items="guideList" hide-default-footer class="text-pre-wrap">
                   <template #[`item.selectGuide`]="{ item }">
-                    <v-checkbox-btn v-model="item.selectGuide" />
+                    <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectGuide" />
+                    <div v-else>予約中</div>
                   </template>
                 </v-data-table>
               </v-col>
@@ -153,29 +160,33 @@ const router = useRouter()
 const { $Const } = useNuxtApp()
 const { $swal } = useNuxtApp()
 const userData = useUserData();
+const { $dayjs } = useNuxtApp();
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
+
 
 // 案件情報を保持
 const { orderInfo } = useOrderInfo()
 // 運行情報を保持
 const { orderOperationInfo } = useOrderOperationInfo()
 
-// バス情報を保持
-const { busInfo, editBusInfo } = useBusInfo()
-// 運転手情報を保持
-const { driverInfo, editDriverInfo } = useDriverInfo()
-// ガイド情報を保持
-const { guideInfo, editGuideInfo } = useGuideInfo()
-
 // 配車情報を保持
 const { dispatchInfo, editDispatchInfo } = useDispatchInfo()
 
 
-// ユーザ操作情報を保持
-const { actionInfo } = useAction()
-const act = actionInfo.value.act
+const loading = ref(false)
+
+// 配車日付
+const reservationFromDt = orderInfo.value.dispatchDate.replace(/\//g, "");
+const reservationToDt = orderOperationInfo.value.endDate.replace(/\//g, "");
+
+
+// 文字列を結合して YYYY-MM-DD HH:mm 形式に変換
+const formattedSearchReservationFrom = `${reservationFromDt.slice(0, 4)}-${reservationFromDt.slice(4, 6)}-${reservationFromDt.slice(6, 8)} 00:00`;
+const formattedSearchReservationTo = `${reservationToDt.slice(0, 4)}-${reservationToDt.slice(4, 6)}-${reservationToDt.slice(6, 8)} 23:59`;
+const SearchReservationTSFrom = new Date($dayjs(formattedSearchReservationFrom, 'YYYY-MM-DD HH:mm').valueOf());
+const SearchReservationTSTo = new Date($dayjs(formattedSearchReservationTo, 'YYYY-MM-DD HH:mm').valueOf());
 
 // 合計を計算するcomputedプロパティ
 const totalvehicleAmount = computed(() => {
@@ -187,15 +198,33 @@ const totalvehicleAmount = computed(() => {
  * バス情報取得の一覧を取得する。
  */
 const getBusInfoList = async () => {
+
   const busList = await userData.getBusList(keyUserId);
   // 既に配車選択済みのバス情報一覧(チェック状態にするための処理)
   const dispatchBusList = dispatchInfo.value.busList
   const busInfoListArray = []
   for (let i = 0; i < busList.length; i++) {
     const busId = busList[i].id
+    // 画面トランザクション内で保持する情報：確定(DB登録)されてはいないが、既に予約選択済みか否かのフラグ
     const isdispatched = dispatchBusList.some(dispatchBus => {
       return dispatchBus.id === busId;
     })
+    // DBで保持する情報：既に予約登録済み
+    let isReservation = false
+
+    let reservationId = ''
+    let reservationTimeDisp = ''
+    const reservationTime = []
+
+    const busReservationInfo = await userData.searchReservation('0', busId, SearchReservationTSFrom, SearchReservationTSTo)
+    if (busReservationInfo != null && busReservationInfo.length > 0) {
+      reservationId = busReservationInfo[0].id
+      reservationTimeDisp = $dayjs(busReservationInfo[0].reservationFrom.toDate()).format('YYYY/MM/DD HH:mm') + ' - ' + $dayjs(busReservationInfo[0].reservationTo.toDate()).format('YYYY/MM/DD HH:mm')
+      // 既に指定期間で予約済み
+      isReservation = true
+    }
+
+
     // バスが配置されている駐車場のdocid
     const parkingId = busList[i].parkingId
     const parkingData = await userData.getParkingData(parkingId)
@@ -209,7 +238,11 @@ const getBusInfoList = async () => {
       parking: parkingData.parking,
       parkingAddr: parkingData.parkingAddr,
       parkingRemarks: parkingData.remarks,
+      reservationId: reservationId,
+      reservationTimeDisp: reservationTimeDisp,
+      reservationTime: reservationTime,
       selectBus: isdispatched,
+      isReservation: isReservation,
     }
     busInfoListArray.push(busInfoObj)
   }
@@ -235,24 +268,19 @@ const busListHeaders = [
     sortable: true
   },
   {
+    title: '配車予約',
+    key: 'reservationTimeDisp',
+    sortable: true
+  },
+  {
     title: 'バス備考',
     key: 'remarks',
     sortable: false
   },
   {
-    title: '駐車場',
-    key: 'parking',
-    sortable: true
-  },
-  {
     title: '駐車場住所',
     key: 'parkingAddr',
     sortable: true
-  },
-  {
-    title: '駐車場備考',
-    key: 'parkingRemarks',
-    sortable: false
   },
 
 ]
@@ -270,6 +298,21 @@ const getDriverInfoList = async () => {
     const isdispatched = dispatchDriverList.some(dispatchDriver => {
       return dispatchDriver.id === driverId;
     })
+    // DBで保持する情報：既に予約登録済み
+    let isReservation = false
+
+    let reservationId = ''
+    let reservationTimeDisp = ''
+    const reservationTime = []
+
+    const reservationInfo = await userData.searchReservation('1', driverId, SearchReservationTSFrom, SearchReservationTSTo)
+    if (reservationInfo != null && reservationInfo.length > 0) {
+      reservationId = reservationInfo[0].id
+      reservationTimeDisp = $dayjs(reservationInfo[0].reservationFrom.toDate()).format('YYYY/MM/DD HH:mm') + ' - ' + $dayjs(reservationInfo[0].reservationTo.toDate()).format('YYYY/MM/DD HH:mm')
+      // 既に指定期間で予約済み
+      isReservation = true
+    }
+
     const driverInfoObj = {
       id: driverId,
       companyId: driverList[i].companyId,
@@ -277,7 +320,12 @@ const getDriverInfoList = async () => {
       driverNameKana: driverList[i].driverNameKana,
       contact: driverList[i].contact,
       remarks: driverList[i].remarks,
+      reservationId: reservationId,
+      reservationTimeDisp: reservationTimeDisp,
+      reservationTime: reservationTime,
       selectDriver: isdispatched,
+      isReservation: isReservation,
+
     }
     driverInfoListArray.push(driverInfoObj)
   }
@@ -310,6 +358,11 @@ const driverListHeaders = [
     sortable: true
   },
   {
+    title: '配車予約',
+    key: 'reservationTimeDisp',
+    sortable: true
+  },
+  {
     title: '備考',
     key: 'remarks',
     sortable: false
@@ -329,6 +382,23 @@ const getGuideInfoList = async () => {
     const isdispatched = dispatchGuideList.some(dispatchGuide => {
       return dispatchGuide.id === guideId;
     })
+
+    // DBで保持する情報：既に予約登録済み
+    let isReservation = false
+
+    let reservationId = ''
+    let reservationTimeDisp = ''
+    const reservationTime = []
+
+    const reservationInfo = await userData.searchReservation('2', guideId, SearchReservationTSFrom, SearchReservationTSTo)
+    // console.log(busReservationInfo)
+    if (reservationInfo != null && reservationInfo.length > 0) {
+      reservationId = reservationInfo[0].id
+      reservationTimeDisp = $dayjs(reservationInfo[0].reservationFrom.toDate()).format('YYYY/MM/DD HH:mm') + ' - ' + $dayjs(reservationInfo[0].reservationTo.toDate()).format('YYYY/MM/DD HH:mm')
+      // 既に指定期間で予約済み
+      isReservation = true
+    }
+
     const guideInfoObj = {
       id: guideId,
       companyId: guideList[i].companyId,
@@ -336,7 +406,12 @@ const getGuideInfoList = async () => {
       guideNameKana: guideList[i].guideNameKana,
       contact: guideList[i].contact,
       remarks: guideList[i].remarks,
+      reservationId: reservationId,
+      reservationTimeDisp: reservationTimeDisp,
+      reservationTime: reservationTime,
       selectGuide: isdispatched,
+      isReservation: isReservation,
+
     }
     guideInfoListArray.push(guideInfoObj)
   }
@@ -366,6 +441,11 @@ const guideListHeaders = [
   {
     title: '連絡先',
     key: 'contact',
+    sortable: true
+  },
+  {
+    title: '配車予約',
+    key: 'reservationTimeDisp',
     sortable: true
   },
   {
@@ -454,10 +534,6 @@ const dispatch = async () => {
     }
   }
 
-
-
-
-
   await $swal.fire({
     text: '選択した内容で配車手配をします。よろしいですか？',
     showCancelButton: true,
@@ -494,13 +570,8 @@ const dispatch = async () => {
  * すべての保有リソースを確認できる画面表示
  */
 const showAllResource = () => {
-  $swal.fire({
-    html: '開発途中！！<br>モーダルでバス、ドライバー、ガイドのスケジュールが見れる画面を表示する',
-    showCancelButton: false,
-    confirmButtonText: 'OK',
-    icon: 'warning'
-  })
-  return
+  loading.value = true;
+  router.push('/delivery/reservation')
 }
 
 

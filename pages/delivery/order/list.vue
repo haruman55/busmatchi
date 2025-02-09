@@ -25,7 +25,7 @@ elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
             :color="$Const.ORDER_STATUS_DISP[order.state].color" @click="selectOrder(order)">
             <v-card-text class="text-h5"> {{ order.applicantCompanyName }} {{ order.applicant }}</v-card-text>
 
-            <v-card-text>配車日時:{{ order.dispatchDate }} {{ order.dispatchTime }}</v-card-text>
+            <v-card-text>配車日時:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ order.dispatchTimeMinute }}</v-card-text>
             <v-card-text>配車場所:{{ order.deliveryLocation }}</v-card-text>
           </v-card>
 
@@ -51,7 +51,7 @@ const keyUserId = userInfo.value.companyId
  */
 const getOrderDeliveryList = async () => {
 
-  const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_RESERVATION, $Const.STATUS_APPLICATION, $Const.STATUS_ARRANGEMENTS_COMPLETED, $Const.STATUS_PATMENT_COMPLETED, $Const.ORDER_COMPLETED]
+  const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_RESERVATION, $Const.STATUS_APPLICATION, $Const.STATUS_ARRANGEMENTS_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
   const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
   const orderListArray = []
   for (let i = 0; i < orderList.length; i++) {
@@ -79,8 +79,10 @@ const getOrderDeliveryList = async () => {
       vehicleTypeSmallAmount: orderList[i].vehicleTypeSmallAmount,
       vehicleTypeMicroAmount: orderList[i].vehicleTypeMicroAmount,
       dispatchDate: orderList[i].dispatchDate,
-      dispatchTime: orderList[i].dispatchTime,
-      departureTime: orderList[i].departureTime,
+      dispatchTimeHour: orderList[i].dispatchTimeHour,
+      dispatchTimeMinute: orderList[i].dispatchTimeMinute,
+      departureTimeHour: orderList[i].departureTimeHour,
+      departureTimeMinute: orderList[i].departureTimeMinute,
       deliveryLocation: orderList[i].deliveryLocation,
       itinerary1Top: orderList[i].itinerary1Top,
       itinerary1Bottom: orderList[i].itinerary1Bottom,
@@ -90,7 +92,8 @@ const getOrderDeliveryList = async () => {
       accommodationsTel1: orderList[i].accommodationsTel1,
       accommodationsAddr1: orderList[i].accommodationsAddr1,
       endDate: orderList[i].endDate,
-      endingTime: orderList[i].endingTime,
+      endingTimeHour: orderList[i].endingTimeHour,
+      endingTimeMinute: orderList[i].endingTimeMinute,
       terminalLocation: orderList[i].terminalLocation,
       customerId: orderList[i].customerId,
       deliveryCompanyId: orderList[i].deliveryCompanyId,
@@ -111,6 +114,26 @@ const orderList = await getOrderDeliveryList();
  * 一覧から選択した案件情報を表示する
  */
 const selectOrder = async (order) => {
+  let dispatchTime =''
+  let departureTime =''
+  let endingTime =''
+
+  if (order.dispatchTimeHour != null && order.dispatchTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.dispatchTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.dispatchTimeMinute);
+    dispatchTime = time.disp + ':' + min.disp
+  }
+  if (order.departureTimeHour != null && order.departureTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.departureTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.departureTimeMinute);
+    departureTime = time.disp + ':' + min.disp
+  }
+  if (order.endingTimeHour != null && order.endingTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.endingTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.endingTimeMinute);
+    endingTime = time.disp + ':' + min.disp
+  }
+
   // 一覧から選択した申込情報を保持
   const { editOrderInfo } = useOrderInfo()
   // stateへ保存
@@ -133,8 +156,12 @@ const selectOrder = async (order) => {
     vehicleTypeSmallAmount: order.vehicleTypeSmallAmount,
     vehicleTypeMicroAmount: order.vehicleTypeMicroAmount,
     dispatchDate: order.dispatchDate,
-    dispatchTime: order.dispatchTime,
-    departureTime: order.departureTime,
+    dispatchTime: dispatchTime,
+    dispatchTimeHour: order.dispatchTimeHour,
+    dispatchTimeMinute: order.dispatchTimeMinute,
+    departureTime: departureTime,
+    departureTimeHour: order.departureTimeHour,
+    departureTimeMinute: order.departureTimeMinute,
     deliveryLocation: order.deliveryLocation,
     customerId: order.customerId,
     deliveryCompanyId: order.deliveryCompanyId,
@@ -187,8 +214,13 @@ const selectOrder = async (order) => {
       companyFax: orderDeliveryUser.companyFax,
       companyEmail: orderDeliveryUser.companyEmail,
       dispatchDate: order.dispatchDate,
-      dispatchTime: order.dispatchTime,
-      departureTime: order.departureTime,
+      dispatchTime: dispatchTime,
+      dispatchTimeHour: order.dispatchTimeHour,
+      dispatchTimeMinute: order.dispatchTimeMinute,
+      departureTime: departureTime,
+      departureTimeHour: order.departureTimeHour,
+      departureTimeMinute: order.departureTimeMinute,
+
       deliveryLocation: order.deliveryLocation,
       counterPersonMain: order.counterPersonMain,
       counterPersonSub: order.counterPersonSub,
@@ -208,7 +240,9 @@ const selectOrder = async (order) => {
     accommodationsTel1: order.accommodationsTel1,
     accommodationsAddr1: order.accommodationsAddr1,
     endDate: order.endDate,
-    endingTime: order.endingTime,
+    endingTime: endingTime,
+    endingTimeHour: order.endingTimeHour,
+    endingTimeMinute: order.endingTimeMinute,
     terminalLocation: order.terminalLocation,
   }
   editOrderOperationInfo(orderOperationInfoObject)

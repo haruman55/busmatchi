@@ -5,10 +5,7 @@
 
       <h3> {{ userInfo.companyName }}さん({{ userInfo.companyId }})</h3>
 
-      <v-btn x-large >
-        <font-awesome-icon icon="fa-solid  fa-home" size="2x" />
-      </v-btn>
-      <v-icon size="x-large" @click="home">
+      <v-icon size="x-large" >
         mdi-home
       </v-icon>
 
@@ -21,6 +18,7 @@
 // const router = useRouter()
 // user情報の状態管理
 const { userInfo } = useUserInfo()
+
 
 
 

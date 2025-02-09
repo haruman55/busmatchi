@@ -56,8 +56,6 @@
                 <td>{{ orderInfo.applicantCompanyEmail }}</td>
               </tr>
             </tbody>
-            <!-- </v-table>
-          <v-table class="table-border"> -->
             <tbody>
               <tr align="center">
                 <td rowspan="5" align="center">お客様名</td>
@@ -87,8 +85,6 @@
               </tr>
 
             </tbody>
-            <!-- </v-table>
-          <v-table class="table-border"> -->
             <tbody>
               <tr align="center">
                 <td rowspan="2" align="center">申込乗車人員</td>
@@ -209,6 +205,9 @@
       <v-btn rounded dark size="x-large" color="yellow" class="mb-2 pr-8 pl-8" @click="entry">
         配車情報を登録する
       </v-btn>
+      <v-overlay :model-value="loading" class="align-center justify-center">
+        <v-progress-circular color="primary" size="150" width="20" indeterminate />
+      </v-overlay>
 
       <v-table class="table-border">
         <tbody>
@@ -249,27 +248,6 @@
           </tr>
         </tbody>
       </v-table>
-      <!-- <v-table>
-        <tbody>
-          <tr>
-            <td rowspan="2">乗務員</td>
-            <td>ドライバー①</td>
-            <td />
-            <td>連絡先</td>
-            <td />
-            <td>ガイド①</td>
-            <td />
-          </tr>
-          <tr>
-            <td>ドライバー②</td>
-            <td />
-            <td>連絡先</td>
-            <td />
-            <td>ガイド②</td>
-            <td />
-          </tr>
-        </tbody>
-      </v-table> -->
       <v-table v-if="dispatchInfo.busList.length > 0">
         <thead>
           <tr align="center">
@@ -304,9 +282,7 @@
         <v-spacer />
 
         <v-col v-if="orderInfo.state == $Const.STATUS_REQUEST" align="center">
-          <v-btn
-rounded dark size="x-large" color="indigo darken-4"
-             class="mb-2 pr-8 pl-8" @click="undertake">
+          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="undertake">
             運送手配を引き受ける
           </v-btn>
         </v-col>
@@ -342,6 +318,8 @@ const { orderInfo, clearOrderInfo } = useOrderInfo()
 // 既にDB登録済みの案件の場合のid情報
 const keyOrderId = orderInfo.value.id
 
+const loading = ref(false)
+
 // 選択された申込顧客情報
 const { applicantCustomerInfo, clearApplicantCustomerInfo } = useApplicantCustomerInfo()
 
@@ -367,14 +345,6 @@ const totalvehicleAmount = computed(() => {
 const counterPersonMain = ref(orderDeliveryUserInfo.value.counterPersonMain)
 const counterPersonSub = ref(orderDeliveryUserInfo.value.counterPersonSub)
 
-/**
- * 画面初期処理
- */
-onMounted(async () => {
-  //手配情報を画面表示用に生成
-
-
-})
 
 /**
  * 運送手配情報を登録する
@@ -392,11 +362,13 @@ const entry = () => {
     counterPersonMain: counterPersonMain.value,
     counterPersonSub: counterPersonSub.value
   }
+  loading.value = true;
+
   editOrderDeliveryUserInfo(deliveryUser)
 
 
   // 画面遷移
-  router.push('/delivery/dispatch/list')
+  router.push('/delivery/order/dispatch')
 
 
 }
@@ -424,7 +396,7 @@ const undertake = async () => {
     })
     return
   }
-  
+
 
   // 案件情報を保存
   let confirmRes = false
@@ -442,7 +414,8 @@ const undertake = async () => {
   if (!confirmRes) {
     return
   }
-  // 配車情報の登録
+
+  // オーダー(案件)に紐付く配車情報のDB保存
   if (keydispatchId.value != null && keydispatchId.value != '') {
     // 更新
     const updateDispatchObj = {
@@ -451,37 +424,31 @@ const undertake = async () => {
       busList: dispatchInfo.value.busList,
       driverList: dispatchInfo.value.driverList,
       guideList: dispatchInfo.value.guideList,
-      termFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      termTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
       updatedAt: new Date(),
     }
-    // console.log("更新")
-    // console.log(updateDispatchObj)
     await userData.updateDispatch(updateDispatchObj)
 
-    //バス情報、運転手情報、ガイド情報に配車の期間を追加する
-
   } else {
-    // 新規で登録
     const insertDispatchObj = {
       orderId: dispatchInfo.value.orderId,
       busList: dispatchInfo.value.busList,
       driverList: dispatchInfo.value.driverList,
       guideList: dispatchInfo.value.guideList,
-      termFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      termTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
       createdAt: new Date(),
       updatedAt: new Date(),
     }
     keydispatchId.value = await userData.addDispatch(insertDispatchObj)
-    //バス情報、運転手情報、ガイド情報に配車の期間を追加更新する
-  }
 
+  }
   // 運送引受会社の追加情報(配車情報のdocIdとの紐付けも)とステータス更新
   const updateObject = {
     id: keyOrderId,
     // 運送手配完了：3
-    state: $Const.STATUS_ARRANGEMENTS_COMPLETED,
+    state: $Const.STATUS_RESERVATION,
     counterPersonMain: counterPersonMain.value,
     counterPersonSub: counterPersonSub.value,
     dispatchId: keydispatchId.value,
@@ -490,6 +457,64 @@ const undertake = async () => {
   await userData.updateOrder(updateObject)
 
 
+  //バス、運転手、ガイドに対する指定日時の予約設定をDB保存
+  const busList = dispatchInfo.value.busList
+  for (let i = 0; i < busList.length; i++) {
+
+    const busId = busList[i].id
+    // 新規登録
+    const reservationInfoObj = {
+      category: $Const.CATEGORY_BUS,
+      itemId: busId,
+      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+      orderId: dispatchInfo.value.orderId,
+      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    await userData.addReservation(reservationInfoObj)
+
+  }
+
+  const driverList = dispatchInfo.value.driverList
+  for (let i = 0; i < driverList.length; i++) {
+
+
+    const driverId = driverList[i].id
+    // 新規登録
+    const reservationInfoObj = {
+      category: $Const.CATEGORY_DRIVER,
+      itemId: driverId,
+      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+      orderId: dispatchInfo.value.orderId,
+      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    await userData.addReservation(reservationInfoObj)
+
+  }
+
+  const guideList = dispatchInfo.value.guideList
+  for (let i = 0; i < guideList.length; i++) {
+    const guideId = guideList[i].id
+
+    // 新規登録
+    const reservationInfoObj = {
+      category: $Const.CATEGORY_GUIDE,
+      itemId: guideId,
+      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+      orderId: dispatchInfo.value.orderId,
+      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    await userData.addReservation(reservationInfoObj)
+
+  }
 
   // stateのクリア
   clearOrderInfo(orderInfo)
@@ -501,6 +526,7 @@ const undertake = async () => {
   // 画面遷移
   router.push('/delivery/order/list')
 }
+
 
 
 /** 運送手配を断る */
@@ -527,12 +553,24 @@ const deny = async () => {
   const updateObject = {
     id: keyOrderId,
     // 運送手配引受不可：8
-    state: $Const.ORDER_DENY,
-    counterPersonMain: counterPersonMain.value,
-    counterPersonSub: counterPersonSub.value,
+    state: $Const.STATUS_ORDER_DENY,
+    // 配車紐付けを初期化
+    dispatchId: '',
     updatedAt: new Date(),
   }
   await userData.updateOrder(updateObject)
+
+  // 配車情報がある場合、テーブルの情報(reservation/dispatch)を削除 
+  if (keydispatchId.value != null && keydispatchId.value != '') {
+
+    const reservationList = await userData.getReservationList(keyOrderId)
+    for (let i = 0; i < reservationList.length; i++) {
+      await userData.deleteReservation(reservationList[i].id)
+    }
+
+    // 配車情報(dispatch)を削除
+    await userData.deleteDispatch(keydispatchId.value)
+  }
 
   // stateのクリア
   clearOrderInfo(orderInfo)
@@ -565,7 +603,9 @@ const back = () => {
 definePageMeta({
   layout: 'user'
 })
+
 </script>
+
 <style>
 /* 点線を適用 */
 .dashed-border {

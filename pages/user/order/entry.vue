@@ -54,14 +54,14 @@
                     <v-card-item class="text-center text-h4">
                       {{ applicantCustomerInfo.customerName }}
                     </v-card-item>
-                    <v-card-item class="text-left text-h6" prepend-icon="mdi-map-marker-outline">
+                    <v-card-item class="text-left" prepend-icon="mdi-map-marker-outline">
                       {{ applicantCustomerInfo.customerAddr }}
                     </v-card-item>
-                    <v-card-item class="text-left text-h6">
+                    <v-card-item class="text-left">
                       <v-icon>mdi-phone-outline</v-icon>{{ applicantCustomerInfo.customerTel }}
                       <v-icon>mdi-fax</v-icon> {{ applicantCustomerInfo.customerFax }}
                     </v-card-item>
-                    <v-card-item class="text-left text-h6">
+                    <v-card-item class="text-left">
                       <v-icon>mdi-email-outline</v-icon>{{ applicantCustomerInfo.customerMail }}
                     </v-card-item>
                   </v-card>
@@ -112,21 +112,42 @@ v-model.number="vehicleTypeMicroAmount" label="マイクロ-車両数" type="num
               <v-row>
                 <v-col cols="12" sm="2" md="2">配車日時
                 </v-col>
-                <v-col cols="12" sm="4" md="4" class="ma-2 pa-2">
+                <v-col cols="12" sm="3" md="3" class="ma-2 pa-2">
                   <datepicker
-v-model="dispatchDate" :teleport="true"  locale="jp" auto-apply :enable-time-picker="false"
+v-model="dispatchDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="false"
                     format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
                 </v-col>
+                <v-col cols="12" sm="2" md="2">
+                  <v-select
+v-model="dispatchTimeHour" label="時間" item-title="disp" item-value="code"
+                    :items="$Const.TIME_HOUR_LIST" />
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
+
+                  <v-select
+v-model="dispatchTimeMinute" label="分" item-title="disp" item-value="code"
+                    :items="$Const.TIME_MINUTE_LIST" />
+                </v-col>
               </v-row>
+
               <v-row>
-                <v-col cols="12" sm="2" md="2" />
-                <v-col cols="12" sm="2" md="2">
-                  <v-text-field v-model="dispatchTime" label="配車時間" type="text" />
+                <v-col cols="12" sm="2" md="2">出発時間
                 </v-col>
                 <v-col cols="12" sm="2" md="2">
-                  <v-text-field v-model="departureTime" label="出発時間" type="text" />
+                  <v-select
+v-model="departureTimeHour" label="時間" item-title="disp" item-value="code"
+                    :items="$Const.TIME_HOUR_LIST" />
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
+
+                  <v-select
+v-model="departureTimeMinute" label="分" item-title="disp" item-value="code"
+                    :items="$Const.TIME_MINUTE_LIST" />
                 </v-col>
               </v-row>
+
+
+
               <v-row>
                 <v-col cols="12" sm="2" md="2">配車場所</v-col>
                 <v-col cols="12" sm="8" md="8">
@@ -205,13 +226,26 @@ v-model="accommodationsAddr1" label="住所" outlined
                 <v-col cols="12" sm="2" md="2">終着日時</v-col>
                 <v-col cols="12" sm="2" md="2" class="ma-2 pa-2">
                   <datepicker
-v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="false" format="yyyy/MM/dd"
-                    model-type="yyyy/MM/dd" />
+v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="false"
+                    format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
+                </v-col>
+                <!-- <v-col cols="12" sm="2" md="2">
+                  <v-text-field v-model="endingTime" label="終着時間" type="text" />
+                </v-col> -->
+                <v-col cols="12" sm="2" md="2">
+                  <v-select
+v-model="endingTimeHour" label="時間" item-title="disp" item-value="code"
+                    :items="$Const.TIME_HOUR_LIST" />
                 </v-col>
                 <v-col cols="12" sm="2" md="2">
-                  <v-text-field v-model="endingTime" label="終着時間" type="text" />
+
+                  <v-select
+v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
+                    :items="$Const.TIME_MINUTE_LIST" />
                 </v-col>
+
               </v-row>
+
               <v-row>
                 <v-col cols="12" sm="2" md="2">終着場所</v-col>
                 <v-col cols="12" sm="8" md="8">
@@ -227,7 +261,7 @@ v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="f
 
     <v-container>
 
-      <v-row v-if="orderState == $Const.STATUS_DRAFT || orderState == ''">
+      <v-row v-if="orderState == $Const.STATUS_DRAFT || orderState == $Const.STATUS_ORDER_DENY || orderState == ''">
         <v-col cols="12">
           <v-btn rounded dark color="yellow" class="mb-2 pr-8 pl-8" @click="deliverySerch">
             運送引受会社選択
@@ -244,22 +278,56 @@ v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="f
               <v-card-title>運送引受会社</v-card-title>
 
               <v-row>
-                <v-col cols="12" sm="12" md="12">
+                <v-col cols="12" sm="6" md="6">
                   <v-card color="white" class="mx-auto" elevation="15">
                     <v-card-item class="text-center text-h4">
                       {{ orderDeliveryUserInfo.companyName }}
                     </v-card-item>
-                    <v-card-item class="text-left text-h6" prepend-icon="mdi-map-marker-outline">
+                    <v-card-item class="text-left" prepend-icon="mdi-map-marker-outline">
                       {{ orderDeliveryUserInfo.companyAddr }}
                     </v-card-item>
-                    <v-card-item class="text-left text-h6">
+                    <v-card-item class="text-left">
                       <v-icon>mdi-phone-outline</v-icon>{{ orderDeliveryUserInfo.companyTel }}
                       <v-icon>mdi-fax</v-icon> {{ orderDeliveryUserInfo.companyFax }}
+                      <v-icon>mdi-phone-outline</v-icon> TODO:車庫番号(入力なし)
                     </v-card-item>
-                    <v-card-item class="text-left text-h6">
+                    <v-card-item class="text-left ">
                       <v-icon>mdi-email-outline</v-icon>{{ orderDeliveryUserInfo.companyEmail }}
                     </v-card-item>
+                    <v-card-item class="text-left ">
+                      事業許可:平成 10年 4月 1日 第 10号 TODO:(入力なし)
+                    </v-card-item>
+                    <v-card-item class="text-left ">
+                      営業区域: TODO:(入力なし)
+                    </v-card-item>
                   </v-card>
+                </v-col>
+                <v-col cols="12" sm="6" md="6">
+                  <v-card-item>
+                    <v-table v-if="keydispatchId != null && keydispatchId != ''">
+                      <thead>
+                        <tr align="center">
+                          <th colspan="5" class="text-left">
+                            乗務員
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(driver) in dispatchInfo.driverList" :key="driver.id">
+                          <td>ドライバー</td>
+                          <td colspan="2"> {{ driver.driverName }}</td>
+                          <td>連絡先</td>
+                          <td colspan="2">{{ driver.contact }}</td>
+                        </tr>
+                        <tr>
+                          <td>ガイド</td>
+                          <td v-for="(guide) in dispatchInfo.guideList" :key="guide.id" colspan="2"> {{
+                            guide.guideName
+                          }}</td>
+                        </tr>
+                      </tbody>
+                    </v-table>
+                  </v-card-item>
                 </v-col>
               </v-row>
             </v-container>
@@ -268,6 +336,78 @@ v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="f
       </v-row>
     </v-container>
     <br>
+    <v-container v-if="orderState == $Const.STATUS_RESERVATION" align="center">
+      <v-card>
+        <v-row>
+          <v-col cols="12" sm="6" md="6">
+            <!-- <v-card> -->
+            <v-row>
+              <v-col cols="12">
+                運賃・料金
+              </v-col>
+
+              <v-col cols="12">
+                <v-text-field v-model="a" label="発注料金" type="text" />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field v-model="b" label="実費" type="text" />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field v-model="c" label="合計金額" type="text" />
+              </v-col>
+            </v-row>
+            <!-- </v-card> -->
+          </v-col>
+          <v-col cols="12" sm="6" md="6">
+            <!-- <v-card> -->
+            <v-row>
+              <v-col cols="12">料金の支払方法</v-col>
+              <v-col cols="12">
+                <v-radio-group v-model="selectPayment" inline>
+                  <v-radio value="1" label="銀行振込" />
+                  <v-radio value="2" label="現金" />
+                  <v-radio value="9" label="その他" />
+                </v-radio-group>
+                <v-text-field v-model="c" label="その他" type="text" />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">適用予定の割引</v-col>
+              <!-- <v-col ><v-checkbox v-model="discount" label="学校団体割引" /><v-checkbox v-model="discount" label="XXXX" /><v-checkbox v-model="discount" label="その他" /></v-col> -->
+              <v-col cols="12">
+                <v-radio-group v-model="selectDiscount" inline>
+                  <v-radio value="1" label="学校団体割引" />
+                  <v-radio value="2" label="XXXXXXXXXXXXXX割引" />
+                  <v-radio value="9" label="その他" />
+                </v-radio-group>
+                <v-text-field v-model="c" label="その他" type="text" />
+              </v-col>
+
+            </v-row>
+            <!-- </v-card> -->
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" sm="6" md="6">
+            <v-textarea v-model="d" label="特約事項" rows="2" outlined />
+          </v-col>
+          <v-col cols="12" sm="6" md="6">
+            <v-text-field v-model="d" label="担当者" outlined />
+          </v-col>
+
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-textarea v-model="d" label="備考" rows="2" outlined />
+          </v-col>
+        </v-row>
+
+      </v-card>
+    </v-container>
 
 
     <v-container class="align-center" fluid>
@@ -325,6 +465,7 @@ const { orderDeliveryUserInfo, editOrderDeliveryUserInfo, clearOrderDeliveryUser
 const { orderOperationInfo, editOrderOperationInfo, clearOrderOperationInfo } = useOrderOperationInfo()
 // 運送引受外車側で登録された配車情報を保持
 const { dispatchInfo, clearDispatchInfo } = useDispatchInfo()
+const keydispatchId = ref(dispatchInfo.value.id)
 
 
 // 画面入力項目
@@ -338,8 +479,15 @@ const vehicleTypeMediumAmount = ref(orderInfo.value.vehicleTypeMediumAmount)
 const vehicleTypeSmallAmount = ref(orderInfo.value.vehicleTypeSmallAmount)
 const vehicleTypeMicroAmount = ref(orderInfo.value.vehicleTypeMicroAmount)
 const dispatchDate = ref(orderInfo.value.dispatchDate)
+
 const dispatchTime = ref(orderInfo.value.dispatchTime)
 const departureTime = ref(orderInfo.value.departureTime)
+
+const dispatchTimeHour = ref(orderInfo.value.dispatchTimeHour)
+const dispatchTimeMinute = ref(orderInfo.value.dispatchTimeMinute)
+const departureTimeHour = ref(orderInfo.value.departureTimeHour)
+const departureTimeMinute = ref(orderInfo.value.departureTimeMinute)
+
 const deliveryLocation = ref(orderInfo.value.deliveryLocation)
 // TODO:旅程の行数は一旦２行で決め打ち固定
 const itinerary1Top = ref(orderOperationInfo.value.itinerary1Top)
@@ -351,13 +499,14 @@ const accommodationsTel1 = ref(orderOperationInfo.value.accommodationsTel1)
 const accommodationsAddr1 = ref(orderOperationInfo.value.accommodationsAddr1)
 const endDate = ref(orderOperationInfo.value.endDate)
 const endingTime = ref(orderOperationInfo.value.endingTime)
+const endingTimeHour = ref(orderOperationInfo.value.endingTimeHour)
+const endingTimeMinute = ref(orderOperationInfo.value.endingTimeMinute)
 const terminalLocation = ref(orderOperationInfo.value.terminalLocation)
 
 // 合計を計算するcomputedプロパティ
 const totalvehicleAmount = computed(() => {
   return (vehicleTypeLiftAmount.value || 0) + (vehicleTypeMediumAmount.value || 0) + (vehicleTypeSmallAmount.value || 0) + (vehicleTypeMicroAmount.value || 0);
 });
-
 
 
 /**
@@ -387,7 +536,12 @@ const customerSerch = () => {
     vehicleTypeMicroAmount: utils.toZero(vehicleTypeMicroAmount.value),
     dispatchDate: dispatchDate.value,
     dispatchTime: dispatchTime.value,
+    dispatchTimeHour: utils.toZero(dispatchTimeHour.value),
+    dispatchTimeMinute: utils.toZero(dispatchTimeMinute.value),
     departureTime: departureTime.value,
+    departureTimeHour: utils.toZero(departureTimeHour.value),
+    departureTimeMinute: utils.toZero(departureTimeMinute.value),
+
     deliveryLocation: deliveryLocation.value,
     customerId: utils.toBlank(applicantCustomerId),
     deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
@@ -403,6 +557,9 @@ const customerSerch = () => {
     accommodationsAddr1: accommodationsAddr1.value,
     endDate: endDate.value,
     endingTime: endingTime.value,
+    endingTimeHour: utils.toZero(endingTimeHour.value),
+    endingTimeMinute: utils.toZero(endingTimeMinute.value),
+
     terminalLocation: terminalLocation.value,
   }
   editOrderOperationInfo(orderOperationInfoObject)
@@ -438,7 +595,12 @@ const deliverySerch = () => {
     vehicleTypeMicroAmount: utils.toZero(vehicleTypeMicroAmount.value),
     dispatchDate: dispatchDate.value,
     dispatchTime: dispatchTime.value,
+    dispatchTimeHour: utils.toZero(dispatchTimeHour.value),
+    dispatchTimeMinute: utils.toZero(dispatchTimeMinute.value),
     departureTime: departureTime.value,
+    departureTimeHour: utils.toZero(departureTimeHour.value),
+    departureTimeMinute: utils.toZero(departureTimeMinute.value),
+
     deliveryLocation: deliveryLocation.value,
     customerId: utils.toBlank(applicantCustomerId),
     deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
@@ -455,6 +617,8 @@ const deliverySerch = () => {
     accommodationsAddr1: accommodationsAddr1.value,
     endDate: endDate.value,
     endingTime: endingTime.value,
+    endingTimeHour: utils.toZero(endingTimeHour.value),
+    endingTimeMinute: utils.toZero(endingTimeMinute.value),
     terminalLocation: terminalLocation.value,
   }
   editOrderOperationInfo(orderOperationInfoObject)
@@ -501,7 +665,12 @@ const draft = async () => {
       vehicleTypeMicroAmount: utils.toZero(vehicleTypeMicroAmount.value),
       dispatchDate: utils.toBlank(dispatchDate.value),
       dispatchTime: utils.toBlank(dispatchTime.value),
+      dispatchTimeHour: utils.toZero(dispatchTimeHour.value),
+      dispatchTimeMinute: utils.toZero(dispatchTimeMinute.value),
       departureTime: utils.toBlank(departureTime.value),
+      departureTimeHour: utils.toZero(departureTimeHour.value),
+      departureTimeMinute: utils.toZero(departureTimeMinute.value),
+
       deliveryLocation: utils.toBlank(deliveryLocation.value),
       itinerary1Top: utils.toBlank(itinerary1Top.value),
       itinerary1Bottom: utils.toBlank(itinerary1Bottom.value),
@@ -512,6 +681,8 @@ const draft = async () => {
       accommodationsAddr1: utils.toBlank(accommodationsAddr1.value),
       endDate: utils.toBlank(endDate.value),
       endingTime: utils.toBlank(endingTime.value),
+      endingTimeHour: utils.toZero(endingTimeHour.value),
+    endingTimeMinute: utils.toZero(endingTimeMinute.value),
       terminalLocation: utils.toBlank(terminalLocation.value),
       customerId: utils.toBlank(applicantCustomerId),
       deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
@@ -536,7 +707,12 @@ const draft = async () => {
       vehicleTypeMicroAmount: utils.toZero(vehicleTypeMicroAmount.value),
       dispatchDate: utils.toBlank(dispatchDate.value),
       dispatchTime: utils.toBlank(dispatchTime.value),
+      dispatchTimeHour: utils.toZero(dispatchTimeHour.value),
+      dispatchTimeMinute: utils.toZero(dispatchTimeMinute.value),
       departureTime: utils.toBlank(departureTime.value),
+      departureTimeHour: utils.toZero(departureTimeHour.value),
+      departureTimeMinute: utils.toZero(departureTimeMinute.value),
+
       deliveryLocation: utils.toBlank(deliveryLocation.value),
 
       itinerary1Top: utils.toBlank(itinerary1Top.value),
@@ -548,6 +724,8 @@ const draft = async () => {
       accommodationsAddr1: utils.toBlank(accommodationsAddr1.value),
       endDate: utils.toBlank(endDate.value),
       endingTime: utils.toBlank(endingTime.value),
+      endingTimeHour: utils.toZero(endingTimeHour.value),
+    endingTimeMinute: utils.toZero(endingTimeMinute.value),
       terminalLocation: utils.toBlank(terminalLocation.value),
       customerId: utils.toBlank(applicantCustomerId),
       deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
@@ -576,6 +754,7 @@ const draft = async () => {
 
 /** 運送引受会社への依頼内容の最終確認をする */
 const confirm = async () => {
+
   // 必須入力チェック
   if (utils.toBlank(applicant.value) == '') {
     $swal.fire({
@@ -613,7 +792,8 @@ const confirm = async () => {
     })
     return
   }
-  if (utils.toBlank(dispatchTime.value) == '') {
+
+  if(dispatchTimeHour.value == null || dispatchTimeMinute.value == null) {
     $swal.fire({
       text: '配車時間を入力してください。',
       showCancelButton: false,
@@ -622,6 +802,18 @@ const confirm = async () => {
     })
     return
   }
+
+  if(departureTimeHour.value == null || departureTimeMinute.value == null) {
+    $swal.fire({
+      text: '出発時間を入力してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning'
+    })
+    return
+  }
+
+
   if (utils.toBlank(deliveryLocation.value) == '') {
     $swal.fire({
       text: '配車場所を入力してください。',
@@ -642,7 +834,7 @@ const confirm = async () => {
     })
     return
   }
-  if (utils.toBlank(endingTime.value) == '') {
+  if(endingTimeHour.value == null || endingTimeMinute.value == null) {
     $swal.fire({
       text: '終着時間を入力してください。',
       showCancelButton: false,
@@ -651,6 +843,12 @@ const confirm = async () => {
     })
     return
   }
+
+
+
+
+
+
   if (utils.toBlank(terminalLocation.value) == '') {
     $swal.fire({
       text: '終着場所を入力してください。',
@@ -695,7 +893,12 @@ const confirm = async () => {
     vehicleTypeMicroAmount: utils.toZero(vehicleTypeMicroAmount.value),
     dispatchDate: dispatchDate.value,
     dispatchTime: dispatchTime.value,
-    departureTime: departureTime.value,
+    dispatchTimeHour: utils.toZero(dispatchTimeHour.value),
+    dispatchTimeMinute: utils.toZero(dispatchTimeMinute.value),
+    departureTime: utils.toBlank(departureTime.value),
+    departureTimeHour: utils.toZero(departureTimeHour.value),
+    departureTimeMinute: utils.toZero(departureTimeMinute.value),
+
     deliveryLocation: deliveryLocation.value,
     customerId: utils.toBlank(applicantCustomerId),
     deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
@@ -726,6 +929,8 @@ const confirm = async () => {
     accommodationsAddr1: accommodationsAddr1.value,
     endDate: endDate.value,
     endingTime: endingTime.value,
+    endingTimeHour: utils.toZero(endingTimeHour.value),
+    endingTimeMinute: utils.toZero(endingTimeMinute.value),
     terminalLocation: terminalLocation.value,
   }
   editOrderOperationInfo(orderOperationInfoObject)
@@ -751,3 +956,9 @@ definePageMeta({
   layout: 'user'
 })
 </script>
+<style>
+th,
+td {
+  border: 1px solid #ccc;
+}
+</style>

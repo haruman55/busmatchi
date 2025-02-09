@@ -212,7 +212,12 @@ type OrderInfo = {
   vehicleTypeMicroAmount: number;
   dispatchDate: string;
   dispatchTime: string;
+  dispatchTimeHour: number;
+  dispatchTimeMinute: number;
   departureTime: string;
+  departureTimeHour: number;
+  departureTimeMinute: number;
+  
   deliveryLocation: string;
   // 顧客ID(docid)
   customerId: string;
@@ -243,7 +248,12 @@ export const useOrderInfo = () => {
     vehicleTypeMicroAmount: 0,
     dispatchDate: '',
     dispatchTime: '',
+    dispatchTimeHour: 0,
+    dispatchTimeMinute: 0,
     departureTime: '',
+    departureTimeHour: 0,
+    departureTimeMinute: 0,
+
     deliveryLocation: '',
     // 顧客ID
     customerId: '',
@@ -290,7 +300,12 @@ const clearOrderInfo = (orderInfo: Ref<OrderInfo>) => () => {
     vehicleTypeMicroAmount: 0,
     dispatchDate: '',
     dispatchTime: '',
+    dispatchTimeHour: 0,
+    dispatchTimeMinute: 0,
     departureTime: '',
+    departureTimeHour: 0,
+    departureTimeMinute: 0,
+
     deliveryLocation: '',
     customerId: '',
     deliveryCompanyId: '',
@@ -382,6 +397,8 @@ type OrderOperationInfo = {
   accommodationsAddr1: string;
   endDate: string;
   endingTime: string;
+  endingTimeHour: number;
+  endingTimeMinute: number;
   terminalLocation: string;
 
 }
@@ -400,6 +417,8 @@ export const useOrderOperationInfo = () => {
     accommodationsAddr1: '',
     endDate: '',
     endingTime: '',
+    endingTimeHour: 0,
+    endingTimeMinute: 0,  
     terminalLocation: '',
 
   }));
@@ -434,6 +453,8 @@ const clearOrderOperationInfo = (orderOperationInfo: Ref<OrderOperationInfo>) =>
     accommodationsAddr1: '',
     endDate: '',
     endingTime: '',
+    endingTimeHour: 0,
+    endingTimeMinute: 0,  
     terminalLocation: '',
 
   };
@@ -548,7 +569,7 @@ type DriverInfo = {
   driverNameKana: string;
   contact: string;
   remarks: string;
-  schedule: [{ orderId: string, termTo: string, termFrom: string }];
+  schedule: [{ orderId: string, reservationTo: string, reservationFrom: string }];
 };
 
 /** 運転手情報を扱うState */
@@ -560,7 +581,7 @@ export const useDriverInfo = () => {
     driverNameKana: '',
     contact: '',
     remarks: '',
-    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+    schedule: [{ orderId: "", reservationTo: "", reservationFrom: "" }],
 
   }))
 
@@ -589,7 +610,7 @@ const clearDriverInfo = (driverInfo: Ref<DriverInfo>) => () => {
     driverNameKana: '',
     contact: '',
     remarks: '',
-    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+    schedule: [{ orderId: "", reservationTo: "", reservationFrom: "" }],
   }
   return {
     driverInfo
@@ -605,7 +626,7 @@ type GuideInfo = {
   guideNameKana: string;
   contact: string;
   remarks: string;
-  schedule: [{ orderId: string, termTo: string, termFrom: string }];
+  schedule: [{ orderId: string, reservationTo: string, reservationFrom: string }];
 };
 
 /** バスガイド情報を扱うState */
@@ -617,7 +638,7 @@ export const useGuideInfo = () => {
     guideNameKana: '',
     contact: '',
     remarks: '',
-    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+    schedule: [{ orderId: "", reservationTo: "", reservationFrom: "" }],
   }))
 
   return {
@@ -645,7 +666,7 @@ const clearGuideInfo = (guideInfo: Ref<GuideInfo>) => () => {
     guideNameKana: '',
     contact: '',
     remarks: '',
-    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+    schedule: [{ orderId: "", reservationTo: "", reservationFrom: "" }],
   }
   return {
     guideInfo
@@ -711,7 +732,7 @@ type BusInfo = {
   remarks: string;
   // バスが配置されている駐車場のdocid
   parkingId: string;
-  schedule: [{ orderId: string, termTo: string, termFrom: string }];
+  schedule: [{ orderId: string, reservationTo: string, reservationFrom: string }];
 
 };
 
@@ -724,7 +745,7 @@ export const useBusInfo = () => {
     vehicleType: '',
     remarks: '',
     parkingId: '',
-    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+    schedule: [{ orderId: "", reservationTo: "", reservationFrom: "" }],
 
   }))
 
@@ -753,7 +774,7 @@ const clearBusInfo = (busInfo: Ref<BusInfo>) => () => {
     vehicleType: '',
     remarks: '',
     parkingId: '',
-    schedule: [{ orderId: "", termTo: "", termFrom: "" }],
+    schedule: [{ orderId: "", reservationTo: "", reservationFrom: "" }],
   }
   return {
     busInfo

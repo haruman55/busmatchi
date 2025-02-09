@@ -121,9 +121,9 @@
               </tr>
               <tr align="center">
                 <td>配車</td>
-                <td class="text-h4">{{ orderInfo.dispatchTime }}</td>
+                <td class="text-h4">{{ dispDispatchTime }}</td>
                 <td>出発</td>
-                <td class="text-h4">{{ orderInfo.departureTime }}</td>
+                <td class="text-h4">{{ dispDepartureTime }}</td>
               </tr>
             </tbody>
 
@@ -175,7 +175,7 @@
             <td>{{ orderOperationInfo.accommodations1 }}</td>
           </tr>
           <tr class="thick-border" align="center">
-            <td>{{ orderInfo.dispatchTime }}発</td>
+            <td>{{ dispDispatchTime }}発</td>
             <td>{{ orderOperationInfo.timeschedule1Top }}</td>
             <td>電話</td>
             <td>{{ orderOperationInfo.accommodationsTel1 }}</td>
@@ -195,7 +195,7 @@
         <tbody>
           <tr class="dashed-border" align="center">
             <td>終着</td>
-            <td class="text-h4">{{ orderOperationInfo.endDate }} 時間 {{ orderOperationInfo.endingTime }}</td>
+            <td class="text-h4">{{ orderOperationInfo.endDate }} {{ dispEndingTime }}</td>
             <td>場所</td>
             <td>{{ orderOperationInfo.terminalLocation }}</td>
           </tr>
@@ -278,7 +278,9 @@
         </v-col>
         <v-spacer />
 
-        <v-col v-if="orderInfo.state == $Const.STATUS_DRAFT" align="center">
+        <v-col
+          v-if="orderInfo.state == $Const.STATUS_DRAFT || orderInfo.state == $Const.STATUS_ORDER_DENY || orderInfo.state == ''"
+          align="center">
           <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="entry">
             運送引受会社へ依頼する
           </v-btn>
@@ -321,6 +323,10 @@ const { orderOperationInfo, clearOrderOperationInfo } = useOrderOperationInfo()
 const { dispatchInfo, clearDispatchInfo } = useDispatchInfo()
 const keydispatchId = ref(dispatchInfo.value.id)
 
+const dispDispatchTime = ref('')
+const dispDepartureTime = ref('')
+const dispEndingTime = ref('')
+
 //-----------------------//
 
 
@@ -333,10 +339,23 @@ const totalvehicleAmount = computed(() => {
  * 画面初期処理
  */
 onMounted(async () => {
-  // TODO:運送引受会社が選択済みの場合の情報取得:運送引受会社の情報をDBから取得する
-  // const selectDeliveryUser = orderDeliveryUserInfo.value.companyId
-  // if (selectDeliveryUser != null && utils.toBlank(selectDeliveryUser) != '') {
-  // }
+  if (orderInfo.value.dispatchTimeHour != null && orderInfo.value.dispatchTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === orderInfo.value.dispatchTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === orderInfo.value.dispatchTimeMinute);
+    dispDispatchTime.value = time.disp + ':' + min.disp
+  }
+  if (orderInfo.value.departureTimeHour != null && orderInfo.value.departureTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === orderInfo.value.departureTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === orderInfo.value.departureTimeMinute);
+    dispDepartureTime.value = time.disp + ':' + min.disp
+  }
+  if (orderOperationInfo.value.endingTimeHour != null && orderOperationInfo.value.endingTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === orderOperationInfo.value.endingTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === orderOperationInfo.value.endingTimeMinute);
+    dispEndingTime.value = time.disp + ':' + min.disp
+  }
+
+
 })
 
 
@@ -380,8 +399,11 @@ const entry = async () => {
       vehicleTypeSmallAmount: utils.toZero(orderInfo.value.vehicleTypeSmallAmount),
       vehicleTypeMicroAmount: utils.toZero(orderInfo.value.vehicleTypeMicroAmount),
       dispatchDate: orderInfo.value.dispatchDate,
-      dispatchTime: orderInfo.value.dispatchTime,
-      departureTime: orderInfo.value.departureTime,
+      dispatchTimeHour: utils.toZero(orderInfo.value.dispatchTimeHour),
+      dispatchTimeMinute: utils.toZero(orderInfo.value.dispatchTimeMinute),
+      departureTimeHour: utils.toZero(orderInfo.value.departureTimeHour),
+      departureTimeMinute: utils.toZero(orderInfo.value.departureTimeMinute),
+
       deliveryLocation: orderInfo.value.deliveryLocation,
       itinerary1Top: utils.toBlank(orderOperationInfo.value.itinerary1Top),
       itinerary1Bottom: utils.toBlank(orderOperationInfo.value.itinerary1Bottom),
@@ -391,7 +413,10 @@ const entry = async () => {
       accommodationsTel1: utils.toBlank(orderOperationInfo.value.accommodationsTel1),
       accommodationsAddr1: utils.toBlank(orderOperationInfo.value.accommodationsAddr1),
       endDate: utils.toBlank(orderOperationInfo.value.endDate),
-      endingTime: utils.toBlank(orderOperationInfo.value.endingTime),
+
+      endingTimeHour: utils.toZero(orderOperationInfo.value.endingTimeHour),
+      endingTimeMinute: utils.toZero(orderOperationInfo.value.endingTimeMinute),
+
       terminalLocation: utils.toBlank(orderOperationInfo.value.terminalLocation),
       deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
       customerId: utils.toBlank(applicantCustomerId),
@@ -415,8 +440,12 @@ const entry = async () => {
       vehicleTypeSmallAmount: utils.toZero(orderInfo.value.vehicleTypeSmallAmount),
       vehicleTypeMicroAmount: utils.toZero(orderInfo.value.vehicleTypeMicroAmount),
       dispatchDate: orderInfo.value.dispatchDate,
-      dispatchTime: orderInfo.value.dispatchTime,
-      departureTime: orderInfo.value.departureTime,
+      dispatchTimeHour: utils.toZero(orderInfo.value.dispatchTimeHour),
+      dispatchTimeMinute: utils.toZero(orderInfo.value.dispatchTimeMinute),
+      departureTimeHour: utils.toZero(orderInfo.value.departureTimeHour),
+      departureTimeMinute: utils.toZero(orderInfo.value.departureTimeMinute),
+
+
       deliveryLocation: orderInfo.value.deliveryLocation,
       itinerary1Top: utils.toBlank(orderOperationInfo.value.itinerary1Top),
       itinerary1Bottom: utils.toBlank(orderOperationInfo.value.itinerary1Bottom),
@@ -426,7 +455,9 @@ const entry = async () => {
       accommodationsTel1: utils.toBlank(orderOperationInfo.value.accommodationsTel1),
       accommodationsAddr1: utils.toBlank(orderOperationInfo.value.accommodationsAddr1),
       endDate: utils.toBlank(orderOperationInfo.value.endDate),
-      endingTime: utils.toBlank(orderOperationInfo.value.endingTime),
+      endingTimeHour: utils.toZero(orderOperationInfo.value.endingTimeHour),
+      endingTimeMinute: utils.toZero(orderOperationInfo.value.endingTimeMinute),
+
       terminalLocation: utils.toBlank(orderOperationInfo.value.terminalLocation),
       deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
       customerId: utils.toBlank(applicantCustomerId),
@@ -457,12 +488,27 @@ const entry = async () => {
 const back = () => {
 
   // 画面遷移
-  if (orderInfo.value.state == $Const.STATUS_DRAFT) {
+  if (orderInfo.value.state == $Const.STATUS_DRAFT || orderInfo.value.state == '') {
     router.push('/user/order/entry')
 
   } else if (orderInfo.value.state == $Const.STATUS_REQUEST) {
+
+    // stateのクリア
+    clearOrderInfo(orderInfo)
+    clearApplicantCustomerInfo(applicantCustomerInfo)
+    clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+    clearOrderOperationInfo(orderOperationInfo)
+    clearDispatchInfo(dispatchInfo)
+
     router.push('/user/order/list')
   } else {
+    // stateのクリア
+    clearOrderInfo(orderInfo)
+    clearApplicantCustomerInfo(applicantCustomerInfo)
+    clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+    clearOrderOperationInfo(orderOperationInfo)
+    clearDispatchInfo(dispatchInfo)
+
     router.push('/user/order/list')
   }
 

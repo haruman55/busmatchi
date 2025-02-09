@@ -67,8 +67,10 @@ type Order = {
   vehicleTypeMicroAmount: number;
   deliveryLocation: string;
   dispatchDate: string;
-  dispatchTime: string;
-  departureTime: string;
+  dispatchTimeHour: number;
+  dispatchTimeMinute: number;
+  departureTimeHour: number;
+  departureTimeMinute: number;
   itinerary1Top: string;
   itinerary1Bottom: string;
   timeschedule1Top: string;
@@ -77,7 +79,8 @@ type Order = {
   accommodationsTel1: string;
   accommodationsAddr1: string;
   endDate: string;
-  endingTime: string;
+  endingTimeHour: number;
+  endingTimeMinute: number;
   terminalLocation: string;
   // 申込対象の顧客のdocid
   customerId: string;
@@ -99,12 +102,29 @@ type Dispatch = {
   busList: string[]
   driverList: string[]
   guideList: string[]
-  termTo: Timestamp | FieldValue;
-  termFrom: Timestamp | FieldValue;
+  reservationFrom: Timestamp | FieldValue;
+  reservationTo: Timestamp | FieldValue;
   createdAt: Timestamp | FieldValue;
   updatedAt: Timestamp | FieldValue;
 
 }
+
+// バス、運転手、ガイドの配車、出勤予約管理
+type Reservation = {
+  id: string;
+  // TODO:仕様で固定 0:バス 1:運転手 2:ガイド
+  category: string;
+  // 各種バス、運転手、ガイドのDocId
+  itemId: string;
+  title: string;
+  reservationFrom: Timestamp | FieldValue;
+  reservationTo: Timestamp | FieldValue;
+  // 案件に紐付く予約の場合は案件IDが設定される
+  orderId: string;
+  createdAt: Timestamp | FieldValue;
+  updatedAt: Timestamp | FieldValue;
+};
+
 
 
 // 運送引受会社保有情報-駐車地情報オブジェクト
@@ -155,6 +175,9 @@ type Bus = {
   createdAt: Timestamp | FieldValue;
   updatedAt: Timestamp | FieldValue;
 };
+
+
+
 
 
 
@@ -534,7 +557,7 @@ export const useUserData = () => {
   const getOrderDeliveryList = async (companyId: string | "", state: string[]) => {
     const order: Order[] = [];
     let q = null;
-    if (companyId == "" ) {
+    if (companyId == "") {
       return null
     } else {
       q = query(
@@ -848,6 +871,8 @@ export const useUserData = () => {
     return bus;
   };
 
+
+
   /**
   * 指定のバス情報(ユニーク)を取得する
   * @param doc_id 
@@ -947,7 +972,7 @@ export const useUserData = () => {
       // ドキュメントが存在するか確認
       if (docSnap.exists()) {
         // データを取得
-        return docSnap.data() as Bus;
+        return docSnap.data() as Dispatch;
       } else {
         // ドキュメントが存在しない場合の処理
         console.log("No such document! bus");
@@ -989,8 +1014,236 @@ export const useUserData = () => {
 
   };
 
+    /**
+   * 配車情報を削除する.
+   * @param docid 
+   */
+    const deleteDispatch = async (docid: string) => {
+      // 指定データの削除
+      await deleteDoc(doc(db, "dispatch", docid));
+      console.log(`ドキュメント ${docid} が削除されました`);
+  
+    };
+  
+
+    /**
+     * 指定案件に紐付くリソースの登録情報の一覧を取得する.
+     * @param companyId 
+     * @returns 
+     */
+    const getReservationList = async (orderId: string | "") => {
+      const reservation: Reservation[] = [];
+      let q = null;
+      if (orderId == "") {
+        return null
+      } else {
+        q = query(
+          collection(db, "reservation"),
+          where("orderId", "==", orderId),
+        );
+      }
+      const querySnapshot = await getDocs(q);
+      let index = 0
+      querySnapshot.docs.map((doc) => {
+        reservation.push(doc.data() as Reservation);
+        reservation[index]["id"] = doc.id;
+        index++;
+      });
+      return reservation;
+    };
+  
+  
+
+  /**
+  * 予約情報を登録する
+  * @param busReservation
+  * @returns ドキュメントID
+  */
+  const addReservation = async (reservation: Reservation) => {
+    if (reservation == null) {
+      return null;
+    }
+    const docRef = await addDoc(collection(db, "reservation"), reservation);
+    return docRef.id
+
+  };
+
+  /**
+   * 予約情報を削除する.
+   * @param docid 
+   */
+  const deleteReservation = async (docid: string) => {
+    // 指定データの削除
+    await deleteDoc(doc(db, "reservation", docid));
+    console.log(`ドキュメント ${docid} が削除されました`);
+
+  };
+
+  /**
+   * 案件登録に紐付く期間での、配車可能なリソースの予約状況を検索する
+   * @param category 
+   * @param itemId 
+   * @param reservationFrom 
+   * @param reservationTo 
+   * @returns 
+   */
+  const searchReservation = async (category: string, itemId: string, reservationFrom: Timestamp, reservationTo: Timestamp) => {
+
+    const reservationFromArray: Reservation[] = [];
+    const reservationToArray: Reservation[] = [];
+
+    // reservationFrom 基準でのデータ取得
+    let qFrom = null;
+    qFrom = query(
+      collection(db, "reservation"),
+      where("category", "==", category),
+      where("itemId", "==", itemId),
+      orderBy("reservationFrom"),
+      startAt(reservationFrom),
+      endAt(reservationTo)
+    );
+    const querySnapshotFromBase = await getDocs(qFrom);
+
+    // reservationTo 基準でのデータ取得
+    let qTo = null;
+    qTo = query(
+      collection(db, "reservation"),
+      where("category", "==", category),
+      where("itemId", "==", itemId),
+      where("reservationFrom", "<=", reservationFrom),
+      orderBy("reservationTo"),
+      startAt(reservationFrom),
+    );
+    const querySnapshotToBase = await getDocs(qTo);
+
+    let index = 0;
+    querySnapshotFromBase.docs.map((doc) => {
+      const docId = doc.id
+      reservationFromArray.push(doc.data() as Reservation);
+      reservationFromArray[index]["id"] = docId;
+      index++;
+    });
+
+    index = 0;
+    querySnapshotToBase.docs.map((doc) => {
+      const docId = doc.id
+      reservationToArray.push(doc.data() as Reservation);
+      reservationToArray[index]["id"] = docId;
+      index++;
+    });
+
+    // TODO:From/To基点で取得した情報をマージ(ChatGPT)
+    const mergedMap = new Map();
+    // From基点 のデータをマップに登録
+    reservationFromArray.forEach(item => mergedMap.set(item.id, item));
+
+    // TO基点 のデータで上書きまたは追加
+    reservationToArray.forEach(item => mergedMap.set(item.id, item));
+
+    // マップを配列に変換
+    const reservation = Array.from(mergedMap.values());
+
+    return reservation;
+  };
 
 
+  /**
+   * 指定日時に該当する予約開始日時(reservationFrom)を検索する
+   * @param busId 
+   * @param reservationDate 
+   * @returns 
+   */
+  const searchReservationFromBase = async (category: string, itemId: string, reservationFrom: Timestamp, reservationTo: Timestamp) => {
+
+    const reservation: Reservation[] = [];
+
+    let q = null;
+    q = query(
+      collection(db, "reservation"),
+      where("category", "==", category),
+      where("itemId", "==", itemId),
+      orderBy("reservationFrom"),
+      startAt(reservationFrom),
+      endAt(reservationTo)
+    );
+    const querySnapshot = await getDocs(q);
+
+
+    let index = 0;
+    querySnapshot.docs.map((doc) => {
+      const docId = doc.id
+      reservation.push(doc.data() as Reservation);
+      reservation[index]["id"] = docId;
+      index++;
+    });
+
+    return reservation;
+  };
+
+  /**  
+ * 指定日時に該当する予約終了日時(reservationTo)を検索する：日跨ぎで予約された場合の終了日時基点でのデータ取得
+ * @param busId 
+ * @param reservationDate 
+ * @returns 
+ */
+  const searchReservationToBase = async (category: string, itemId: string, reservationFrom: Timestamp, reservationTo: Timestamp) => {
+
+    const reservation: Reservation[] = [];
+
+    let q = null;
+    q = query(
+      collection(db, "reservation"),
+      where("category", "==", category),
+      where("itemId", "==", itemId),
+      where("reservationFrom", "<=", reservationFrom),
+      orderBy("reservationTo"),
+      startAt(reservationFrom),
+    );
+    const querySnapshot = await getDocs(q);
+
+
+    let index = 0;
+    querySnapshot.docs.map((doc) => {
+      const docId = doc.id
+      reservation.push(doc.data() as Reservation);
+      reservation[index]["id"] = docId;
+      index++;
+    });
+
+    return reservation;
+  };
+
+
+
+
+  /**
+  * 指定の予約情報(ユニーク)を取得する
+  * @param doc_id 
+  * @returns 
+  */
+  const getReservationData = async (doc_id: string) => {
+    const docRef = doc(db, "reservation", doc_id as string);
+
+    try {
+      // ドキュメントを取得
+      const docSnap = await getDoc(docRef);
+
+      // ドキュメントが存在するか確認
+      if (docSnap.exists()) {
+        // データを取得
+        return docSnap.data() as Reservation;
+      } else {
+        // ドキュメントが存在しない場合の処理
+        console.log("No such document! Reservation");
+        return null;
+      }
+    } catch (error) {
+      // エラー処理
+      console.error("Error getting document Reservation :", error);
+      return null;
+    }
+
+  };
 
 
 
@@ -1021,7 +1274,6 @@ export const useUserData = () => {
 
     return user;
   };
-
 
 
 
@@ -1065,6 +1317,15 @@ export const useUserData = () => {
     getDispatchData,
     addDispatch,
     updateDispatch,
+    deleteDispatch,
+    getReservationList,
+    addReservation,
+    deleteReservation,
+    searchReservationFromBase,
+    searchReservationToBase,
+    getReservationData,
+    searchReservation,
     searchUser,
+
   };
 };

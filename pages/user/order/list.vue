@@ -26,7 +26,7 @@ elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
             <v-card-text class="text-h6"> {{ $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-text>
             <v-card-text class="text-h5">{{ order.tourOrganization }}</v-card-text>
 
-            <v-card-text>日程:{{ order.dispatchDate }} {{ order.dispatchTime }}</v-card-text>
+            <v-card-text>日程:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ order.dispatchTimeMinute }}</v-card-text>
             <v-card-text>申込者:{{ order.applicant }}</v-card-text>
           </v-card>
 
@@ -62,6 +62,17 @@ const orderList = await userData.getOrderList(keyUserId);
  * 案件登録画面表示
  */
 const addOrder = () => {
+  const { editOrderInfo } = useOrderInfo()
+  // stateへ保存
+  const orderInfo = {
+    applicantCompanyName: userInfo.value.companyName,
+    applicantCompanyTel: userInfo.value.companyTel,
+    applicantCompanyFax: userInfo.value.companyFax,
+    applicantCompanyAddr: userInfo.value.companyAddr,
+    applicantCompanyEmail: userInfo.value.companyEmail,
+  }
+  editOrderInfo(orderInfo)
+
   // 画面遷移
   router.push('/user/order/entry')
 }
@@ -70,6 +81,27 @@ const addOrder = () => {
  * 一覧から選択した案件情報の登録画面を表示する
  */
 const selectOrder = async (order) => {
+
+  let dispatchTime =''
+  let departureTime =''
+  let endingTime =''
+
+  if (order.dispatchTimeHour != null && order.dispatchTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.dispatchTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.dispatchTimeMinute);
+    dispatchTime = time.disp + ':' + min.disp
+  }
+  if (order.departureTimeHour != null && order.departureTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.departureTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.departureTimeMinute);
+    departureTime = time.disp + ':' + min.disp
+  }
+  if (order.endingTimeHour != null && order.endingTimeMinute != null) {
+    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.endingTimeHour);
+    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.endingTimeMinute);
+    endingTime = time.disp + ':' + min.disp
+  }
+
 
   // 一覧から選択した申込情報を保持
   const { editOrderInfo } = useOrderInfo()
@@ -93,8 +125,13 @@ const selectOrder = async (order) => {
     vehicleTypeSmallAmount: order.vehicleTypeSmallAmount,
     vehicleTypeMicroAmount: order.vehicleTypeMicroAmount,
     dispatchDate: order.dispatchDate,
-    dispatchTime: order.dispatchTime,
-    departureTime: order.departureTime,
+    dispatchTime: dispatchTime,
+    dispatchTimeHour: order.dispatchTimeHour,
+    dispatchTimeMinute: order.dispatchTimeMinute,
+    departureTime: departureTime,
+    departureTimeHour: order.departureTimeHour,
+    departureTimeMinute: order.departureTimeMinute,
+
     deliveryLocation: order.deliveryLocation,
     customerId: order.customerId,
     deliveryCompanyId: order.deliveryCompanyId,
@@ -102,8 +139,8 @@ const selectOrder = async (order) => {
   }
   editOrderInfo(orderInfo)
 
-    // 配車情報があれば設定
-    const { editDispatchInfo } = useDispatchInfo()
+  // 配車情報があれば設定
+  const { editDispatchInfo } = useDispatchInfo()
   if (order.dispatchId != null && order.dispatchId != '') {
     const dispatchInfo = await userData.getDispatchData(order.dispatchId);
     const dispatchObj = {
@@ -148,8 +185,13 @@ const selectOrder = async (order) => {
       companyFax: orderDeliveryUser.companyFax,
       companyEmail: orderDeliveryUser.companyEmail,
       dispatchDate: order.dispatchDate,
-      dispatchTime: order.dispatchTime,
+      dispatchTime: dispatchTime,
+      dispatchTimeHour: order.dispatchTimeHour,
+      dispatchTimeMinute: order.dispatchTimeMinute,
       departureTime: order.departureTime,
+      departureTimeHour: order.departureTimeHour,
+      departureTimeMinute: order.departureTimeMinute,
+
       deliveryLocation: order.deliveryLocation,
       counterPersonMain: order.counterPersonMain,
       counterPersonSub: order.counterPersonSub,
@@ -169,12 +211,14 @@ const selectOrder = async (order) => {
     accommodationsTel1: order.accommodationsTel1,
     accommodationsAddr1: order.accommodationsAddr1,
     endDate: order.endDate,
-    endingTime: order.endingTime,
+    endingTime: endingTime,
+    endingTimeHour: order.endingTimeHour,
+    endingTimeMinute: order.endingTimeMinute,
     terminalLocation: order.terminalLocation,
   }
   editOrderOperationInfo(orderOperationInfoObject)
 
-  if (order.state == $Const.STATUS_DRAFT) {
+  if (order.state == $Const.STATUS_DRAFT || order.state == $Const.STATUS_RESERVATION || order.state == $Const.STATUS_ORDER_DENY) {
     router.push('/user/order/entry')
 
   } else if (order.state == $Const.STATUS_REQUEST) {
