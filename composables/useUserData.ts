@@ -2,7 +2,7 @@ import type {
   FieldValue
   ,
   Timestamp
-} from "firebase/firestore";
+} from "firebase/firestore/lite";//利用機能(/lite)を限定することで速度アップ
 import {
   getFirestore,
   collection,
@@ -19,9 +19,8 @@ import {
   setDoc,
   updateDoc,
   deleteDoc
-} from "firebase/firestore";
+} from "firebase/firestore/lite";//利用機能(/lite)を限定することで速度アップ
 
-import dayjs from 'dayjs';
 
 type User = {
   id: string;
@@ -1149,11 +1148,13 @@ export const useUserData = () => {
 
   /**
    * 指定日時に該当する予約開始日時(reservationFrom)を検索する
-   * @param busId 
-   * @param reservationDate 
+   * @param category 0:バス 1:運転手 2:ガイド
+   * @param itemId バス、運転手、ガイドのそれぞれの対象のdocId
+   * @param searchTSFrom 検索指定日の開始時間(YYYY/MM/DD 00:00)
+   * @param searchTSTo  検索指定日の終了時間(YYYY/MM/DD 23:59)
    * @returns 
    */
-  const searchReservationFromBase = async (category: string, itemId: string, reservationFrom: Timestamp, reservationTo: Timestamp) => {
+  const searchReservationFromBase = async (category: string, itemId: string, searchTSFrom: Timestamp, searchTSTo: Timestamp) => {
 
     const reservation: Reservation[] = [];
 
@@ -1163,8 +1164,8 @@ export const useUserData = () => {
       where("category", "==", category),
       where("itemId", "==", itemId),
       orderBy("reservationFrom"),
-      startAt(reservationFrom),
-      endAt(reservationTo)
+      startAt(searchTSFrom),
+      endAt(searchTSTo)
     );
     const querySnapshot = await getDocs(q);
 
@@ -1180,13 +1181,15 @@ export const useUserData = () => {
     return reservation;
   };
 
-  /**  
- * 指定日時に該当する予約終了日時(reservationTo)を検索する：日跨ぎで予約された場合の終了日時基点でのデータ取得
- * @param busId 
- * @param reservationDate 
- * @returns 
- */
-  const searchReservationToBase = async (category: string, itemId: string, reservationFrom: Timestamp, reservationTo: Timestamp) => {
+  /**
+   * 指定日時に該当する予約終了日時(reservationTo)を検索する：日跨ぎで予約された場合の終了日時基点でのデータ取得
+   * @param category 0:バス 1:運転手 2:ガイド
+   * @param itemId バス、運転手、ガイドのそれぞれの対象のdocId
+   * @param searchTSFrom 検索指定日の開始時間(YYYY/MM/DD 00:00)
+   * @param searchTSTo  検索指定日の終了時間(YYYY/MM/DD 23:59)
+   * @returns 
+   */
+  const searchReservationToBase = async (category: string, itemId: string, searchTSFrom: Timestamp, searchTSTo: Timestamp) => {
 
     const reservation: Reservation[] = [];
 
@@ -1195,9 +1198,10 @@ export const useUserData = () => {
       collection(db, "reservation"),
       where("category", "==", category),
       where("itemId", "==", itemId),
-      where("reservationFrom", "<=", reservationFrom),
+      where("reservationFrom", "<=", searchTSFrom),
       orderBy("reservationTo"),
-      startAt(reservationFrom),
+      startAt(searchTSFrom),
+      // endAt(reservationTo) ←TODO:要検証:これをつけるとFROM-TOの間の日（例えば2/10-12の場合の 11） が取得できない？
     );
     const querySnapshot = await getDocs(q);
 
@@ -1247,33 +1251,6 @@ export const useUserData = () => {
 
 
 
-  /**
-   * ユーザ情報を検索取得.
-   * @param name 検索条件(前方一致検索)
-   * @param myDocId docummentid:指定があった場合、このdocidは含まない
-   * @returns 
-   */
-  const searchUser = async (name: string, myDocId: string) => {
-    const user: User[] = [];
-
-    let q = null;
-    q = query(collection(db, "user"), orderBy("handleName"), startAt(name), endAt(name + "\uf8ff"));
-    const querySnapshot = await getDocs(q);
-    let index = 0;
-    querySnapshot.docs.map((doc) => {
-      const docId = doc.id
-      if (docId == myDocId) {
-        // console.log("docId:" + docId + "/ myDocId:" + myDocId)
-        return
-      } else {
-        user.push(doc.data() as User);
-        user[index]["id"] = docId;
-      }
-      index++;
-    });
-
-    return user;
-  };
 
 
 
@@ -1325,7 +1302,6 @@ export const useUserData = () => {
     searchReservationToBase,
     getReservationData,
     searchReservation,
-    searchUser,
 
   };
 };

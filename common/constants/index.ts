@@ -2,7 +2,7 @@
 export const ORDER_STATUS_DISP = {
   1: { text: '案件登録中', icon: 'mdi-note-plus-outline', color: 'green' },
   2: { text: '運送依頼中', icon: 'mdi-note-plus-outline', color: '#bae6fd' },
-  3: { text: '運送手配完了', icon: 'mdi-bus', color: 'yellow-lighten-2' },
+  3: { text: '運送手配済', icon: 'mdi-bus', color: 'yellow-lighten-2' },
   4: { text: '運送手配申込', icon: 'mdi-bus', color: 'green' },
   5: { text: '運送手配引受完了', icon: 'mdi-bus', color: 'yellow-lighten-2' },
   6: { text: '運送手配引受完了(支払い完了)', icon: 'mdi-bus', color: 'yellow-lighten-2' },
@@ -14,7 +14,7 @@ export const ORDER_STATUS_DISP = {
 export const STATUS_DRAFT = '1'
 // 案件状況-依頼中
 export const STATUS_REQUEST = '2'
-// 案件状況-運送手配完了
+// 案件状況-運送手配済
 export const STATUS_RESERVATION = '3'
 // 案件状況-運送手配申込
 export const STATUS_APPLICATION = '4'

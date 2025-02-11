@@ -55,10 +55,10 @@ v-model="dispatchDate" :teleport="true" locale="jp" auto-apply :enable-time-pick
       <v-row v-for="(busInfo) in busInfoList" :key="busInfo.id" align="center">
         <v-col cosl="12" sm="1" md="1" class="borderline"><v-card-text>{{ busInfo.vehicleNo }} {{
           $Const.VEHICLE_TYPE_DISP[busInfo.vehicleType].text
-            }}</v-card-text></v-col>
+        }}</v-card-text></v-col>
         <v-col
 v-for="(reservation, index) in busInfo.reservationTimeArray" :key="reservation.id" align="center"
-          class="borderline" :class="{ 'bg-grey-lighten-3': reservation == '1' }"
+          class="borderline" :class="{ 'bg-grey-lighten-3': reservation != '' }"
           @click="reservationItem($Const.CATEGORY_BUS, index, busInfo)" /></v-row>
     </v-container>
 
@@ -84,7 +84,7 @@ v-for="(reservation, index) in busInfo.reservationTimeArray" :key="reservation.i
         <v-col cosl="12" sm="1" md="1" class="borderline"><v-card-text>{{ driverInfo.driverName }}</v-card-text></v-col>
         <v-col
 v-for="(reservation, index) in driverInfo.reservationTimeArray" :key="reservation.id" align="center"
-          class="borderline" :class="{ 'bg-grey-lighten-3': reservation == '1' }"
+          class="borderline" :class="{ 'bg-grey-lighten-3': reservation != '' }"
           @click="reservationItem($Const.CATEGORY_DRIVER, index, driverInfo)" /></v-row>
     </v-container>
 
@@ -109,7 +109,7 @@ v-for="(reservation, index) in driverInfo.reservationTimeArray" :key="reservatio
         <v-col cosl="12" sm="1" md="1" class="borderline"><v-card-text>{{ guideInfo.guideName }} </v-card-text></v-col>
         <v-col
 v-for="(reservation, index) in guideInfo.reservationTimeArray" :key="reservation.id" align="center"
-          class="borderline" :class="{ 'bg-grey-lighten-3': reservation == '1' }"
+          class="borderline" :class="{ 'bg-grey-lighten-3': reservation != '' }"
           @click="reservationItem($Const.CATEGORY_GUIDE, index, guideInfo)" /></v-row>
     </v-container>
 
@@ -117,7 +117,7 @@ v-for="(reservation, index) in guideInfo.reservationTimeArray" :key="reservation
     <!-- モーダルコンポーネント -->
     <DeliveryItemReservation
 v-if="isOpenReservation" :dispatch-date="dispatchDate" :category="selectedCategory"
-      :index="selectedIndex" :item="selectedItem" :is-reservation="isReservation" @close="closeModal"
+      :index="selectedIndex" :reservation-id="selectedReservationId" :item="selectedItem"  @close="closeModal"
       @reload="serach" />
 
 
@@ -155,16 +155,28 @@ const keyUserId = userInfo.value.companyId
 const { actionInfo } = useAction()
 const act = actionInfo.value.act
 
+// 検索基点とのなる日付
 const dispatchDate = ref($dayjs().format('YYYY/MM/DD'))
 
 const loading = ref(false)
 const isOpenReservation = ref(false)
 // モーダルへ引き割らす選択データ
 const selectedIndex = ref(0)
+const selectedReservationId = ref('')
 const selectedItem = ref({})
 const selectedCategory = ref('')
-const isReservation = ref(false)
 
+/**
+ * 画面初期処理
+ */
+onMounted( () => {
+  // 案件登録の導線から呼び出された際は、該当案件の配車日を検索日として初期設定する。
+  // const { orderInfo } = useOrderInfo()
+  // if (orderInfo.value.dispatchDate != null && orderInfo.value.dispatchDate != '') {
+  //   dispatchDate.value =  orderInfo.value.dispatchDate
+  // }
+  
+})
 
 const changeDate = (days) => {
   dispatchDate.value = $dayjs(dispatchDate.value, "YYYY/MM/DD")
@@ -241,7 +253,7 @@ const getBusInfoList = async () => {
           // From,Toで日付が違う場合(日跨ぎ)は、Fromの日付の最終時刻を設定する
           reservationTo = '23'
         }
-        reservationTimeArray.fill(1, utils.toNumber(reservationFrom), utils.toNumber(reservationTo) + 1);
+        reservationTimeArray.fill(reservationId, utils.toNumber(reservationFrom), utils.toNumber(reservationTo) + 1);
       }
       reservationTime = getTimeRanges(reservationTimeArray);
 
@@ -260,11 +272,11 @@ const getBusInfoList = async () => {
 
         if (reservationDt != dateFrom && dateFrom != dateTo && reservationDt == dateTo) {
           // 前日(配車日)からの日跨ぎなので、スケジュール上開始は 0時(第2引数↓) からとなる
-          reservationTimeArray.fill(1, 0, utils.toNumber(reservationTo) + 1);
+          reservationTimeArray.fill(reservationId, 0, utils.toNumber(reservationTo) + 1);
 
         } else if (reservationDt != dateFrom && dateFrom != dateTo && reservationDt != dateTo) {
           // 指定の日付はぶち抜きで予約されている。例：1/2(From)-1/4(TO)の場合の 1/3 のこと 
-          reservationTimeArray.fill(1, 0, 24);
+          reservationTimeArray.fill(reservationId, 0, 24);
         }
         else {
           // すでにFrom側の処理でスケジュール設定しているので、処理なし
@@ -292,6 +304,7 @@ const getBusInfoList = async () => {
     }
     busInfoListArray.push(busInfoObj)
   }
+
   return busInfoListArray
 }
 const busInfoList = ref(await getBusInfoList())
@@ -344,7 +357,7 @@ const getDriverInfoList = async () => {
           // From,Toで日付が違う場合(日跨ぎ)は、Fromの日付の最終時刻を設定する
           reservationTo = '23'
         }
-        reservationTimeArray.fill(1, utils.toNumber(reservationFrom), utils.toNumber(reservationTo) + 1);
+        reservationTimeArray.fill(reservationId, utils.toNumber(reservationFrom), utils.toNumber(reservationTo) + 1);
       }
       reservationTime = getTimeRanges(reservationTimeArray);
 
@@ -363,11 +376,11 @@ const getDriverInfoList = async () => {
 
         if (reservationDt != dateFrom && dateFrom != dateTo && reservationDt == dateTo) {
           // 前日(配車日)からの日跨ぎなので、スケジュール上開始は 0時(第2引数↓) からとなる
-          reservationTimeArray.fill(1, 0, utils.toNumber(reservationTo) + 1);
+          reservationTimeArray.fill(reservationId, 0, utils.toNumber(reservationTo) + 1);
 
         } else if (reservationDt != dateFrom && dateFrom != dateTo && reservationDt != dateTo) {
           // 指定の日付はぶち抜きで予約されている。例：1/2(From)-1/4(TO)の場合の 1/3 のこと 
-          reservationTimeArray.fill(1, 0, 24);
+          reservationTimeArray.fill(reservationId, 0, 24);
         }
         else {
           // すでにFrom側の処理でスケジュール設定しているので、処理なし
@@ -441,7 +454,7 @@ const getGuideInfoList = async () => {
           // From,Toで日付が違う場合は、Fromの日付の最終時刻を設定する
           reservationTo = '23'
         }
-        reservationTimeArray.fill(1, utils.toNumber(reservationFrom), utils.toNumber(reservationTo) + 1);
+        reservationTimeArray.fill(reservationId, utils.toNumber(reservationFrom), utils.toNumber(reservationTo) + 1);
       }
       reservationTime = getTimeRanges(reservationTimeArray);
 
@@ -460,11 +473,11 @@ const getGuideInfoList = async () => {
 
         if (reservationDt != dateFrom && dateFrom != dateTo && reservationDt == dateTo) {
           // 前日(配車日)からの日跨ぎなので、スケジュール上開始は 0時(第2引数↓) からとなる
-          reservationTimeArray.fill(1, 0, utils.toNumber(reservationTo) + 1);
+          reservationTimeArray.fill(reservationId, 0, utils.toNumber(reservationTo) + 1);
 
         } else if (reservationDt != dateFrom && dateFrom != dateTo && reservationDt != dateTo) {
           // 指定の日付はぶち抜きで予約されている。例：1/2(From)-1/4(TO)の場合の 1/3 のこと 
-          reservationTimeArray.fill(1, 0, 24);
+          reservationTimeArray.fill(reservationId, 0, 24);
         }
         else {
           // すでにFrom側の処理でスケジュール設定しているので、skip
@@ -499,10 +512,8 @@ const guideList = ref(await getGuideInfoList());
  */
 const reservationItem = async (category, index, item) => {
 
-  // 既に予約済みの時間チェック
-  isReservation.value = false
   let confirmRes = false
-  if (item.reservationTimeArray[index] === 1) {
+  if (item.reservationTimeArray[index] != '') {
     await $swal.fire({
       text: '既に配車予約している時間をしています。よろしいですか？',
       showCancelButton: true,
@@ -513,7 +524,7 @@ const reservationItem = async (category, index, item) => {
       icon: 'info'
     }).then((res) => {
       confirmRes = res.isConfirmed
-      isReservation.value = true
+      selectedReservationId.value = item.reservationTimeArray[index]
     })
     if (!confirmRes) {
       return
@@ -548,6 +559,8 @@ const serach = async () => {
 const closeModal = () => {
   isOpenReservation.value = false
   selectedIndex.value = null
+  selectedCategory.value = ''
+  selectedReservationId.value = ''
   selectedItem.value = null
 
 }

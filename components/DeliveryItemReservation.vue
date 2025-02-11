@@ -6,44 +6,31 @@ const userData = useUserData();
 // 共通関数の呼び出し
 const utils = useUtils();
 
+
 const props = defineProps({
   dispatchDate: String,
   index: Number,
+  // 既に登録済みの場合は値保有
+  reservationId: String,
   // TODO:仕様で固定:0:バス 1:運転手 2:バスガイド
   category: String,
   item: Object,
-  isReservation: Boolean,
 })
 
 const emit = defineEmits(['close', 'reload'])
 
 const dispatchDate = ref(props.dispatchDate)
-// TODO(仕様):dispatchDateと同値を初期値とする
 const endDate = ref(props.dispatchDate)
-const dispatchTime = ref(props.index)
+const dispatchTimeHour = ref(props.index)
+const dispatchTimeMinute = ref(0)
+
 // TODO(仕様):dispatchTimeに1時間足した時間(これだと24(0)時が対応できないのでバグ有)
-const endingTime = ref(props.index + 1)
+const endingTimeHour = ref(props.index + 1)
+const endingTimeMinute = ref(0)
+
 const category = ref(props.category)
-const isReservation = ref(props.isReservation)
-const reservationId = ref(props.item.reservationId)
+const reservationId = ref(props.reservationId)
 const title = ref("")
-
-/**
- * 日付文字列(YYYY/MM/DD)と時間のコード値をTimeStamp型に変換する
- */
-const formatTimeStampData = (dateStr, timeStr) => {
-  // 日付
-  const date = dateStr.replace(/\//g, "");
-  // 配車時間
-  const time = $Const.TIME_LIST.find(item => item.code === timeStr);
-  // 文字列を結合して YYYY-MM-DD HH:mm 形式に変換
-  const formattedDateTime = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)} ${time.disp}`;
-
-  // dayjsでパースしてタイムスタンプに変換（ミリ秒単位）
-  const formattedTimeStamp = $dayjs(formattedDateTime, 'YYYY-MM-DD HH:mm').valueOf();
-  return formattedTimeStamp
-
-}
 
 
 /**
@@ -51,7 +38,19 @@ const formatTimeStampData = (dateStr, timeStr) => {
  */
 const reservation = async () => {
 
-  if (dispatchTime.value === null || dispatchTime.value === undefined) {
+  if (reservationId.value == '') {
+    if (title.value == null || title.value == '') {
+    $swal.fire({
+      text: 'タイトルを入力してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning'
+    })
+    return
+  }
+
+  }
+  if (dispatchTimeHour.value == null || dispatchTimeMinute.value == null) {
     $swal.fire({
       text: '開始時間を入力してください。',
       showCancelButton: false,
@@ -61,7 +60,7 @@ const reservation = async () => {
     return
   }
 
-  if (endingTime.value === null || endingTime.value === undefined) {
+  if (endingTimeHour.value == null || endingTimeMinute.value == null) {
     $swal.fire({
       text: '終着時間を入力してください。',
       showCancelButton: false,
@@ -70,12 +69,16 @@ const reservation = async () => {
     })
     return
   }
-
+  
+  // 画面入力された日、時、分を結合してDB登録用のTSへ変換
   // 予約設定-開始時間
-  const formattedReservationFromTS = formatTimeStampData(dispatchDate.value, dispatchTime.value)
-
+  const timeFrom = $Const.TIME_HOUR_LIST.find(item => item.code === dispatchTimeHour.value);
+  const minFrom = $Const.TIME_MINUTE_LIST.find(item => item.code === dispatchTimeMinute.value);
+  const formattedReservationFromTS = new Date(`${dispatchDate.value} ${timeFrom.disp + ':' + minFrom.disp}`)
   // 予約設定-終了時間
-  const formattedReservationToTS = formatTimeStampData(endDate.value, endingTime.value)
+  const timeTo = $Const.TIME_HOUR_LIST.find(item => item.code === endingTimeHour.value);
+  const minTo = $Const.TIME_MINUTE_LIST.find(item => item.code === endingTimeMinute.value);
+  const formattedReservationToTS = new Date(`${endDate.value} ${timeTo.disp + ':' + minTo.disp}`)
 
 
   let confirmRes = false
@@ -95,7 +98,7 @@ const reservation = async () => {
   }
 
   // 指定予約の更新の場合(delete/insert)
-  if (utils.toBlank(reservationId.value) != '') {
+  if (reservationId.value != '') {
     // 既存の登録内容がある際は削除(Delete)
     await userData.deleteReservation(reservationId.value)
   }
@@ -106,8 +109,9 @@ const reservation = async () => {
   const reservationInfoObj = {
     category: category.value,
     itemId: itemId,
-    reservationFrom: new Date(formattedReservationFromTS),
-    reservationTo: new Date(formattedReservationToTS),
+    reservationFrom: formattedReservationFromTS,
+    reservationTo: formattedReservationToTS,
+    // 本画面からの登録は案件と紐付いていないので'空白'
     orderId: '',
     title: title.value,
     createdAt: new Date(),
@@ -148,8 +152,24 @@ const cancel = async () => {
   emit('close')
 }
 
+/**
+ * 初期処理
+ * 既に予約登録されている場合の、登録時間開始日時、終了日時を復元する
+ */
+onMounted( async () => {
+  if (reservationId.value != '') {
+    const reservationData =await userData.getReservationData(reservationId.value)
+    dispatchDate.value = $dayjs(reservationData.reservationFrom.toDate()).format('YYYY/MM/DD')
+    dispatchTimeHour.value = utils.toNumber($dayjs(reservationData.reservationFrom.toDate()).format('HH'))
+    dispatchTimeMinute.value = utils.toNumber($dayjs(reservationData.reservationFrom.toDate()).format('mm'))
 
+    endDate.value = $dayjs(reservationData.reservationTo.toDate()).format('YYYY/MM/DD')
+    endingTimeHour.value = utils.toNumber($dayjs(reservationData.reservationTo.toDate()).format('HH'))
+    endingTimeMinute.value = utils.toNumber($dayjs(reservationData.reservationTo.toDate()).format('mm'))
 
+  }
+
+})
 
 
 
@@ -164,7 +184,7 @@ const cancel = async () => {
             <v-col>
               <v-card>
                 <v-row justify="center">
-                  <v-col v-if="isReservation" cols="12" sm="12" md="12">
+                  <v-col v-if="reservationId != ''" cols="12" sm="12" md="12">
                     <v-card-title class="font-weight-bold">{{ props.item.title }}</v-card-title>
                   </v-col>
                   <v-col v-else align="center" cols="12" sm="10" md="10">
@@ -247,11 +267,17 @@ v-model="dispatchDate" :teleport="true" locale="jp" auto-apply
                       :enable-time-picker="true" format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
                   </v-col>
 
-                  <v-col cols="12" sm="4" md="4">
-                    <v-select
-v-model="dispatchTime" label="開始時間" item-title="disp" item-value="code"
-                      :items="$Const.TIME_LIST" />
-                  </v-col>
+                  <v-col cols="12" sm="2" md="2">
+                  <v-select
+v-model="dispatchTimeHour" label="時間" item-title="disp" item-value="code"
+                    :items="$Const.TIME_HOUR_LIST" />
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
+
+                  <v-select
+v-model="dispatchTimeMinute" label="分" item-title="disp" item-value="code"
+                    :items="$Const.TIME_MINUTE_LIST" />
+                </v-col>
 
                 </v-row>
 
@@ -266,13 +292,18 @@ v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="t
                       format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
                   </v-col>
 
+                  <v-col cols="12" sm="2" md="2">
+                  <v-select
+v-model="endingTimeHour" label="時間" item-title="disp" item-value="code"
+                    :items="$Const.TIME_HOUR_LIST" />
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
 
-                  <v-col cols="12" sm="4" md="4">
-                    <v-select
-v-model="endingTime" label="終了時間" item-title="disp" item-value="code"
-                      :items="$Const.TIME_LIST" />
+                  <v-select
+v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
+                    :items="$Const.TIME_MINUTE_LIST" />
+                </v-col>
 
-                  </v-col>
                 </v-row>
 
                 <v-row justify="center" no-gutters>
@@ -287,7 +318,7 @@ rounded size="x-large" color="indigo darken-4" dark class="mb-2 pr-8 pl-8"
                       @click="reservation">保存</v-btn>
                   </v-col>
 
-                  <v-col v-if="isReservation" align="center">
+                  <v-col v-if="reservationId != ''" align="center">
                     <v-btn
 rounded size="x-large" color="grey darken-4" dark class="mb-2 pr-8 pl-8"
                       @click="cancel">削除</v-btn>
