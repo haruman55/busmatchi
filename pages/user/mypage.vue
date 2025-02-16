@@ -51,13 +51,13 @@
 
         </v-col>
         <v-col cols="12" sm="4" md="4">
-          <v-card class="mx-auto" width="300" height="420" elevation="15">
+          <v-card class="mx-auto" width="300" height="420" elevation="15" @click="showContract">
             <v-card-item title="契約管理" />
 
             <v-card-text class="py-0">
               <v-row align="center" no-gutters>
                 <v-col class="text-h2" align="center" cols="6">
-                  1件
+                  {{ contractList.length }}件
                 </v-col>
                 <v-col class="text-right" cols="6">
                   <v-icon color="green" icon="mdi-check-circle-outline" size="70" />
@@ -152,6 +152,11 @@ const userData = useUserData();
 const customerList = await userData.getUserCustomerList(userInfo.value.companyId);
 // 登録案件情報取得
 const orderList = await userData.getOrderList(userInfo.value.companyId);
+
+// 支払～完了までの登録案件情報取得
+const statusArray = [ $Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
+const contractList = await userData.getOrderList(userInfo.value.companyId,statusArray);
+
 // 運送引受会社情報(マスタ)取得
 const deliveryUserList = await userData.getDeliveryUser();
 
@@ -180,6 +185,20 @@ const showOrder = () => {
 
   // 画面遷移
   router.push('/user/order/list')
+}
+/**
+ * 契約一覧画面を表示
+ */
+const showContract = () => {
+  const setAction = {
+    act: $Const.USER_ACTION_CONTRACT
+  }
+  editActionInfo(setAction)
+
+  // 画面遷移
+  router.push('/user/contract/list')
+
+
 }
 
 /**

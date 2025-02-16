@@ -183,8 +183,9 @@ const reservationToDt = orderOperationInfo.value.endDate.replace(/\//g, "");
 
 
 // 文字列を結合して YYYY-MM-DD HH:mm 形式に変換
-const formattedSearchReservationFrom = `${reservationFromDt.slice(0, 4)}-${reservationFromDt.slice(4, 6)}-${reservationFromDt.slice(6, 8)} 00:00`;
-const formattedSearchReservationTo = `${reservationToDt.slice(0, 4)}-${reservationToDt.slice(4, 6)}-${reservationToDt.slice(6, 8)} 23:59`;
+const formattedSearchReservationFrom = `${reservationFromDt.slice(0, 4)}-${reservationFromDt.slice(4, 6)}-${reservationFromDt.slice(6, 8)} ${orderInfo.value.dispatchTime}`;
+const formattedSearchReservationTo = `${reservationToDt.slice(0, 4)}-${reservationToDt.slice(4, 6)}-${reservationToDt.slice(6, 8)} ${orderOperationInfo.value.endingTime}`;
+
 const SearchReservationTSFrom = new Date($dayjs(formattedSearchReservationFrom, 'YYYY-MM-DD HH:mm').valueOf());
 const SearchReservationTSTo = new Date($dayjs(formattedSearchReservationTo, 'YYYY-MM-DD HH:mm').valueOf());
 

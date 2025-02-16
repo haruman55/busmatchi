@@ -23,10 +23,12 @@
           <v-card
 elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
             :color="$Const.ORDER_STATUS_DISP[order.state].color" @click="selectOrder(order)">
+            <v-card-text class="text-h6"> {{ $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-text>
             <v-card-text class="text-h5"> {{ order.applicantCompanyName }} {{ order.applicant }}</v-card-text>
 
-            <v-card-text>配車日時:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ order.dispatchTimeMinute }}</v-card-text>
-            <v-card-text>配車場所:{{ order.deliveryLocation }}</v-card-text>
+            <v-card-text>配車日時:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ order.dispDispatchTimeMinute
+              }}</v-card-text>
+            <!-- <v-card-text>配車場所:{{ order.deliveryLocation }}</v-card-text> -->
           </v-card>
 
         </v-col>
@@ -51,7 +53,7 @@ const keyUserId = userInfo.value.companyId
  */
 const getOrderDeliveryList = async () => {
 
-  const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_RESERVATION, $Const.STATUS_APPLICATION, $Const.STATUS_ARRANGEMENTS_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
+  const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_UNDERTAKE, $Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED,  $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
   const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
   const orderListArray = []
   for (let i = 0; i < orderList.length; i++) {
@@ -72,7 +74,7 @@ const getOrderDeliveryList = async () => {
       applicantCompanyEmail: companyData.companyEmail,
       emergencyContact: orderList[i].emergencyContact,
       tourOrganization: orderList[i].tourOrganization,
-      remarks: orderList[i].remarks,
+      customerRemarks: orderList[i].customerRemarks,
       passengers: orderList[i].passengers,
       vehicleTypeLiftAmount: orderList[i].vehicleTypeLiftAmount,
       vehicleTypeMediumAmount: orderList[i].vehicleTypeMediumAmount,
@@ -81,6 +83,9 @@ const getOrderDeliveryList = async () => {
       dispatchDate: orderList[i].dispatchDate,
       dispatchTimeHour: orderList[i].dispatchTimeHour,
       dispatchTimeMinute: orderList[i].dispatchTimeMinute,
+      // 画面(一覧のカード)表示用に編集
+      dispDispatchTimeMinute:$Const.TIME_MINUTE_LIST.find(item => item.code === orderList[i].dispatchTimeMinute)?.disp ?? '',
+
       departureTimeHour: orderList[i].departureTimeHour,
       departureTimeMinute: orderList[i].departureTimeMinute,
       deliveryLocation: orderList[i].deliveryLocation,
@@ -95,6 +100,15 @@ const getOrderDeliveryList = async () => {
       endingTimeHour: orderList[i].endingTimeHour,
       endingTimeMinute: orderList[i].endingTimeMinute,
       terminalLocation: orderList[i].terminalLocation,
+      selectPayment: orderList[i].selectPayment,
+      selectPaymentOther: orderList[i].selectPaymentOther,
+      selectDiscount: orderList[i].selectDiscount,
+      selectDiscountOther: orderList[i].selectDiscountOther,
+      orderAmount: orderList[i].orderAmount,
+      actualCost: orderList[i].actualCost,
+      paymentDueDate: orderList[i].paymentDueDate,
+      specialTerms: orderList[i].specialTerms,
+      remarks: orderList[i].remarks,
       customerId: orderList[i].customerId,
       deliveryCompanyId: orderList[i].deliveryCompanyId,
       dispatchId: orderList[i].dispatchId,
@@ -114,9 +128,9 @@ const orderList = await getOrderDeliveryList();
  * 一覧から選択した案件情報を表示する
  */
 const selectOrder = async (order) => {
-  let dispatchTime =''
-  let departureTime =''
-  let endingTime =''
+  let dispatchTime = ''
+  let departureTime = ''
+  let endingTime = ''
 
   if (order.dispatchTimeHour != null && order.dispatchTimeMinute != null) {
     const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.dispatchTimeHour);
@@ -149,7 +163,7 @@ const selectOrder = async (order) => {
     applicantCompanyEmail: order.applicantCompanyEmail,
     emergencyContact: order.emergencyContact,
     tourOrganization: order.tourOrganization,
-    remarks: order.remarks,
+    customerRemarks: order.customerRemarks,
     passengers: order.passengers,
     vehicleTypeLiftAmount: order.vehicleTypeLiftAmount,
     vehicleTypeMediumAmount: order.vehicleTypeMediumAmount,
@@ -163,6 +177,15 @@ const selectOrder = async (order) => {
     departureTimeHour: order.departureTimeHour,
     departureTimeMinute: order.departureTimeMinute,
     deliveryLocation: order.deliveryLocation,
+    selectPayment: order.selectPayment,
+    selectPaymentOther: order.selectPaymentOther,
+    selectDiscount: order.selectDiscount,
+    selectDiscountOther: order.selectDiscountOther,
+    orderAmount: order.orderAmount,
+    actualCost: order.actualCost,
+    paymentDueDate: order.paymentDueDate,
+    specialTerms: order.specialTerms,
+    remarks: order.remarks,
     customerId: order.customerId,
     deliveryCompanyId: order.deliveryCompanyId,
     dispatchId: order.dispatchId,

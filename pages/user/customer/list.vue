@@ -7,7 +7,7 @@
             <v-icon left x-large @click="back">
               mdi-close
             </v-icon>
-            顧客選択
+            顧客情報
           </v-card-text>
         </v-col>
       </v-row>
@@ -55,13 +55,15 @@ const router = useRouter()
 const { $Const } = useNuxtApp()
 const { $swal } = useNuxtApp()
 const userData = useUserData();
-// ログインユーザーのキーID
+
+// ユーザ情報を保持
 const { userInfo } = useUserInfo()
-const keyUserId = userInfo.value.companyId
 
 // ユーザ操作情報を保持
 const { actionInfo } = useAction()
 const act = actionInfo.value.act
+// 顧客情報(マスタ)の状態管理
+const { editCustomerInfo } = useCustomerInfo()
 
 // 案件申込顧客情報
 const { editApplicantCustomerInfo } = useApplicantCustomerInfo()
@@ -170,7 +172,7 @@ const entry = () => {
  * 顧客情報編集画面を表示
  */
 const editItemInfo = (item) => {
-  const customerInfo = {
+  const object = {
     id: item.id,
     customerId: item.customerId,
     customerName: item.customerName,
@@ -183,7 +185,7 @@ const editItemInfo = (item) => {
 
   }
   // 画面遷移
-  customerState.editCustomerInfo(customerInfo)
+  editCustomerInfo(object)
 
   // 画面遷移
   router.push('/user/customer/update')

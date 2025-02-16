@@ -7,7 +7,7 @@
             <v-icon left x-large @click="back">
               mdi-close
             </v-icon>
-            案件登録-運送引受会社への申込確認
+            {{ $Const.ORDER_STATUS_DISP[orderInfo.state]?.text ?? '案件登録中' }}
           </v-card-text>
         </v-col>
       </v-row>
@@ -63,7 +63,7 @@
                 <td rowspan="5" align="center">お客様名</td>
                 <td>団体名</td>
                 <td class="text-h4" colspan="5">{{ orderInfo.tourOrganization }}</td>
-                <td colspan="2">{{ orderInfo.remarks }}</td>
+                <td colspan="2">{{ orderInfo.customerRemarks }}</td>
               </tr>
               <tr align="center">
                 <td rowspan="2">氏名<br>名称</td>
@@ -151,59 +151,8 @@
       </v-row>
 
     </v-container>
-    <v-divider />
 
-    <v-divider />
-    <!-- TODO:以下 運行情報 については一旦日帰りで実装。数日の旅程の場合はデータの持ち方や表示を検討必要 -->
-    <v-container>
-      <v-table class="table-border">
-        <thead>
-          <tr align="center">
-            <th width="80%" colspan="2" class="text-center">
-              旅程
-            </th>
-            <th class="text-center" colspan="2">
-              宿泊場所
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="dashed-border" align="center">
-            <td>{{ orderInfo.dispatchDate }} </td>
-            <td>{{ orderOperationInfo.itinerary1Top }}</td>
-            <td>名称</td>
-            <td>{{ orderOperationInfo.accommodations1 }}</td>
-          </tr>
-          <tr class="thick-border" align="center">
-            <td>{{ dispDispatchTime }}発</td>
-            <td>{{ orderOperationInfo.timeschedule1Top }}</td>
-            <td>電話</td>
-            <td>{{ orderOperationInfo.accommodationsTel1 }}</td>
-          </tr>
-          <tr class="dashed-border" align="center">
-            <td align="right">日 </td>
-            <td>{{ orderOperationInfo.itinerary1Bottom }}</td>
 
-            <td rowspan="2">住所</td>
-            <td rowspan="2">{{ orderOperationInfo.accommodationsAddr1 }}</td>
-          </tr>
-          <tr class="thick-border" align="center">
-            <td>発</td>
-            <td>{{ orderOperationInfo.timeschedule1Bottom }}</td>
-          </tr>
-        </tbody>
-        <tbody>
-          <tr class="dashed-border" align="center">
-            <td>終着</td>
-            <td class="text-h4">{{ orderOperationInfo.endDate }} {{ dispEndingTime }}</td>
-            <td>場所</td>
-            <td>{{ orderOperationInfo.terminalLocation }}</td>
-          </tr>
-        </tbody>
-      </v-table>
-
-    </v-container>
-    <v-divider />
     <!-- TODO:運送引受会社-申込書に合わせたが、申込のタイミングだと会社の名称と電話番号のみの表示となるか？ -->
     <v-container>
       <v-table class="table-border">
@@ -254,16 +203,107 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(driver) in dispatchInfo.driverList" :key="driver.id">
-            <td>ドライバー</td>
+          <tr v-for="(driver, index) in dispatchInfo.driverList" :key="driver.id">
+            <td>ドライバー{{ index + 1 }}</td>
             <td colspan="2"> {{ driver.driverName }}</td>
             <td>連絡先</td>
             <td colspan="2">{{ driver.contact }}</td>
           </tr>
-          <tr>
-            <td>ガイド</td>
-            <td v-for="(guide) in dispatchInfo.guideList" :key="guide.id" colspan="2"> {{ guide.guideName }}</td>
+          <tr v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id">
+            <td>ガイド{{ index + 1 }}</td>
+            <td colspan="2"> {{ guide.guideName }}</td>
           </tr>
+        </tbody>
+      </v-table>
+    </v-container>
+
+
+
+    <!-- TODO:以下 運行情報 については一旦日帰りで実装。数日の旅程の場合はデータの持ち方や表示を検討必要 -->
+    <v-container>
+      <v-table class="table-border">
+        <thead>
+          <tr align="center">
+            <th width="80%" colspan="2" class="text-center">
+              旅程
+            </th>
+            <th class="text-center" colspan="2">
+              宿泊場所
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="dashed-border" align="center">
+            <td>{{ orderInfo.dispatchDate }} </td>
+            <td>{{ orderOperationInfo.itinerary1Top }}</td>
+            <td>名称</td>
+            <td>{{ orderOperationInfo.accommodations1 }}</td>
+          </tr>
+          <tr class="thick-border" align="center">
+            <td>{{ dispDepartureTime }}発</td>
+            <td>{{ orderOperationInfo.timeschedule1Top }}</td>
+            <td>電話</td>
+            <td>{{ orderOperationInfo.accommodationsTel1 }}</td>
+          </tr>
+          <tr class="dashed-border" align="center">
+            <td align="right">日 </td>
+            <td>{{ orderOperationInfo.itinerary1Bottom }}</td>
+
+            <td rowspan="2">住所</td>
+            <td rowspan="2">{{ orderOperationInfo.accommodationsAddr1 }}</td>
+          </tr>
+          <tr class="thick-border" align="center">
+            <td>発</td>
+            <td>{{ orderOperationInfo.timeschedule1Bottom }}</td>
+          </tr>
+        </tbody>
+        <tbody>
+          <tr class="dashed-border" align="center">
+            <td>終着</td>
+            <td class="text-h4">{{ orderOperationInfo.endDate }} {{ dispEndingTime }}</td>
+            <td>場所</td>
+            <td>{{ orderOperationInfo.terminalLocation }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+
+    </v-container>
+
+    <v-container>
+      <v-table class="table-border">
+        <tbody>
+          <tr align="center">
+            <td colspan="3">運賃・料金</td>
+            <td >支払期日</td>
+            <td >{{ orderInfo.paymentDueDate }}</td>
+          </tr>
+          <tr>
+            <td rowspan="2">運賃及び料金の支払い方法</td>
+            <td rowspan="2" colspan="2">{{ dispPaymentType }}</td>
+            <td>発注料金</td>
+            <td colspan="2">{{ orderInfo.orderAmount }}円</td>
+          </tr>
+          <tr>
+            <td>実費</td>
+            <td colspan="2">{{ orderInfo.actualCost }}円</td>
+          </tr>
+          <tr>
+            <td>適用を受けようとする割引</td>
+            <td colspan="2">{{ dispDiscount }}</td>
+            <td>合計金額</td>
+            <td colspan="2">{{ totalAmount }}円</td>
+          </tr>
+
+          <tr>
+            <td>特約事項</td>
+            <td colspan="5">{{ orderInfo.specialTerms }}</td>
+          </tr>
+          <tr>
+            <td>備考</td>
+            <td colspan="5">{{ orderInfo.remarks }}</td>
+          </tr>
+
+
         </tbody>
       </v-table>
     </v-container>
@@ -285,6 +325,18 @@
             運送引受会社へ依頼する
           </v-btn>
         </v-col>
+        <v-col v-else-if="orderInfo.state == $Const.STATUS_UNDERTAKE" align="center">
+          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="payment">
+            支払方法を確定し、手配を完了する
+          </v-btn>
+        </v-col>
+
+        <v-col v-else-if="orderInfo.state == $Const.STATUS_PAYMENT_COMPLETED" align="center">
+          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="completed">
+            案件を完了する
+          </v-btn>
+        </v-col>
+
         <v-spacer />
 
       </v-row>
@@ -299,6 +351,7 @@ const router = useRouter()
 const utils = useUtils();
 // DB接続の呼び出し
 const userData = useUserData();
+const masterData = useMasterData();
 
 // state保持情報 //
 // ログインユーザー(申込会社)のキーID
@@ -327,8 +380,23 @@ const dispDispatchTime = ref('')
 const dispDepartureTime = ref('')
 const dispEndingTime = ref('')
 
+const dispPaymentType = ref('')
+// 割引情報：DBでマスタ管理
+const discountList = ref(await masterData.getDiscountList())
+
+const dispDiscount = ref('')
+// 計算された合計金額
+const totalAmount = ref('')
+
 //-----------------------//
 
+
+// 支払方法
+const PAYMENT_TYPE = [
+  { label: '銀行振込', code: '1' },
+  { label: '現金', code: '2' },
+  { label: 'その他', code: '9' },
+]
 
 // 合計を計算するcomputedプロパティ
 const totalvehicleAmount = computed(() => {
@@ -353,6 +421,52 @@ onMounted(async () => {
     const time = $Const.TIME_HOUR_LIST.find(item => item.code === orderOperationInfo.value.endingTimeHour);
     const min = $Const.TIME_MINUTE_LIST.find(item => item.code === orderOperationInfo.value.endingTimeMinute);
     dispEndingTime.value = time.disp + ':' + min.disp
+  }
+  //支払い方法
+  if (utils.toBlank(orderInfo.value.selectPayment) !== '') {
+    if (orderInfo.value.selectPayment == '9') {
+      // その他の内容を表示する
+      dispPaymentType.value = 'その他 (' + orderInfo.value.selectPaymentOther + ')'
+
+    } else {
+      dispPaymentType.value = PAYMENT_TYPE.find(item => item.code === orderInfo.value.selectPayment).label
+    }
+  }
+  // 選択した割引たち
+  const dispDiscountArray = []
+  const selectDiscount = orderInfo.value.selectDiscount
+  selectDiscount.sort()
+  for (let i = 0; i < selectDiscount.length; i++) {
+    const code = selectDiscount[i]
+    if (code === '99') {
+      // その他の内容を表示する
+      dispDiscountArray.push('その他 (' + orderInfo.value.selectDiscountOther + ') ')
+
+    } else {
+      dispDiscountArray.push(discountList.value.find(item => item.code === code).title)
+    }
+  }
+  dispDiscount.value = dispDiscountArray.join('、')
+
+
+  // 合計金額
+  let totalValue = 0
+  let orderAmountValue = utils.toBlank(orderInfo.value.orderAmount).replace(/[^\d]/g, "");
+  let actualCostValue = utils.toBlank(orderInfo.value.actualCost).replace(/[^\d]/g, "");
+  if (orderAmountValue == '') {
+    orderAmountValue = '0'
+  }
+  if (actualCostValue == '') {
+    actualCostValue = '0'
+  }
+
+  if (utils.toNumber(orderAmountValue) > 0 || utils.toNumber(actualCost.value) > 0) {
+    totalValue = utils.toNumber(orderAmountValue) + utils.toNumber(actualCostValue)
+
+    // if (isTaxIn.value) {
+    totalValue = totalValue * 1.1
+    // }
+    totalAmount.value = totalValue.toLocaleString("ja-JP", { maximumFractionDigits: 0 });
   }
 
 
@@ -392,7 +506,7 @@ const entry = async () => {
       applicant: orderInfo.value.applicant,
       emergencyContact: orderInfo.value.emergencyContact,
       tourOrganization: orderInfo.value.tourOrganization,
-      remarks: orderInfo.value.remarks,
+      customerRemarks: orderInfo.value.customerRemarks,
       passengers: utils.toZero(orderInfo.value.passengers),
       vehicleTypeLiftAmount: utils.toZero(orderInfo.value.vehicleTypeLiftAmount),
       vehicleTypeMediumAmount: utils.toZero(orderInfo.value.vehicleTypeMediumAmount),
@@ -419,6 +533,16 @@ const entry = async () => {
 
       terminalLocation: utils.toBlank(orderOperationInfo.value.terminalLocation),
       deliveryCompanyId: utils.toBlank(orderDeliveryUserInfo.value.id),
+      selectPayment: utils.toBlank(orderInfo.value.selectPayment),
+      selectPaymentOther: utils.toBlank(orderInfo.value.selectPaymentOther),
+      selectDiscount: orderInfo.value.selectDiscount,
+      selectDiscountOther: utils.toBlank(orderInfo.value.selectDiscountOther),
+      orderAmount: utils.toBlank(orderInfo.value.orderAmount),
+      actualCost: utils.toBlank(orderInfo.value.actualCost),
+      paymentDueDate: utils.toBlank(orderInfo.value.paymentDueDate),
+      specialTerms: utils.toBlank(orderInfo.value.specialTerms),
+
+      remarks: utils.toBlank(orderInfo.value.remarks),
       customerId: utils.toBlank(applicantCustomerId),
       updatedAt: new Date(),
     }
@@ -433,7 +557,7 @@ const entry = async () => {
       applicant: orderInfo.value.applicant,
       emergencyContact: orderInfo.value.emergencyContact,
       tourOrganization: orderInfo.value.tourOrganization,
-      remarks: orderInfo.value.remarks,
+      customerRemarks: orderInfo.value.customerRemarks,
       passengers: utils.toZero(orderInfo.value.passengers),
       vehicleTypeLiftAmount: utils.toZero(orderInfo.value.vehicleTypeLiftAmount),
       vehicleTypeMediumAmount: utils.toZero(orderInfo.value.vehicleTypeMediumAmount),
@@ -465,6 +589,16 @@ const entry = async () => {
       dispatchId: utils.toBlank(dispatchInfo.value.id),
       counterPersonMain: utils.toBlank(orderDeliveryUserInfo.value.counterPersonMain),
       counterPersonSub: utils.toBlank(orderDeliveryUserInfo.value.counterPersonSub),
+      selectPayment: utils.toBlank(orderInfo.value.selectPayment),
+      selectPaymentOther: utils.toBlank(orderInfo.value.selectPaymentOther),
+      selectDiscount: orderInfo.value.selectDiscount,
+      selectDiscountOther: utils.toBlank(orderInfo.value.selectDiscountOther),
+      orderAmount: utils.toBlank(orderInfo.value.orderAmount),
+      actualCost: utils.toBlank(orderInfo.value.actualCost),
+      paymentDueDate: utils.toBlank(orderInfo.value.paymentDueDate),
+      specialTerms: utils.toBlank(orderInfo.value.specialTerms),
+      remarks: utils.toBlank(orderInfo.value.remarks),
+
 
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -484,32 +618,164 @@ const entry = async () => {
 
 
 }
-/** 前の画面へ戻る */
-const back = () => {
+
+/**
+ * 支払方法を確定する
+ */
+const payment = async () => {
+  //必須入力チェック
+  if (utils.toBlank(orderInfo.value.selectPayment) == '') {
+    $swal.fire({
+      text: '支払方法を選択してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning'
+    })
+    return
+  }
+  if (utils.toBlank(orderInfo.value.orderAmount) == '') {
+    $swal.fire({
+      text: '料金が設定されていません。確認してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning'
+    })
+    return
+  }
+
+
+
+  // 案件情報を保存
+  let confirmRes = false
+  await $swal.fire({
+    text: '運送引受会社への支払方法を確定し申込を完了します。よろしいですか？',
+    showCancelButton: true,
+    confirmButtonColor: "#00BCD4",
+    cancelButtonColor: "#CFD8DC",
+    confirmButtonText: 'はい。',
+    cancelButtonText: 'キャンセル',
+    icon: 'info'
+  }).then((res) => {
+    confirmRes = res.isConfirmed
+  })
+  if (!confirmRes) {
+    return
+  }
+
+  // 更新
+  const updateObject = {
+    id: keyOrderId,
+    // 運送引受会社との支払方法確定：4
+    state: $Const.STATUS_PAYMENT_METHOD_CONFIRMED,
+    selectPayment: utils.toBlank(orderInfo.value.selectPayment),
+    selectPaymentOther: utils.toBlank(orderInfo.value.selectPaymentOther),
+    selectDiscount: orderInfo.value.selectDiscount,
+    selectDiscountOther: utils.toBlank(orderInfo.value.selectDiscountOther),
+    orderAmount: utils.toBlank(orderInfo.value.orderAmount),
+    actualCost: utils.toBlank(orderInfo.value.actualCost),
+    paymentDueDate: utils.toBlank(orderInfo.value.paymentDueDate),
+    specialTerms: utils.toBlank(orderInfo.value.specialTerms),
+    remarks: utils.toBlank(orderInfo.value.remarks),
+    updatedAt: new Date(),
+  }
+  await userData.updateOrder(updateObject)
+
+
+  // stateのクリア
+  clearOrderInfo(orderInfo)
+  clearApplicantCustomerInfo(applicantCustomerInfo)
+  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+  clearOrderOperationInfo(orderOperationInfo)
+  clearDispatchInfo(dispatchInfo)
 
   // 画面遷移
-  if (orderInfo.value.state == $Const.STATUS_DRAFT || orderInfo.value.state == '') {
-    router.push('/user/order/entry')
+  router.push('/user/order/list')
 
-  } else if (orderInfo.value.state == $Const.STATUS_REQUEST) {
 
-    // stateのクリア
+}
+
+/**
+ * 案件を完了する
+ */
+const completed = async () => {
+  // 案件情報を保存
+  let confirmRes = false
+  await $swal.fire({
+    text: '案件を完了します。よろしいですか？',
+    showCancelButton: true,
+    confirmButtonColor: "#00BCD4",
+    cancelButtonColor: "#CFD8DC",
+    confirmButtonText: 'はい。',
+    cancelButtonText: 'キャンセル',
+    icon: 'info'
+  }).then((res) => {
+    confirmRes = res.isConfirmed
+  })
+  if (!confirmRes) {
+    return
+  }
+
+  // 更新
+  const updateObject = {
+    id: keyOrderId,
+    // 案件完了：9
+    state: $Const.STATUS_ORDER_COMPLETED,
+    updatedAt: new Date(),
+  }
+  await userData.updateOrder(updateObject)
+
+
+  // stateのクリア
+  clearOrderInfo(orderInfo)
+  clearApplicantCustomerInfo(applicantCustomerInfo)
+  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+  clearOrderOperationInfo(orderOperationInfo)
+  clearDispatchInfo(dispatchInfo)
+
+  // 画面遷移
+  router.push('/user/order/list')
+
+
+}
+
+
+/** 前の画面へ戻る */
+const back = () => {
+  const { actionInfo } = useAction()
+  // 画面遷移
+  if (actionInfo.value.act == $Const.USER_ACTION_CONTRACT) {
+    // 契約管理メニューからの遷移
     clearOrderInfo(orderInfo)
     clearApplicantCustomerInfo(applicantCustomerInfo)
     clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
     clearOrderOperationInfo(orderOperationInfo)
     clearDispatchInfo(dispatchInfo)
-
-    router.push('/user/order/list')
+    router.push('/user/contract/list')
   } else {
-    // stateのクリア
-    clearOrderInfo(orderInfo)
-    clearApplicantCustomerInfo(applicantCustomerInfo)
-    clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
-    clearOrderOperationInfo(orderOperationInfo)
-    clearDispatchInfo(dispatchInfo)
+    // 案件管理メニューからの遷移
+    if (orderInfo.value.state == $Const.STATUS_DRAFT || orderInfo.value.state == $Const.STATUS_UNDERTAKE || orderInfo.value.state == $Const.STATUS_ORDER_DENY || orderInfo.value.state == '') {
+      router.push('/user/order/entry')
 
-    router.push('/user/order/list')
+    } else if (orderInfo.value.state == $Const.STATUS_REQUEST) {
+
+      // stateのクリア
+      clearOrderInfo(orderInfo)
+      clearApplicantCustomerInfo(applicantCustomerInfo)
+      clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+      clearOrderOperationInfo(orderOperationInfo)
+      clearDispatchInfo(dispatchInfo)
+
+      router.push('/user/order/list')
+    } else {
+      // stateのクリア
+      clearOrderInfo(orderInfo)
+      clearApplicantCustomerInfo(applicantCustomerInfo)
+      clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+      clearOrderOperationInfo(orderOperationInfo)
+      clearDispatchInfo(dispatchInfo)
+
+      router.push('/user/order/list')
+    }
   }
 
 }

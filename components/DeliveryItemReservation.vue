@@ -40,14 +40,14 @@ const reservation = async () => {
 
   if (reservationId.value == '') {
     if (title.value == null || title.value == '') {
-    $swal.fire({
-      text: 'タイトルを入力してください。',
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    return
-  }
+      $swal.fire({
+        text: 'タイトルを入力してください。',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        icon: 'warning'
+      })
+      return
+    }
 
   }
   if (dispatchTimeHour.value == null || dispatchTimeMinute.value == null) {
@@ -69,7 +69,7 @@ const reservation = async () => {
     })
     return
   }
-  
+
   // 画面入力された日、時、分を結合してDB登録用のTSへ変換
   // 予約設定-開始時間
   const timeFrom = $Const.TIME_HOUR_LIST.find(item => item.code === dispatchTimeHour.value);
@@ -156,9 +156,9 @@ const cancel = async () => {
  * 初期処理
  * 既に予約登録されている場合の、登録時間開始日時、終了日時を復元する
  */
-onMounted( async () => {
+onMounted(async () => {
   if (reservationId.value != '') {
-    const reservationData =await userData.getReservationData(reservationId.value)
+    const reservationData = await userData.getReservationData(reservationId.value)
     dispatchDate.value = $dayjs(reservationData.reservationFrom.toDate()).format('YYYY/MM/DD')
     dispatchTimeHour.value = utils.toNumber($dayjs(reservationData.reservationFrom.toDate()).format('HH'))
     dispatchTimeMinute.value = utils.toNumber($dayjs(reservationData.reservationFrom.toDate()).format('mm'))
@@ -183,6 +183,21 @@ onMounted( async () => {
           <v-row>
             <v-col>
               <v-card>
+                <v-row>
+                  <v-col cols="12" sm="10" md="10" />
+
+
+                  <v-col  cols="12" sm="1" md="1">
+                    <v-icon v-if="reservationId != ''" size="large" @click="cancel">mdi-trash-can-outline</v-icon>
+                    <v-tooltip v-if="reservationId != ''" activator="parent" location="bottom">予定を削除</v-tooltip>
+                  </v-col>
+
+                  <v-col cols="12" sm="1" md="1">
+                    <v-icon  size="large" @click="$emit('close')">mdi-close</v-icon>
+                    <v-tooltip activator="parent" location="bottom">閉じる</v-tooltip>
+                  </v-col>
+                </v-row>
+
                 <v-row justify="center">
                   <v-col v-if="reservationId != ''" cols="12" sm="12" md="12">
                     <v-card-title class="font-weight-bold">{{ props.item.title }}</v-card-title>
@@ -268,16 +283,16 @@ v-model="dispatchDate" :teleport="true" locale="jp" auto-apply
                   </v-col>
 
                   <v-col cols="12" sm="2" md="2">
-                  <v-select
+                    <v-select
 v-model="dispatchTimeHour" label="時間" item-title="disp" item-value="code"
-                    :items="$Const.TIME_HOUR_LIST" />
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
+                      :items="$Const.TIME_HOUR_LIST" />
+                  </v-col>
+                  <v-col cols="12" sm="2" md="2">
 
-                  <v-select
+                    <v-select
 v-model="dispatchTimeMinute" label="分" item-title="disp" item-value="code"
-                    :items="$Const.TIME_MINUTE_LIST" />
-                </v-col>
+                      :items="$Const.TIME_MINUTE_LIST" />
+                  </v-col>
 
                 </v-row>
 
@@ -293,22 +308,22 @@ v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="t
                   </v-col>
 
                   <v-col cols="12" sm="2" md="2">
-                  <v-select
+                    <v-select
 v-model="endingTimeHour" label="時間" item-title="disp" item-value="code"
-                    :items="$Const.TIME_HOUR_LIST" />
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
+                      :items="$Const.TIME_HOUR_LIST" />
+                  </v-col>
+                  <v-col cols="12" sm="2" md="2">
 
-                  <v-select
+                    <v-select
 v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
-                    :items="$Const.TIME_MINUTE_LIST" />
-                </v-col>
+                      :items="$Const.TIME_MINUTE_LIST" />
+                  </v-col>
 
                 </v-row>
 
                 <v-row justify="center" no-gutters>
                   <v-col align="center">
-                    <v-btn rounded color="grey" dark class="mb-2 pr-8 pl-8" @click="$emit('close')">キャンセル</v-btn>
+                    <v-btn rounded color="grey" dark class="mb-2 pr-8 pl-8" @click="$emit('close')">閉じる</v-btn>
                   </v-col>
                   <v-spacer />
 
@@ -325,7 +340,6 @@ rounded size="x-large" color="grey darken-4" dark class="mb-2 pr-8 pl-8"
                   </v-col>
 
                 </v-row>
-
               </v-card>
             </v-col>
           </v-row>

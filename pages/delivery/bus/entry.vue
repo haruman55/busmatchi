@@ -155,6 +155,20 @@ const entry = async () => {
     return
   }
 
+  if (selectPaking.value === '') {
+    $swal.fire({
+      html: '駐車場が選択されていません。選択してください。<br>選択肢がない場合はマイページから駐車場を選択して登録してください。',
+      confirmButtonColor: "#00BCD4",
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning'
+    })
+    return
+  }
+
+
+
+
   let confirmRes = false
   await $swal.fire({
     text: '入力した内容でバス情報を登録します。よろしいですか？',

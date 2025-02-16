@@ -25,9 +25,8 @@ elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
             :color="$Const.ORDER_STATUS_DISP[order.state].color" @click="selectOrder(order)">
             <v-card-text class="text-h6"> {{ $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-text>
             <v-card-text class="text-h5">{{ order.tourOrganization }}</v-card-text>
-
-            <v-card-text>日程:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ order.dispatchTimeMinute }}</v-card-text>
-            <v-card-text>申込者:{{ order.applicant }}</v-card-text>
+            <v-card-text>日程:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ $Const.TIME_MINUTE_LIST.find(item => item.code === order.dispatchTimeMinute)?.disp ?? ''}}</v-card-text>
+            <v-card-text>申込担当:{{ order.applicant }}</v-card-text>
           </v-card>
 
         </v-col>
@@ -62,16 +61,15 @@ const orderList = await userData.getOrderList(keyUserId);
  * 案件登録画面表示
  */
 const addOrder = () => {
-  const { editOrderInfo } = useOrderInfo()
+  const { orderInfo, editOrderInfo } = useOrderInfo()
+  const order = orderInfo
   // stateへ保存
-  const orderInfo = {
-    applicantCompanyName: userInfo.value.companyName,
-    applicantCompanyTel: userInfo.value.companyTel,
-    applicantCompanyFax: userInfo.value.companyFax,
-    applicantCompanyAddr: userInfo.value.companyAddr,
-    applicantCompanyEmail: userInfo.value.companyEmail,
-  }
-  editOrderInfo(orderInfo)
+  order.value.applicantCompanyName = userInfo.value.companyName
+  order.value.applicantCompanyTel = userInfo.value.companyTel
+  order.value.applicantCompanyFax = userInfo.value.companyFax
+  order.value.applicantCompanyAddr = userInfo.value.companyAddr
+  order.value.applicantCompanyEmail = userInfo.value.companyEmail
+  editOrderInfo(order.value)
 
   // 画面遷移
   router.push('/user/order/entry')
@@ -82,9 +80,9 @@ const addOrder = () => {
  */
 const selectOrder = async (order) => {
 
-  let dispatchTime =''
-  let departureTime =''
-  let endingTime =''
+  let dispatchTime = ''
+  let departureTime = ''
+  let endingTime = ''
 
   if (order.dispatchTimeHour != null && order.dispatchTimeMinute != null) {
     const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.dispatchTimeHour);
@@ -118,7 +116,7 @@ const selectOrder = async (order) => {
     applicantCompanyEmail: userInfo.value.companyEmail,
     emergencyContact: order.emergencyContact,
     tourOrganization: order.tourOrganization,
-    remarks: order.remarks,
+    customerRemarks: order.customerRemarks,
     passengers: order.passengers,
     vehicleTypeLiftAmount: order.vehicleTypeLiftAmount,
     vehicleTypeMediumAmount: order.vehicleTypeMediumAmount,
@@ -131,8 +129,16 @@ const selectOrder = async (order) => {
     departureTime: departureTime,
     departureTimeHour: order.departureTimeHour,
     departureTimeMinute: order.departureTimeMinute,
-
     deliveryLocation: order.deliveryLocation,
+    selectPayment: order.selectPayment,
+    selectPaymentOther: order.selectPaymentOther,
+    selectDiscount: order.selectDiscount,
+    selectDiscountOther: order.selectDiscountOther,
+    orderAmount: order.orderAmount,
+    actualCost: order.actualCost,
+    paymentDueDate: order.paymentDueDate,
+    specialTerms: order.specialTerms,
+    remarks: order.remarks,
     customerId: order.customerId,
     deliveryCompanyId: order.deliveryCompanyId,
     dispatchId: order.dispatchId,
@@ -218,14 +224,16 @@ const selectOrder = async (order) => {
   }
   editOrderOperationInfo(orderOperationInfoObject)
 
-  if (order.state == $Const.STATUS_DRAFT || order.state == $Const.STATUS_RESERVATION || order.state == $Const.STATUS_ORDER_DENY) {
-    router.push('/user/order/entry')
+  // if (order.state == $Const.STATUS_DRAFT || order.state == $Const.STATUS_UNDERTAKE || order.state == $Const.STATUS_ORDER_DENY) {
+  //   router.push('/user/order/entry')
 
-  } else if (order.state == $Const.STATUS_REQUEST) {
-    router.push('/user/order/entryConfirm')
-  } else {
-    router.push('/user/order/entryConfirm')
-  }
+  // } else if (order.state == $Const.STATUS_REQUEST) {
+  //   router.push('/user/order/entryConfirm')
+  // } else {
+  //   router.push('/user/order/entryConfirm')
+  // }
+  router.push('/user/order/entry')
+
 
 }
 

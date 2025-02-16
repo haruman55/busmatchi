@@ -204,7 +204,7 @@ type OrderInfo = {
   applicantCompanyEmail: string;
   emergencyContact: string;
   tourOrganization: string;
-  remarks: string;
+  customerRemarks: string;
   passengers: number;
   vehicleTypeLiftAmount: number;
   vehicleTypeMediumAmount: number;
@@ -217,8 +217,16 @@ type OrderInfo = {
   departureTime: string;
   departureTimeHour: number;
   departureTimeMinute: number;
-  
   deliveryLocation: string;
+  selectPayment: string;
+  selectPaymentOther: string;
+  selectDiscount: [];
+  selectDiscountOther: string;
+  orderAmount: string;
+  actualCost: string;
+  paymentDueDate: string;
+  specialTerms: string;
+  remarks: string;
   // 顧客ID(docid)
   customerId: string;
   // 運送引受会社ID(docid)
@@ -237,10 +245,9 @@ export const useOrderInfo = () => {
     applicantCompanyFax: '',
     applicantCompanyAddr: '',
     applicantCompanyEmail: '',
-
     emergencyContact: '',
     tourOrganization: '',
-    remarks: '',
+    customerRemarks:'',
     passengers: 0,
     vehicleTypeLiftAmount: 0,
     vehicleTypeMediumAmount: 0,
@@ -253,8 +260,17 @@ export const useOrderInfo = () => {
     departureTime: '',
     departureTimeHour: 0,
     departureTimeMinute: 0,
-
     deliveryLocation: '',
+    selectPayment:  '',
+    selectPaymentOther: '',
+    selectDiscount: [],
+    selectDiscountOther: '',
+    orderAmount: '',
+    actualCost: '',
+    paymentDueDate:'',
+    specialTerms: '',
+    remarks: '',
+
     // 顧客ID
     customerId: '',
     // 運送引受会社ID
@@ -289,10 +305,9 @@ const clearOrderInfo = (orderInfo: Ref<OrderInfo>) => () => {
     applicantCompanyFax: '',
     applicantCompanyAddr: '',
     applicantCompanyEmail: '',
-
     emergencyContact: '',
     tourOrganization: '',
-    remarks: '',
+    customerRemarks:'',
     passengers: 0,
     vehicleTypeLiftAmount: 0,
     vehicleTypeMediumAmount: 0,
@@ -305,8 +320,16 @@ const clearOrderInfo = (orderInfo: Ref<OrderInfo>) => () => {
     departureTime: '',
     departureTimeHour: 0,
     departureTimeMinute: 0,
-
     deliveryLocation: '',
+    selectPayment:  '',
+    selectPaymentOther: '',
+    selectDiscount: [],
+    selectDiscountOther: '',
+    orderAmount: '',
+    actualCost: '',
+    paymentDueDate:'',
+    specialTerms: '',
+    remarks: '',
     customerId: '',
     deliveryCompanyId: '',
 

@@ -8,7 +8,7 @@
             <v-icon left x-large @click="back">
               mdi-close
             </v-icon>
-            配車管理
+            運行管理
           </v-card-text>
         </v-col>
       </v-row>
@@ -261,7 +261,6 @@ const getBusInfoList = async () => {
 
     // 配車予約のFromとToの日付が異なる（日跨ぎ）場合、Toのデータを取得する必要がある
     const reservationEndDateList = await userData.searchReservationToBase('0', busId, SearchReservationTSFrom, SearchReservationTSTo)
-
     if (reservationEndDateList != null && reservationEndDateList.length > 0) {
       for (let i = 0; i < reservationEndDateList.length; i++) {
         reservationId = reservationEndDateList[i].id

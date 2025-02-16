@@ -27,14 +27,6 @@
             <v-row justify="center" no-gutters>
               <v-col>
                 <v-data-table :headers="parkingListHeaders" :items="parkingList" class="text-pre-wrap">
-                  <template #[`item.parking`]="{ item }">
-                    <!-- <div v-if="act == $Const.USER_ACTION_ORDER"> -->
-                      <a href="" @click.prevent.stop="selectParking(item)">
-                        {{ item.parking }}</a>
-                    <!-- </div>
-                    <div v-else>{{ item.parking }}</div> -->
-                  </template>
-
                   <template #[`item.editItem`]="{ item }">
                     <v-btn color="primary" fab small rounded dark @click="editItemInfo(item)">
                       編 集

@@ -162,7 +162,7 @@ const { editActionInfo } = useAction()
 // DB操作
 const userData = useUserData();
 // 登録案件情報取得
-const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_RESERVATION, $Const.STATUS_APPLICATION, $Const.STATUS_ARRANGEMENTS_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
+const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_UNDERTAKE, $Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
 const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
 
 // 保有駐車地情報取得
@@ -247,6 +247,18 @@ const showDriver = () => {
  * バス一覧画面を表示
  */
 const showBus = () => {
+  if (parkingList.length === 0) {
+    $swal.fire({
+      text: 'バスの登録より先に駐車場を登録してください。',
+      confirmButtonColor: "#00BCD4",
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning'
+    })
+    return
+  }
+
+  
 
   // 画面遷移
   router.push('/delivery/bus/list')

@@ -53,12 +53,12 @@ type Customer = {
 type Order = {
   id: string;
   state: string;
-  // 申込会社ID(ログインユーザのIDと一緒)
+  // 申込会社ID
   companyId: string;
   applicant: string;
   emergencyContact: string;
   tourOrganization: string;
-  remarks: string;
+  customerRemarks: string;
   passengers: number;
   vehicleTypeLiftAmount: number;
   vehicleTypeMediumAmount: number;
@@ -85,11 +85,21 @@ type Order = {
   customerId: string;
   // 申込対象の運送引受会社のdocid
   deliveryCompanyId: string;
-  // 運送引受会社の設定した配車情報のdocid
+  // 案件に紐付く配車情報のdocid
   dispatchId: string;
   // 運送引受会社の案件担当者
   counterPersonMain: string;
   counterPersonSub: string;
+  // 支払いに関わる情報
+  selectPayment: string;
+  selectPaymentOther: string;
+  selectDiscount: [];
+  selectDiscountOther: string;
+  orderAmount: string;
+  actualCost: string;
+  paymentDueDate: string;
+  specialTerms: string;
+  remarks: string;
   createdAt: Timestamp | FieldValue;
   updatedAt: Timestamp | FieldValue;
 };
@@ -477,6 +487,21 @@ export const useUserData = () => {
   };
 
   /**
+   * 顧客情報を更新する.
+   * @param customer 
+   * @returns 
+   */
+  const updateCustomer = async (customer: Customer) => {
+    if (customer == null) {
+      return null;
+    }
+    const userRef = doc(db, "customer", customer.id as string);
+    await setDoc(userRef, customer, { merge: true });
+
+  };
+
+
+  /**
  * 案件情報を登録する
  * @param order
  * @returns ドキュメントID
@@ -495,17 +520,27 @@ export const useUserData = () => {
 * @param companyId 
 * @returns 
 */
-  const getOrderList = async (companyId: string | "") => {
+  const getOrderList = async (companyId: string | "", state: string[]) => {
     const order: Order[] = [];
     let q = null;
-    if (companyId == "") {
+    if (companyId == '') {
       return null
     } else {
+      if (state == null) {
+        q = query(
+          collection(db, "order"),
+          where("companyId", "==", companyId),
+          orderBy("state", "asc")
+        );
+  
+      } else {
       q = query(
         collection(db, "order"),
         where("companyId", "==", companyId),
+        where("state", "in", state),
         orderBy("state", "asc")
       );
+    }
     }
     const querySnapshot = await getDocs(q);
     let index = 0
@@ -549,7 +584,7 @@ export const useUserData = () => {
 
   /**
   * 運送引受会社へ依頼された案件情報を取得する
-  * @param deliveryCompanyId : 運送引受会社のcompanyId(運送引受会社で利用する際の機能)
+  * @param companyId : 運送引受会社のcompanyId(運送引受会社で利用する際の機能)
   * @param state : 取得対象の案件のステータス情報
   * @returns 
   */
@@ -1109,7 +1144,7 @@ export const useUserData = () => {
       collection(db, "reservation"),
       where("category", "==", category),
       where("itemId", "==", itemId),
-      where("reservationFrom", "<=", reservationFrom),
+      where("reservationFrom", "<", reservationFrom),
       orderBy("reservationTo"),
       startAt(reservationFrom),
     );
@@ -1147,7 +1182,7 @@ export const useUserData = () => {
 
 
   /**
-   * 指定日時に該当する予約開始日時(reservationFrom)を検索する
+   * 指定日に該当する予約開始日時(reservationFrom)を検索する
    * @param category 0:バス 1:運転手 2:ガイド
    * @param itemId バス、運転手、ガイドのそれぞれの対象のdocId
    * @param searchTSFrom 検索指定日の開始時間(YYYY/MM/DD 00:00)
@@ -1182,7 +1217,7 @@ export const useUserData = () => {
   };
 
   /**
-   * 指定日時に該当する予約終了日時(reservationTo)を検索する：日跨ぎで予約された場合の終了日時基点でのデータ取得
+   * 指定日に該当する予約終了日時(reservationTo)を検索する：日跨ぎで予約された場合の終了日時基点でのデータ取得
    * @param category 0:バス 1:運転手 2:ガイド
    * @param itemId バス、運転手、ガイドのそれぞれの対象のdocId
    * @param searchTSFrom 検索指定日の開始時間(YYYY/MM/DD 00:00)
@@ -1198,10 +1233,10 @@ export const useUserData = () => {
       collection(db, "reservation"),
       where("category", "==", category),
       where("itemId", "==", itemId),
-      where("reservationFrom", "<=", searchTSFrom),
+      where("reservationFrom", "<", searchTSFrom),
       orderBy("reservationTo"),
       startAt(searchTSFrom),
-      // endAt(reservationTo) ←TODO:要検証:これをつけるとFROM-TOの間の日（例えば2/10-12の場合の 11） が取得できない？
+      // endAt(searchTSTo) //←TODO:要検証:これをつけるとFROM-TOの間の日は取得できない（例えば2/10(From)-12(To)のデータの場合の 検索指定日 2/11 だとヒットしない） 
     );
     const querySnapshot = await getDocs(q);
 
@@ -1267,6 +1302,7 @@ export const useUserData = () => {
     getUserCustomer,
     getUserCustomerList,
     addCustomer,
+    updateCustomer,
     addUser,
     getDeliveryUser,
     getOrderList,

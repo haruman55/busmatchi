@@ -26,7 +26,7 @@ export const useUtils = () => {
   }
 
   const toNumber = (str: string) => {
-    if (typeof str !== "string" || str.trim() === "") return NaN;
+    if (typeof str !== "string" || str.trim() === "") return '';
     return parseInt(str, 10);
   }
 

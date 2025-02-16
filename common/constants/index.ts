@@ -1,13 +1,13 @@
 // 案件の状況定義
 export const ORDER_STATUS_DISP = {
-  1: { text: '案件登録中', icon: 'mdi-note-plus-outline', color: 'green' },
+  1: { text: '案件登録中', icon: 'mdi-note-plus-outline', color: 'white' },
   2: { text: '運送依頼中', icon: 'mdi-note-plus-outline', color: '#bae6fd' },
-  3: { text: '運送手配済', icon: 'mdi-bus', color: 'yellow-lighten-2' },
-  4: { text: '運送手配申込', icon: 'mdi-bus', color: 'green' },
-  5: { text: '運送手配引受完了', icon: 'mdi-bus', color: 'yellow-lighten-2' },
-  6: { text: '運送手配引受完了(支払い完了)', icon: 'mdi-bus', color: 'yellow-lighten-2' },
+  3: { text: '運送手配引受', icon: 'mdi-bus', color: 'yellow-lighten-2' },
+  4: { text: '申込完了(支払方法確定)', icon: 'mdi-bus', color: 'teal-lighten-1' },
+  5: { text: '運送完了(支払未済)', icon: 'mdi-bus', color: 'green' },
+  6: { text: '支払完了', icon: 'mdi-bus', color: 'brown-darken-1' },
   8: { text: '運送手配引受不可', icon: 'mdi-bus', color: 'grey' },
-  9: { text: '案件完了', icon: 'mdi-check-circle-outline', color: 'grey' },
+  9: { text: '案件完了', icon: 'mdi-check-circle-outline', color: 'blue-grey-darken-1' },
 }
 
 // 案件状況-申込会社
@@ -15,11 +15,13 @@ export const STATUS_DRAFT = '1'
 // 案件状況-依頼中
 export const STATUS_REQUEST = '2'
 // 案件状況-運送手配済
-export const STATUS_RESERVATION = '3'
-// 案件状況-運送手配申込
-export const STATUS_APPLICATION = '4'
-// 案件状況-手配確認完了
-export const STATUS_ARRANGEMENTS_COMPLETED = '5'
+export const STATUS_UNDERTAKE = '3'
+// 案件状況-支払方法確定
+export const STATUS_PAYMENT_METHOD_CONFIRMED = '4'
+
+// 案件状況-運送完了
+export const STATUS_TRANSPORTATION_COMPLETED = '5'
+
 // 案件状況-支払い完了
 export const STATUS_PAYMENT_COMPLETED = '6'
 
