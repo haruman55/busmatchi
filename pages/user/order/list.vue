@@ -18,20 +18,19 @@
     </v-container>
     <v-container class="fill-height align-center" fluid>
       <v-row no-gutters>
-        <v-col v-for="(order) in orderList" :key="order.id" align="center">
-
-          <v-card
-elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
-            :color="$Const.ORDER_STATUS_DISP[order.state].color" @click="selectOrder(order)">
-            <v-card-text class="text-h6"> {{ $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-text>
-            <v-card-text class="text-h5">{{ order.tourOrganization }}</v-card-text>
-            <v-card-text>日程:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ $Const.TIME_MINUTE_LIST.find(item => item.code === order.dispatchTimeMinute)?.disp ?? ''}}</v-card-text>
-            <v-card-text>申込担当:{{ order.applicant }}</v-card-text>
+        <v-col v-for="(order) in orderList" :key="order.id">
+          <v-card elevation="20" class="ma-2 pa-2 " height="250" width="350" @click="selectOrder(order)">
+            <v-card-item :class="'bg-' + $Const.ORDER_STATUS_DISP[order.state].color">{{
+              $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-item>
+            <v-card-text align="center" class="text-h5">{{ order.tourOrganization }}</v-card-text>
+            <v-card-text align="center">日程:{{ order.dispatchDate }} {{ order.dispatchTimeHour
+              }}:{{$Const.TIME_MINUTE_LIST.find(item => item.code === order.dispatchTimeMinute)?.disp ??
+              ''}}</v-card-text>
+            <v-card-text align="center">申込担当:{{ order.applicant }}</v-card-text>
           </v-card>
 
         </v-col>
       </v-row>
-
 
       <v-container class="fill-height align-center" fluid>
         <v-row>
@@ -42,6 +41,8 @@ elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
           </v-col>
         </v-row>
       </v-container>
+
+
 
     </v-container>
   </div>

@@ -18,17 +18,13 @@
     </v-container>
     <v-container class="fill-height align-center" fluid>
       <v-row no-gutters>
-        <v-col v-for="(order) in orderList" :key="order.id" align="center">
-
-          <v-card
-elevation="20" class="ma-2 pa-2 align-end" height="250" width="350"
-            :color="$Const.ORDER_STATUS_DISP[order.state].color" @click="selectOrder(order)">
-            <v-card-text class="text-h6"> {{ $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-text>
-            <v-card-text class="text-h5"> {{ order.applicantCompanyName }} {{ order.applicant }}</v-card-text>
-
-            <v-card-text>配車日時:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ order.dispDispatchTimeMinute
-              }}</v-card-text>
-            <!-- <v-card-text>配車場所:{{ order.deliveryLocation }}</v-card-text> -->
+        <v-col v-for="(order) in orderList" :key="order.id" >
+          <v-card elevation="20" class="ma-2 pa-2" height="250" width="350" @click="selectOrder(order)">
+            <v-card-item :class="'bg-' + $Const.ORDER_STATUS_DISP[order.state].color">{{
+              $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-item>
+            <v-card-text align="center" class="text-h5"> {{ order.applicantCompanyName }} {{ order.applicant }}</v-card-text>
+            <v-card-text align="center" >配車日時:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ order.dispDispatchTimeMinute
+            }}</v-card-text>
           </v-card>
 
         </v-col>
@@ -53,7 +49,7 @@ const keyUserId = userInfo.value.companyId
  */
 const getOrderDeliveryList = async () => {
 
-  const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_UNDERTAKE, $Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED,  $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
+  const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_UNDERTAKE, $Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
   const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
   const orderListArray = []
   for (let i = 0; i < orderList.length; i++) {
@@ -84,7 +80,7 @@ const getOrderDeliveryList = async () => {
       dispatchTimeHour: orderList[i].dispatchTimeHour,
       dispatchTimeMinute: orderList[i].dispatchTimeMinute,
       // 画面(一覧のカード)表示用に編集
-      dispDispatchTimeMinute:$Const.TIME_MINUTE_LIST.find(item => item.code === orderList[i].dispatchTimeMinute)?.disp ?? '',
+      dispDispatchTimeMinute: $Const.TIME_MINUTE_LIST.find(item => item.code === orderList[i].dispatchTimeMinute)?.disp ?? '',
 
       departureTimeHour: orderList[i].departureTimeHour,
       departureTimeMinute: orderList[i].departureTimeMinute,
