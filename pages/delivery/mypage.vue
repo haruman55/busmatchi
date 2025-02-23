@@ -33,39 +33,38 @@
     <v-container class="fill-height align-center" fluid>
       <v-row>
         <v-col cols="12" sm="3" md="3">
-          <v-card class="mx-auto" width="300" height="420" elevation="15" @click="showOrder">
-            <v-card-item title="案件" />
-
+          <v-card class="mx-auto" width="300" height="420" elevation="15" color="indigo" dark  @click="showOrder">
+            <v-card-item title="案件管理" />
             <v-card-text class="py-0">
               <v-row align="center" no-gutters>
                 <v-col class="text-h2" align="center" cols="6">
                   {{ orderList.length }}件
                 </v-col>
-                <v-col class="text-right" cols="6">
-                  <v-icon color="indigo" icon="mdi-note-plus-outline" size="70" />
-                </v-col>
-
               </v-row>
             </v-card-text>
+            <v-card-text class="py-0" align="right">
+            <v-img  width="200" height="300" src="/img/orderIcon.png"/>
+            </v-card-text>
+
           </v-card>
         </v-col>
         <v-col cols="12" sm="3" md="3">
-          <v-card class="mx-auto" width="300" height="420" elevation="15" @click="showReservation">
+          <v-card class="mx-auto" width="300" height="420" elevation="15" color="red-lighten-2" @click="showReservation">
             <v-card-item title="運行管理" />
 
             <v-card-text class="py-0">
-              <v-row align="center" no-gutters>
-                <v-col class="text-right" cols="6">
-                  <v-icon color="red" icon="mdi-bus" size="70" />
-                  <v-icon color="indigo" icon="mdi-card-account-details-outline" size="70" />
-                  <v-icon color="success" icon="mdi-human-female-dance" size="70" />
-                </v-col>
-              </v-row>
               <v-overlay :model-value="loading" class="align-center justify-center">
                 <v-progress-circular color="primary" size="150" width="20" indeterminate />
               </v-overlay>
 
             </v-card-text>
+            <v-card-text class="py-0" align="right">
+            <v-img  width="200" height="200" src="/img/reservationIcon.png"/>
+            <v-icon color="red" icon="mdi-bus" size="70" />
+                  <v-icon color="indigo" icon="mdi-card-account-details-outline" size="70" />
+                  <v-icon color="success" icon="mdi-human-female-dance" size="70" />
+            </v-card-text>
+
           </v-card>
         </v-col>
         <v-divider thickness="1" vertical />

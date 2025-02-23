@@ -33,25 +33,24 @@
     <v-container class="fill-height align-center" fluid>
       <v-row>
         <v-col cols="12" sm="4" md="4">
-          <v-card class="mx-auto" width="300" height="420" elevation="15" color="indigo" dark @click="showOrder">
-            <v-card-item title="案件" />
+          <v-card   class="mx-auto" width="300" height="420" elevation="15" color="indigo" dark @click="showOrder" >
+            <v-card-item title="案件管理" />
 
             <v-card-text class="py-0">
               <v-row align="center" no-gutters>
                 <v-col class="text-h2" align="center" cols="6">
                   {{ orderList.length }}件
                 </v-col>
-                <v-col class="text-right" cols="6">
-                  <v-icon icon="mdi-note-plus-outline" size="70" />
-                </v-col>
-
               </v-row>
+            </v-card-text>
+            <v-card-text class="py-0" align="right">
+            <v-img  width="200" height="300" src="/img/orderIcon.png"/>
             </v-card-text>
           </v-card>
 
         </v-col>
         <v-col cols="12" sm="4" md="4">
-          <v-card class="mx-auto" width="300" height="420" elevation="15" @click="showContract">
+          <v-card class="mx-auto" width="300" height="420" elevation="15" color="#B9F6CA" @click="showContract">
             <v-card-item title="契約管理" />
 
             <v-card-text class="py-0">
@@ -59,12 +58,12 @@
                 <v-col class="text-h2" align="center" cols="6">
                   {{ contractList.length }}件
                 </v-col>
-                <v-col class="text-right" cols="6">
-                  <v-icon color="green" icon="mdi-check-circle-outline" size="70" />
-                </v-col>
-
               </v-row>
             </v-card-text>
+            <v-card-text class="py-0" align="right">
+            <v-img  width="200" height="300" src="/img/contractIcon.png"/>
+            </v-card-text>
+
           </v-card>
 
         </v-col>
