@@ -1,69 +1,39 @@
 <template>
-  <div>
-    <v-container fluid>
-      <v-row>
-        <v-col class="text-h5" align="center" />
-      </v-row>
-    </v-container>
+  <v-container class="pa-0" fluid>
+    <v-row class="mb-10 bg-white" no-gutters style="height: 450px">
+      <v-col class="mx-auto d-flex align-center" style="max-width: 1200px">
+        <div class="w-50 px-8">
+          <p class="mb-2 text-h4">旅の感動をともに創る、</p>
+          <p class="mb-8 text-h4">最高のパートナー。</p>
+          <v-btn class="mr-2" variant="flat" color="grey-darken-3" size="x-large" rounded @click="newEntry">
+            今すぐ始める
+          </v-btn>
+          <v-btn class="ml-2" variant="outlined" color="grey-darken-3" size="x-large" rounded>始め方ガイド</v-btn>
+        </div>
+        <div class="w-50 px-8">
+          <img class="mx-auto" width="100%" src="/img/bus_mono.png" />
+        </div>
+      </v-col>
+    </v-row>
 
-    <v-form @submit.prevent>
-      <v-container fluid >
-        <v-row>
-          <v-col>
-            <v-card class="mx-auto" max-width="700" height="250" image="/img/top.png" />
-            <v-card class="mx-auto " max-width="600" max-height="250">
-              <v-card-text>
-                <v-card-actions>
-                  <v-btn
-size="x-large" block color="teal-accent-2" variant="flat" elevation="8" rounded="xl"
-                    @click="login">
-                    ログイン
-                  </v-btn>
-                </v-card-actions>
-              </v-card-text>
-              <v-card-text>
-                <v-row>
-                  <v-col md="12" align="center">
-                    <p class="white--text">↓ 初めてご利用の方はこちら ↓</p>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions class="justify-center">
-                <v-btn variant="outlined" color="" @click="newEntry">
-                  アカウントを作成する
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-
-          </v-col>
-        </v-row>
-
-      </v-container>
-    </v-form>
-  </div>
+    <v-row no-gutters>
+      <v-col class="mx-auto pa-8" style="max-width: 1200px">
+        <h3 class="font-weight-bold text-h4">busmatchiとは？</h3>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
 <script setup>
 const router = useRouter()
-
-/**
- * ログイン画面表示
- */
-const login =  () => {
-
-  // 画面遷移
-  router.push('/login')
-
-}
 
 /**
  * 新規ユーザ登録表示
  */
 const newEntry = () => {
   // 画面遷移
-  router.push('/user/entrychoice')
+  router.push('/entry')
 }
-
 </script>
-<style scoped>
 
-</style>
+<style scoped></style>
