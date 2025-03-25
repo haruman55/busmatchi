@@ -1,0 +1,25 @@
+{
+  "name": "Node.js & TypeScript",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
+  "runArgs": ["--name", "busmatchi"],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Nuxtr.nuxt-vscode-extentions",
+        "dbaeumer.vscode-eslint",
+        "vue.volar",
+        "hollowtree.vue-snippets",
+        "dariofuzinato.vue-peek",
+        "esbenp.prettier-vscode",
+        "formulahendry.auto-rename-tag",
+        "xabikos.javascriptsnippets",
+        "pkief.material-icon-theme"
+      ]
+    }
+  },
+  "onCreateCommand": "npm install -g firebase-tools@9.7.0",
+  "appPort": [3000]
+}
