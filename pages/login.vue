@@ -131,7 +131,7 @@ const login = async () => {
   const editUser = {
     id: loginCompany.id,
     category: loginCompany.category,
-    companyId: loginCompany.companyId,
+    companyId: loginUser.companyId,
     companyName: loginCompany.companyName,
     companyAddr: loginCompany.companyAddr,
     companyTel: loginCompany.companyTel,
