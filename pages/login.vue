@@ -1,148 +1,151 @@
 <template>
-  <div>
-    <v-container class="align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-            <v-card-text class="text-h6">
-              <v-icon left x-large @click="back">
-                mdi-close
-              </v-icon>
-              ログイン
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+          :items="[
+            { title: 'ホーム', disabled: false, to: '/' },
+            { title: 'ログイン', disabled: true },
+          ]"
+        >
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-form @submit.prevent="login">
+          <v-card class="mx-auto py-14" flat rounded="xl" max-width="500">
+            <v-card-title class="pa-0 pb-6 text-subtitle-1 text-center">
+              <v-icon class="mb-4" size="80">mdi-bus</v-icon>
+              <p>パスワードの入力、または信頼済みの</p>
+              <p>端末でログインしてください。</p>
+            </v-card-title>
+
+            <v-card-text class="d-flex flex-column align-center">
+              <!-- <v-text-field
+                v-model="companyId"
+                label="会社ID"
+                prepend-inner-icon="mdi-office-building-outline"
+                :error-messages="idError"
+                width="400"
+              /> -->
+              <v-text-field
+                v-model="email"
+                label="ユーザーID（メールアドレス）"
+                prepend-inner-icon="mdi-account-outline"
+                :error-messages="mailError"
+                width="400"
+              />
+              <v-text-field
+                v-model="pass"
+                label="password"
+                prepend-inner-icon="mdi-lock-outline"
+                :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="show ? 'text' : 'password'"
+                :error-messages="passError"
+                width="400"
+                @click:append="show = !show"
+              />
             </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
 
-
-    <v-form @submit.prevent>
-      <v-container fluid>
-        <v-row>
-          <v-col>
-            <v-card class="mx-auto " max-width="600">
-              <v-card-text>
-                <v-row>
-                  <v-col>
-                    <v-text-field v-model="companyId" label="id" type="text" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-text-field
-v-model="pass" label="password" :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                      :type="show ? 'text' : 'password'" name="input-10-2" class="input-group--focused"
-                      @click:append="show = !show" />
-                  </v-col>
-                </v-row>
-                <v-card-actions>
-                  <v-btn
-size="x-large" block color="teal-accent-2" variant="flat" elevation="8" rounded="xl"
-                    @click="login">
-                    ログイン
-                  </v-btn>
-                </v-card-actions>
-              </v-card-text>
-
-
-
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-overlay :model-value="loading" class="align-center justify-center">
-          <v-progress-circular color="primary" size="80" width="20" indeterminate />
-        </v-overlay>
-
-
-      </v-container>
-    </v-form>
-  </div>
+            <v-card-actions class="d-flex justify-center">
+              <v-btn
+                variant="flat"
+                color="primary"
+                rounded="xl"
+                size="x-large"
+                :disabled="loading"
+                :loading="loading"
+                width="400"
+                type="submit"
+              >
+                ログイン
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-form>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
 <script setup>
 const { $Const } = useNuxtApp()
 const { $swal } = useNuxtApp()
 const router = useRouter()
 // DB接続
-const userData = useUserData();
+const userData = useUserData()
+const db = useFirestore()
 
-const companyId = ref('')
+const email = ref('')
 const pass = ref('')
 const show = ref(false)
 const loading = ref(false)
+const mailError = ref('')
+const passError = ref('')
 
 /**
  * ログイン処理
  */
 const login = async () => {
-  loading.value = true;
-  // validate
+  loading.value = true
+
   // 必須入力チェック
-  if (companyId.value === null || companyId.value === '') {
-    $swal.fire({
-      text: 'ID(会社ID)を入力してください。',
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    loading.value = false;
+  mailError.value = ''
+  passError.value = ''
+  if (email.value === null || email.value === '') mailError.value = '入力してください。'
+  if (pass.value === null || pass.value === '') passError.value = '入力してください。'
+  if (mailError.value || passError.value) return (loading.value = false)
+
+  // ユーザー情報データ取得
+  const loginUser = await db.getQueryDocument({
+    path: 'user',
+    where: [{ fieldPath: 'email', opStr: '==', value: email.value }],
+    limit: 1,
+  })
+  if (!loginUser) {
+    mailError.value = '指定のユーザーが存在しません。'
+    loading.value = false
     return
   }
-  if (pass.value === null || pass.value === '') {
-    $swal.fire({
-      text: 'パスワードを入力してください。',
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    loading.value = false;
+  if (pass.value !== loginUser.pass) {
+    passError.value = 'パスワードが間違っています。'
+    loading.value = false
     return
   }
 
-
-  // ユーザ情報データ取得
-  const loginUser = await userData.getUser(companyId.value, pass.value)
-  if (loginUser == null) {
-    $swal.fire({
-      text: '指定のユーザが存在しません。',
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    loading.value = false;
-    return
-  }
+  // 会社情報データ取得
+  const loginCompany = await db.getDocument({ path: 'company', docId: loginUser.companyId })
 
   // user情報の状態管理
   const userState = useUserInfo()
 
   // ログインで取得したユーザ情報をstateに設定する
   const editUser = {
-    id: loginUser.id,
-    category: loginUser.category,
-    companyId: loginUser.companyId,
-    companyName: loginUser.companyName,
-    companyAddr: loginUser.companyAddr,
-    companyTel: loginUser.companyTel,
-    companyFax: loginUser.companyFax,
-    companyEmail: loginUser.companyEmail,
+    id: loginCompany.id,
+    category: loginCompany.category,
+    companyId: loginCompany.companyId,
+    companyName: loginCompany.companyName,
+    companyAddr: loginCompany.companyAddr,
+    companyTel: loginCompany.companyTel,
+    companyFax: loginCompany.companyFax,
+    companyEmail: loginUser.email,
     pass: loginUser.pass,
-
   }
   userState.editUserInfo(editUser)
 
   // 画面遷移
-  if (loginUser.category == $Const.CATEGORY_APPLICANT) {
+  if (loginCompany.category == $Const.CATEGORY_APPLICANT) {
     router.push('/user/mypage')
   } else {
     router.push('/delivery/mypage')
-
   }
-
 }
-/** 前の画面へ戻る */
-const back = () => {
-  // 画面遷移
-  router.push('/')
-
-}
-
-
 </script>
