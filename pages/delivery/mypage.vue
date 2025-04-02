@@ -152,7 +152,7 @@ const router = useRouter()
 const { $Const } = useNuxtApp()
 // user情報の状態管理
 const { userInfo } = useUserInfo()
-const keyUserDocId = userInfo.value.id
+// const keyUserDocId = userInfo.value.id
 const keyUserId = userInfo.value.companyId
 const loading = ref(false)
 // ユーザ操作情報の状態管理
@@ -162,7 +162,7 @@ const { editActionInfo } = useAction()
 const userData = useUserData();
 // 登録案件情報取得
 const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_UNDERTAKE, $Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
-const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
+const orderList = await userData.getOrderDeliveryList(keyUserId, statusArray);
 
 // 保有駐車地情報取得
 const parkingList = await userData.getParkingList(keyUserId);
