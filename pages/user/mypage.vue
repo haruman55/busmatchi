@@ -1,138 +1,101 @@
 <template>
-  <div>
-    <br>
-    <!-- <v-container class="fill-height align-center" fluid>
-      <v-row><v-col><v-card-title class="text-h5"  >マイページ</v-card-title></v-col></v-row>
-      </v-container> -->
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col cols="12">
-          <v-card-title><v-icon color="red">mdi-chat-outline</v-icon>インフォメーション</v-card-title>
-          <v-card class="overflow-y-auto overflow-x-hidden">
-            <v-row>
-              <v-col>
-                <a href="" @click.prevent.stop="showInformation()">XXXXX社が運送手配完了しました。</a>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <a href="" @click.prevent.stop="showInformation()">XXXXX社から運送手配が断られました。</a>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <a href="" @click.prevent.stop="showInformation()">XXXXX社との支払確認が完了しました。</a>
-              </v-col>
-            </v-row>
-
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col cols="12" sm="4" md="4">
-          <v-card   class="mx-auto" width="300" height="420" elevation="15" color="indigo" dark @click="showOrder" >
-            <v-card-item title="案件管理" />
-
-            <v-card-text class="py-0">
-              <v-row align="center" no-gutters>
-                <v-col class="text-h2" align="center" cols="6">
-                  {{ orderList.length }}件
-                </v-col>
-              </v-row>
-            </v-card-text>
-            <v-card-text class="py-0" align="right">
-            <v-img  width="200" height="300" src="/img/orderIcon.png"/>
-            </v-card-text>
-          </v-card>
-
-        </v-col>
-        <v-col cols="12" sm="4" md="4">
-          <v-card class="mx-auto" width="300" height="420" elevation="15" color="#B9F6CA" @click="showContract">
-            <v-card-item title="契約管理" />
-
-            <v-card-text class="py-0">
-              <v-row align="center" no-gutters>
-                <v-col class="text-h2" align="center" cols="6">
-                  {{ contractList.length }}件
-                </v-col>
-              </v-row>
-            </v-card-text>
-            <v-card-text class="py-0" align="right">
-            <v-img  width="200" height="300" src="/img/contractIcon.png"/>
-            </v-card-text>
-
-          </v-card>
-
-        </v-col>
-        <v-divider thickness="1" vertical />
-
-        <v-col cols="12" sm="4" md="4">
-          <v-card class="mx-auto" width="300" height="200" elevation="15" @click="showCustomer">
-            <v-card-item title="ご利用顧客" />
-
-            <v-card-text class="py-0">
-              <v-row align="center" no-gutters>
-                <v-col class="text-h2" align="center" cols="6">
-                  {{ customerList.length }}社
-                </v-col>
-                <v-icon color="yellow" icon="mdi-card-account-details-outline" size="70" />
-
-              </v-row>
-            </v-card-text>
-          </v-card>
-          <br>
-
-          <v-card class="mx-auto" width="300" height="200" elevation="15">
-            <v-card-item title="運送引受会社" />
-
-            <v-card-text class="py-0">
-              <v-row align="center" no-gutters>
-                <v-col class="text-h2" align="center" cols="6">
-                  {{ deliveryUserList.length }}社
-                </v-col>
-                <v-icon color="red" icon="mdi-bus" size="70" />
-
-              </v-row>
-            </v-card-text>
-          </v-card>
-
-        </v-col>
-      </v-row>
-    </v-container>
-
-
-    <br>
-    <v-divider />
-    <!-- <v-container class="fill-height align-center" fluid>
-      <v-row align="center">
-      <v-col >
-
-      <v-card class="mx-auto" width="400" height="150" elevation="15">
-        <v-card-item title="運送引受会社" />
-
-        <v-card-text class="py-0">
-          <v-row align="center" no-gutters>
-            <v-col class="text-h2" align="center" cols="6">
-              {{ deliveryUserList.length }}社
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col cols="12">
+        <v-card-title><v-icon color="red">mdi-chat-outline</v-icon>インフォメーション</v-card-title>
+        <v-card class="overflow-y-auto overflow-x-hidden">
+          <v-row>
+            <v-col>
+              <a href="" @click.prevent.stop="showInformation()">XXXXX社が運送手配完了しました。</a>
             </v-col>
-            <v-icon color="red" icon="mdi-bus" size="70" />
-
           </v-row>
-        </v-card-text>
-      </v-card>
+          <v-row>
+            <v-col>
+              <a href="" @click.prevent.stop="showInformation()">XXXXX社から運送手配が断られました。</a>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <a href="" @click.prevent.stop="showInformation()">XXXXX社との支払確認が完了しました。</a>
+            </v-col>
+          </v-row>
+
+        </v-card>
       </v-col>
-      </v-row>
+    </v-row>
 
+    <v-row>
+      <v-col cols="12" sm="4" md="4">
+        <v-card class="mx-auto" width="300" height="420" elevation="15" color="indigo" dark @click="showOrder">
+          <v-card-item title="案件管理" />
 
+          <v-card-text class="py-0">
+            <v-row align="center" no-gutters>
+              <v-col class="text-h2" align="center" cols="6">
+                {{ orderList.length }}件
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-text class="py-0" align="right">
+            <v-img width="200" height="300" src="/img/orderIcon.png" />
+          </v-card-text>
+        </v-card>
 
-    </v-container> -->
-    <v-divider />
+      </v-col>
+      <v-col cols="12" sm="4" md="4">
+        <v-card class="mx-auto" width="300" height="420" elevation="15" color="#B9F6CA" @click="showContract">
+          <v-card-item title="契約管理" />
 
+          <v-card-text class="py-0">
+            <v-row align="center" no-gutters>
+              <v-col class="text-h2" align="center" cols="6">
+                {{ contractList.length }}件
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-text class="py-0" align="right">
+            <v-img width="200" height="300" src="/img/contractIcon.png" />
+          </v-card-text>
 
-  </div>
+        </v-card>
+
+      </v-col>
+      <v-divider thickness="1" vertical />
+
+      <v-col cols="12" sm="4" md="4">
+        <v-card class="mx-auto" width="300" height="200" elevation="15" @click="showCustomer">
+          <v-card-item title="ご利用顧客" />
+
+          <v-card-text class="py-0">
+            <v-row align="center" no-gutters>
+              <v-col class="text-h2" align="center" cols="6">
+                {{ customerList.length }}社
+              </v-col>
+              <v-icon color="yellow" icon="mdi-card-account-details-outline" size="70" />
+
+            </v-row>
+          </v-card-text>
+        </v-card>
+        <br>
+
+        <v-card class="mx-auto" width="300" height="200" elevation="15">
+          <v-card-item title="運送引受会社" />
+
+          <v-card-text class="py-0">
+            <v-row align="center" no-gutters>
+              <v-col class="text-h2" align="center" cols="6">
+                {{ deliveryUserList.length }}社
+              </v-col>
+              <v-icon color="red" icon="mdi-bus" size="70" />
+
+            </v-row>
+          </v-card-text>
+        </v-card>
+
+      </v-col>
+    </v-row>
+
+  </v-container>
 </template>
 <script setup>
 const { $swal } = useNuxtApp()
@@ -153,8 +116,8 @@ const customerList = await userData.getUserCustomerList(userInfo.value.companyId
 const orderList = await userData.getOrderList(userInfo.value.companyId);
 
 // 支払～完了までの登録案件情報取得
-const statusArray = [ $Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
-const contractList = await userData.getOrderList(userInfo.value.companyId,statusArray);
+const statusArray = [$Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
+const contractList = await userData.getOrderList(userInfo.value.companyId, statusArray);
 
 // 運送引受会社情報(マスタ)取得
 const deliveryUserList = await userData.getDeliveryUser();

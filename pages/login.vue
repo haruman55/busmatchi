@@ -3,11 +3,10 @@
     <v-row no-gutters>
       <v-col>
         <v-breadcrumbs
-          :items="[
-            { title: 'ホーム', disabled: false, to: '/' },
-            { title: 'ログイン', disabled: true },
-          ]"
-        >
+:items="[
+          { title: 'ホーム', disabled: false, to: '/' },
+          { title: 'ログイン', disabled: true },
+        ]">
           <template #prepend>
             <v-icon icon="mdi-home" size="small" />
           </template>
@@ -37,35 +36,18 @@
                 width="400"
               /> -->
               <v-text-field
-                v-model="email"
-                label="ユーザーID（メールアドレス）"
-                prepend-inner-icon="mdi-account-outline"
-                :error-messages="mailError"
-                width="400"
-              />
+v-model="email" label="ユーザーID（メールアドレス）" prepend-inner-icon="mdi-account-outline"
+                :error-messages="mailError" width="400" />
               <v-text-field
-                v-model="pass"
-                label="password"
-                prepend-inner-icon="mdi-lock-outline"
-                :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                :type="show ? 'text' : 'password'"
-                :error-messages="passError"
-                width="400"
-                @click:append="show = !show"
-              />
+v-model="pass" label="password" prepend-inner-icon="mdi-lock-outline"
+                :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'" :type="show ? 'text' : 'password'"
+                :error-messages="passError" width="400" @click:append="show = !show" />
             </v-card-text>
 
             <v-card-actions class="d-flex justify-center">
               <v-btn
-                variant="flat"
-                color="primary"
-                rounded="xl"
-                size="x-large"
-                :disabled="loading"
-                :loading="loading"
-                width="400"
-                type="submit"
-              >
+variant="flat" color="primary" rounded="xl" size="x-large" :disabled="loading" :loading="loading"
+                width="400" type="submit">
                 ログイン
               </v-btn>
             </v-card-actions>
@@ -137,6 +119,12 @@ const login = async () => {
     companyTel: loginCompany.companyTel,
     companyFax: loginCompany.companyFax,
     companyEmail: loginUser.email,
+    businessPermitDate: '',
+    businessPermitNo: '',
+    businessLicenseArea: '',
+    name: loginUser.name,
+    email: loginUser.email,
+    auth: loginUser.auth,
     pass: loginUser.pass,
   }
   userState.editUserInfo(editUser)

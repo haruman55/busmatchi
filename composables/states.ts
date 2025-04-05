@@ -8,6 +8,15 @@ type UserInfo = {
   companyTel: string;
   companyFax: string;
   companyEmail: string;
+  // 以降は運送引受会社の設定値
+  businessPermitDate: string
+  businessPermitNo: string
+  businessLicenseArea: string
+  // 以降は利用者個人情報
+  name: string
+  // ログイン時のID
+  email: string
+  auth: number
   pass: string;
 };
 
@@ -22,6 +31,12 @@ export const useUserInfo = () => {
     companyTel: '',
     companyFax: '',
     companyEmail: '',
+    businessPermitDate: '',
+    businessPermitNo: '',
+    businessLicenseArea: '',
+    name: '',
+    email: '',
+    auth: 0,
     pass: '',
   }))
 
@@ -52,8 +67,13 @@ const clearUserInfo = (userInfo: Ref<UserInfo>) => () => {
     companyTel: '',
     companyFax: '',
     companyEmail: '',
+    businessPermitDate: '',
+    businessPermitNo: '',
+    businessLicenseArea: '',
+    name: '',
+    email: '',
+    auth: 0,
     pass: '',
-
   }
   return {
     userInfo
@@ -247,7 +267,7 @@ export const useOrderInfo = () => {
     applicantCompanyEmail: '',
     emergencyContact: '',
     tourOrganization: '',
-    customerRemarks:'',
+    customerRemarks: '',
     passengers: 0,
     vehicleTypeLiftAmount: 0,
     vehicleTypeMediumAmount: 0,
@@ -261,13 +281,13 @@ export const useOrderInfo = () => {
     departureTimeHour: 0,
     departureTimeMinute: 0,
     deliveryLocation: '',
-    selectPayment:  '',
+    selectPayment: '',
     selectPaymentOther: '',
     selectDiscount: [],
     selectDiscountOther: '',
     orderAmount: '',
     actualCost: '',
-    paymentDueDate:'',
+    paymentDueDate: '',
     specialTerms: '',
     remarks: '',
 
@@ -307,7 +327,7 @@ const clearOrderInfo = (orderInfo: Ref<OrderInfo>) => () => {
     applicantCompanyEmail: '',
     emergencyContact: '',
     tourOrganization: '',
-    customerRemarks:'',
+    customerRemarks: '',
     passengers: 0,
     vehicleTypeLiftAmount: 0,
     vehicleTypeMediumAmount: 0,
@@ -321,13 +341,13 @@ const clearOrderInfo = (orderInfo: Ref<OrderInfo>) => () => {
     departureTimeHour: 0,
     departureTimeMinute: 0,
     deliveryLocation: '',
-    selectPayment:  '',
+    selectPayment: '',
     selectPaymentOther: '',
     selectDiscount: [],
     selectDiscountOther: '',
     orderAmount: '',
     actualCost: '',
-    paymentDueDate:'',
+    paymentDueDate: '',
     specialTerms: '',
     remarks: '',
     customerId: '',
@@ -441,7 +461,7 @@ export const useOrderOperationInfo = () => {
     endDate: '',
     endingTime: '',
     endingTimeHour: 0,
-    endingTimeMinute: 0,  
+    endingTimeMinute: 0,
     terminalLocation: '',
 
   }));
@@ -477,7 +497,7 @@ const clearOrderOperationInfo = (orderOperationInfo: Ref<OrderOperationInfo>) =>
     endDate: '',
     endingTime: '',
     endingTimeHour: 0,
-    endingTimeMinute: 0,  
+    endingTimeMinute: 0,
     terminalLocation: '',
 
   };
@@ -803,3 +823,86 @@ const clearBusInfo = (busInfo: Ref<BusInfo>) => () => {
     busInfo
   }
 };
+
+// 利用者登録されたユーザ(メンバー)情報オブジェクト
+type MemberInfo = {
+  id: string;
+  category: string;
+  companyId: string;
+  companyName: string;
+  companyAddr: string;
+  companyTel: string;
+  companyFax: string;
+  companyEmail: string;
+  // 以降は運送引受会社の設定値
+  businessPermitDate: string
+  businessPermitNo: string
+  businessLicenseArea: string
+  // 以降は利用者個人情報
+  name: string
+  // ログイン時のID
+  email: string
+  auth: number
+  pass: string;
+
+};
+
+/** 利用者登録されたユーザ(メンバー)情報を扱うState */
+export const useMemberInfo = () => {
+  const memberInfo = useState<MemberInfo>('member', () => ({
+    id: '',
+    category: '',
+    companyId: '',
+    companyName: '',
+    companyAddr: '',
+    companyTel: '',
+    companyFax: '',
+    companyEmail: '',
+    businessPermitDate: '',
+    businessPermitNo: '',
+    businessLicenseArea: '',
+    name: '',
+    email: '',
+    auth: 0,
+    pass: '',
+  }))
+
+  return {
+    memberInfo,
+    editMemberInfo: editMemberInfo(memberInfo),
+    clearMemberInfo: clearMemberInfo(memberInfo),
+  }
+}
+
+/** 利用者登録されたユーザ(メンバー)情報の編集を行うSetter */
+const editMemberInfo = (memberInfo: Ref<MemberInfo>) => (editMemberInfo: MemberInfo) => {
+  memberInfo.value = editMemberInfo
+  return {
+    memberInfo
+  }
+}
+
+
+/** 利用者登録されたユーザ(メンバー)情報の内容を初期化する */
+const clearMemberInfo = (memberInfo: Ref<MemberInfo>) => () => {
+  memberInfo.value = {
+    id: '',
+    category: '',
+    companyId: '',
+    companyName: '',
+    companyAddr: '',
+    companyTel: '',
+    companyFax: '',
+    companyEmail: '',
+    businessPermitDate: '',
+    businessPermitNo: '',
+    businessLicenseArea: '',
+    name: '',
+    email: '',
+    auth: 0,
+    pass: '',
+  }
+  return {
+    memberInfo
+  }
+}
