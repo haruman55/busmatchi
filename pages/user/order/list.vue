@@ -1,51 +1,47 @@
 <template>
-  <div>
-    <v-container fluid class="bg-grey-lighten-4 mb-6">
-      <v-row justify="center">
-        <v-col>
-          <v-sheet>
-            <v-card-text class="text-h5 ">
-              <v-icon left x-large @click="back">
-                mdi-close
-              </v-icon>
-              案件一覧
-            </v-card-text>
-            <v-divider :thickness="2" class="border-opacity-100" />
-          </v-sheet>
-        </v-col>
-      </v-row>
-      <v-divider />
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col v-for="(order) in orderList" :key="order.id">
-          <v-card elevation="20" class="ma-2 pa-2 " height="250" width="350" @click="selectOrder(order)">
-            <v-card-item :class="'bg-' + $Const.ORDER_STATUS_DISP[order.state].color">{{
-              $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-item>
-            <v-card-text align="center" class="text-h5">{{ order.tourOrganization }}</v-card-text>
-            <v-card-text align="center">日程:{{ order.dispatchDate }} {{ order.dispatchTimeHour
-              }}:{{$Const.TIME_MINUTE_LIST.find(item => item.code === order.dispatchTimeMinute)?.disp ??
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: false, to: '/user/mypage' },
+          { title: '案件管理', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
+
+    <v-row no-gutters>
+      <v-col v-for="(order) in orderList" :key="order.id">
+        <v-card elevation="20" class="ma-2 pa-2 " height="250" width="350" @click="selectOrder(order)">
+          <v-card-item :class="'bg-' + $Const.ORDER_STATUS_DISP[order.state].color">{{
+            $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-item>
+          <v-card-text align="center" class="text-h5">{{ order.tourOrganization }}</v-card-text>
+          <v-card-text align="center">日程:{{ order.dispatchDate }} {{ order.dispatchTimeHour
+          }}:{{$Const.TIME_MINUTE_LIST.find(item => item.code === order.dispatchTimeMinute)?.disp ??
               ''}}</v-card-text>
-            <v-card-text align="center">申込担当:{{ order.applicant }}</v-card-text>
-          </v-card>
+          <v-card-text align="center">申込担当:{{ order.applicant }}</v-card-text>
+        </v-card>
 
-        </v-col>
-      </v-row>
+      </v-col>
+    </v-row>
 
-      <v-container class="fill-height align-center" fluid>
-        <v-row>
-          <v-col cols="12" sm="3" md="3">
-            <v-btn size="x-large" value="add" color="indigo" @click="addOrder">
-              <v-icon>mdi-plus</v-icon>新規登録
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
+    <v-row>
+      <v-col cols="12" sm="3" md="3">
+        <v-btn size="x-large" value="add" color="indigo" @click="addOrder">
+          <v-icon>mdi-plus</v-icon>新規登録
+        </v-btn>
+      </v-col>
+    </v-row>
 
 
-
-    </v-container>
-  </div>
+  </v-container>
 </template>
 <script setup>
 const router = useRouter()

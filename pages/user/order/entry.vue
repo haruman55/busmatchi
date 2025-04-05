@@ -1,5 +1,28 @@
 <template>
-  <div>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: true },
+          { title: '案件管理', disabled: false, click: () => back() },
+          { title: '案件登録', disabled: true },]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+          <template #item="{ item }">
+            <v-breadcrumbs-item :disabled="item.disabled" @click="item.click && item.click()">
+              {{ item.title }}
+            </v-breadcrumbs-item>
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
+
+    <!-- <div>
     <v-container class="fill-height align-center" fluid>
       <v-row no-gutters>
         <v-col>
@@ -11,440 +34,427 @@
           </v-card-text>
         </v-col>
       </v-row>
-    </v-container>
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-card variant="outlined" class="color-outline" elevation="3">
-            <v-container fluid>
-              <v-card-title class="color-title">申込者情報</v-card-title>
-              <v-row>
+    </v-container> -->
+    <!-- <v-container> -->
+    <v-row no-gutters>
+      <v-col>
+        <v-card variant="outlined" class="color-outline" elevation="3">
 
-                <v-col cols="12" sm="6" md="6">
-                  <v-text-field v-model="applicant" label="申込担当者名" outlined />
+          <v-container fluid>
+            <v-card-title class="color-title">申込者情報</v-card-title>
+            <v-row>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field v-model="applicant" label="申込担当者名" outlined />
 
-                </v-col>
-                <v-col align="center" cols="12" sm="6" md="6">
-                  <v-text-field v-model="emergencyContact" label="緊急連絡先" outlined />
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-card variant="outlined" class="color-outline" elevation="3">
-            <v-container fluid>
-              <v-row>
-                <v-card-title class="color-title">お客様情報</v-card-title>
-                <v-btn rounded dark color="yellow" class="mt-2 mb-2 pr-8 pl-8" @click="customerSerch">
-                  顧客選択
-                </v-btn>
+              </v-col>
+              <v-col align="center" cols="12" sm="6" md="6">
+                <v-text-field v-model="emergencyContact" label="緊急連絡先" outlined />
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card variant="outlined" class="color-outline" elevation="3">
+          <v-container fluid>
+            <v-row>
+              <v-card-title class="color-title">お客様情報</v-card-title>
+              <v-btn rounded dark color="yellow" class="mt-2 mb-2 pr-8 pl-8" @click="customerSerch">
+                顧客選択
+              </v-btn>
 
-              </v-row>
-              <v-row>
-                <v-col v-if="applicantCustomerId != '' && applicantCustomerId != null" cols="12" sm="6" md="6">
-                  <v-card color="white" class="mx-auto" elevation="15">
-                    <v-card-item class="text-center text-h4">
-                      {{ applicantCustomerInfo.customerName }}
-                    </v-card-item>
-                    <v-card-item class="text-left" prepend-icon="mdi-map-marker-outline">
-                      {{ applicantCustomerInfo.customerAddr }}
-                    </v-card-item>
-                    <v-card-item class="text-left">
-                      <v-icon>mdi-phone-outline</v-icon>{{ applicantCustomerInfo.customerTel }}
-                      <v-icon>mdi-fax</v-icon> {{ applicantCustomerInfo.customerFax }}
-                    </v-card-item>
-                    <v-card-item class="text-left">
-                      <v-icon>mdi-email-outline</v-icon>{{ applicantCustomerInfo.customerMail }}
-                    </v-card-item>
-                  </v-card>
-                </v-col>
-                <v-col cols="12" sm="6" md="6">
-                  <v-text-field v-model="tourOrganization" label="団体名" outlined />
-                  <v-textarea v-model="customerRemarks" label="備考" rows="2" outlined />
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-    <br>
-    <v-container class="align-center">
-      <v-row>
-        <v-col>
-          <v-card variant="outlined" class="color-outline" elevation="3">
-            <v-container fluid>
-              <v-card-title class="color-title">申込情報</v-card-title>
-
-              <v-row>
-                <v-col cols="12" sm="2" md="2">申込乗車人員</v-col>
-                <v-col cols="12" sm="2" md="2"><v-text-field
-v-model.number="passengers" label="申込乗車人数" type="number"
-                    outlined min="0" step="1" /></v-col>
-              </v-row>
-              <v-row justify="center" dense>
-                <v-col cols="12" sm="2" md="2">乗車定員別又は<br>車種別車両数</v-col>
-                <v-col><v-text-field
-v-model.number="vehicleTypeLiftAmount" label="リフト-車両数" type="number" outlined
-                    min="0" step="1" suffix="両" /></v-col>
-                <v-col><v-text-field
-v-model.number="vehicleTypeMediumAmount" label="中型車-車両数" type="number" outlined
-                    min="0" step="1" suffix="両" /></v-col>
-                <v-col><v-text-field
-v-model.number="vehicleTypeSmallAmount" label="小型車-車両数" type="number" outlined
-                    min="0" step="1" suffix="両" /></v-col>
-                <v-col><v-text-field
-v-model.number="vehicleTypeMicroAmount" label="マイクロ-車両数" type="number" outlined
-                    min="0" step="1" suffix="両" /></v-col>
-              </v-row>
-              <v-row dense>
-                <v-col cols="12" sm="2" md="2">車両合計</v-col><v-col cols="12" sm="2" md="2">{{ totalvehicleAmount
-                  }}両</v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="2" md="2">配車日時
-                </v-col>
-                <v-col cols="12" sm="3" md="3" class="ma-2 pa-2">
-                  <datepicker
-v-model="dispatchDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="false"
-                    format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
-                  <v-select
-v-model="dispatchTimeHour" label="時間" item-title="disp" item-value="code"
-                    :items="$Const.TIME_HOUR_LIST" />
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
-
-                  <v-select
-v-model="dispatchTimeMinute" label="分" item-title="disp" item-value="code"
-                    :items="$Const.TIME_MINUTE_LIST" />
-                </v-col>
-              </v-row>
-
-              <v-row>
-                <v-col cols="12" sm="2" md="2">出発時間
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
-                  <v-select
-v-model="departureTimeHour" label="時間" item-title="disp" item-value="code"
-                    :items="$Const.TIME_HOUR_LIST" />
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
-
-                  <v-select
-v-model="departureTimeMinute" label="分" item-title="disp" item-value="code"
-                    :items="$Const.TIME_MINUTE_LIST" />
-                </v-col>
-              </v-row>
-
-
-
-              <v-row>
-                <v-col cols="12" sm="2" md="2">配車場所</v-col>
-                <v-col cols="12" sm="8" md="8">
-                  <v-text-field v-model="deliveryLocation" label="配車場所" type="text" />
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-card variant="outlined" class="color-outline" elevation="3">
-            <v-container fluid>
-
-              <v-row>
-                <v-card-title class="color-title">運送引受会社</v-card-title>
-                <v-btn
-                  v-if="orderState == $Const.STATUS_DRAFT || orderState == $Const.STATUS_ORDER_DENY || orderState == ''"
-                  rounded dark color="yellow" class="mt-2 mb-2 pr-8 pl-8" @click="deliverySerch">
-                  運送引受会社選択
-                </v-btn>
-
-              </v-row>
-
-              <!-- <v-card-title class="color-title">運送引受会社</v-card-title> -->
-
-              <v-row v-if="orderDeliveryUserInfo.companyId != ''">
-                <v-col cols="12" sm="6" md="6">
-                  <v-card color="white" class="mx-auto" elevation="15">
-                    <v-card-item class="text-center text-h4">
-                      {{ orderDeliveryUserInfo.companyName }}
-                    </v-card-item>
-                    <v-card-item class="text-left" prepend-icon="mdi-map-marker-outline">
-                      {{ orderDeliveryUserInfo.companyAddr }}
-                    </v-card-item>
-                    <v-card-item class="text-left">
-                      <v-icon>mdi-phone-outline</v-icon>{{ orderDeliveryUserInfo.companyTel }}
-                      <v-icon>mdi-fax</v-icon> {{ orderDeliveryUserInfo.companyFax }}
-                      <v-icon>mdi-phone-outline</v-icon> TODO:車庫番号(入力なし)
-                    </v-card-item>
-                    <v-card-item class="text-left ">
-                      <v-icon>mdi-email-outline</v-icon>{{ orderDeliveryUserInfo.companyEmail }}
-                    </v-card-item>
-                    <v-card-item class="text-left ">
-                      事業許可:平成 10年 4月 1日 第 10号 TODO:(入力なし)
-                    </v-card-item>
-                    <v-card-item class="text-left ">
-                      営業区域: TODO:(入力なし)
-                    </v-card-item>
-                  </v-card>
-                </v-col>
-                <v-col cols="12" sm="6" md="6">
-                  <v-card-item>
-                    <v-table v-if="keydispatchId != null && keydispatchId != ''">
-                      <thead>
-                        <tr align="center">
-                          <th colspan="5" class="text-left">
-                            乗務員
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(driver, index) in dispatchInfo.driverList" :key="driver.id">
-                          <td>ドライバー{{ index + 1 }}</td>
-                          <td colspan="2"> {{ driver.driverName }}</td>
-                          <td>連絡先</td>
-                          <td colspan="2">{{ driver.contact }}</td>
-                        </tr>
-                        <tr v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id">
-                          <td>ガイド{{ index + 1 }}</td>
-                          <td colspan="2"> {{ guide.guideName }}</td>
-                        </tr>
-                      </tbody>
-                    </v-table>
+            </v-row>
+            <v-row>
+              <v-col v-if="applicantCustomerId != '' && applicantCustomerId != null" cols="12" sm="6" md="6">
+                <v-card color="white" class="mx-auto" elevation="15">
+                  <v-card-item class="text-center text-h4">
+                    {{ applicantCustomerInfo.customerName }}
                   </v-card-item>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+                  <v-card-item class="text-left" prepend-icon="mdi-map-marker-outline">
+                    {{ applicantCustomerInfo.customerAddr }}
+                  </v-card-item>
+                  <v-card-item class="text-left">
+                    <v-icon>mdi-phone-outline</v-icon>{{ applicantCustomerInfo.customerTel }}
+                    <v-icon>mdi-fax</v-icon> {{ applicantCustomerInfo.customerFax }}
+                  </v-card-item>
+                  <v-card-item class="text-left">
+                    <v-icon>mdi-email-outline</v-icon>{{ applicantCustomerInfo.customerMail }}
+                  </v-card-item>
+                </v-card>
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field v-model="tourOrganization" label="団体名" outlined />
+                <v-textarea v-model="customerRemarks" label="備考" rows="2" outlined />
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card variant="outlined" class="color-outline" elevation="3">
+          <v-container fluid>
+            <v-card-title class="color-title">申込情報</v-card-title>
+
+            <v-row>
+              <v-col cols="12" sm="2" md="2">申込乗車人員</v-col>
+              <v-col cols="12" sm="2" md="2"><v-text-field
+v-model.number="passengers" label="申込乗車人数" type="number"
+                  outlined min="0" step="1" /></v-col>
+            </v-row>
+            <v-row justify="center" dense>
+              <v-col cols="12" sm="2" md="2">乗車定員別又は<br>車種別車両数</v-col>
+              <v-col><v-text-field
+v-model.number="vehicleTypeLiftAmount" label="リフト-車両数" type="number" outlined min="0"
+                  step="1" suffix="両" /></v-col>
+              <v-col><v-text-field
+v-model.number="vehicleTypeMediumAmount" label="中型車-車両数" type="number" outlined
+                  min="0" step="1" suffix="両" /></v-col>
+              <v-col><v-text-field
+v-model.number="vehicleTypeSmallAmount" label="小型車-車両数" type="number" outlined
+                  min="0" step="1" suffix="両" /></v-col>
+              <v-col><v-text-field
+v-model.number="vehicleTypeMicroAmount" label="マイクロ-車両数" type="number" outlined
+                  min="0" step="1" suffix="両" /></v-col>
+            </v-row>
+            <v-row dense>
+              <v-col cols="12" sm="2" md="2">車両合計</v-col><v-col cols="12" sm="2" md="2">{{ totalvehicleAmount
+              }}両</v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="2" md="2">配車日時
+              </v-col>
+              <v-col cols="12" sm="3" md="3" class="ma-2 pa-2">
+                <datepicker
+v-model="dispatchDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="false"
+                  format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
+              </v-col>
+              <v-col cols="12" sm="2" md="2">
+                <v-select
+v-model="dispatchTimeHour" label="時間" item-title="disp" item-value="code"
+                  :items="$Const.TIME_HOUR_LIST" />
+              </v-col>
+              <v-col cols="12" sm="2" md="2">
+
+                <v-select
+v-model="dispatchTimeMinute" label="分" item-title="disp" item-value="code"
+                  :items="$Const.TIME_MINUTE_LIST" />
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col cols="12" sm="2" md="2">出発時間
+              </v-col>
+              <v-col cols="12" sm="2" md="2">
+                <v-select
+v-model="departureTimeHour" label="時間" item-title="disp" item-value="code"
+                  :items="$Const.TIME_HOUR_LIST" />
+              </v-col>
+              <v-col cols="12" sm="2" md="2">
+
+                <v-select
+v-model="departureTimeMinute" label="分" item-title="disp" item-value="code"
+                  :items="$Const.TIME_MINUTE_LIST" />
+              </v-col>
+            </v-row>
+
+
+
+            <v-row>
+              <v-col cols="12" sm="2" md="2">配車場所</v-col>
+              <v-col cols="12" sm="8" md="8">
+                <v-text-field v-model="deliveryLocation" label="配車場所" type="text" />
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card variant="outlined" class="color-outline" elevation="3">
+          <v-container fluid>
+
+            <v-row>
+              <v-card-title class="color-title">運送引受会社</v-card-title>
+              <v-btn
+                v-if="orderState == $Const.STATUS_DRAFT || orderState == $Const.STATUS_ORDER_DENY || orderState == ''"
+                rounded dark color="yellow" class="mt-2 mb-2 pr-8 pl-8" @click="deliverySerch">
+                運送引受会社選択
+              </v-btn>
+
+            </v-row>
+
+
+            <v-row v-if="orderDeliveryUserInfo.companyId != ''">
+              <v-col cols="12" sm="6" md="6">
+                <v-card color="white" class="mx-auto" elevation="15">
+                  <v-card-item class="text-center text-h4">
+                    {{ orderDeliveryUserInfo.companyName }}
+                  </v-card-item>
+                  <v-card-item class="text-left" prepend-icon="mdi-map-marker-outline">
+                    {{ orderDeliveryUserInfo.companyAddr }}
+                  </v-card-item>
+                  <v-card-item class="text-left">
+                    <v-icon>mdi-phone-outline</v-icon>{{ orderDeliveryUserInfo.companyTel }}
+                    <v-icon>mdi-fax</v-icon> {{ orderDeliveryUserInfo.companyFax }}
+                    <v-icon>mdi-phone-outline</v-icon> TODO:車庫番号(入力なし)
+                  </v-card-item>
+                  <v-card-item class="text-left ">
+                    <v-icon>mdi-email-outline</v-icon>{{ orderDeliveryUserInfo.companyEmail }}
+                  </v-card-item>
+                  <v-card-item class="text-left ">
+                    事業許可:平成 10年 4月 1日 第 10号 TODO:(入力なし)
+                  </v-card-item>
+                  <v-card-item class="text-left ">
+                    営業区域: TODO:(入力なし)
+                  </v-card-item>
+                </v-card>
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-card-item>
+                  <v-table v-if="keydispatchId != null && keydispatchId != ''">
+                    <thead>
+                      <tr align="center">
+                        <th colspan="5" class="text-left">
+                          乗務員
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(driver, index) in dispatchInfo.driverList" :key="driver.id">
+                        <td>ドライバー{{ index + 1 }}</td>
+                        <td colspan="2"> {{ driver.driverName }}</td>
+                        <td>連絡先</td>
+                        <td colspan="2">{{ driver.contact }}</td>
+                      </tr>
+                      <tr v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id">
+                        <td>ガイド{{ index + 1 }}</td>
+                        <td colspan="2"> {{ guide.guideName }}</td>
+                      </tr>
+                    </tbody>
+                  </v-table>
+                </v-card-item>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
 
 
 
 
     <!-- TODO:以下 運行情報 については一旦日帰りで実装。数日の旅程の場合はデータの持ち方や表示を検討必要 -->
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-card variant="outlined" class="color-outline" elevation="3">
-            <v-container fluid>
-              <v-card-title class="color-title">旅程</v-card-title>
-              <v-row>
-                <v-col>
+    <v-row>
+      <v-col>
+        <v-card variant="outlined" class="color-outline" elevation="3">
+          <v-container fluid>
+            <v-card-title class="color-title">旅程</v-card-title>
+            <v-row>
+              <v-col>
 
-                  <v-table class="table-border">
-                    <thead>
-                      <tr>
-                        <th width="80%" colspan="2" class="text-center">
-                          旅程
-                        </th>
-                        <th class="text-center">
-                          宿泊場所
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr class="dashed-border">
-                        <td width="10%">{{ dispatchDate }} </td>
-                        <td width="70%"><v-textarea v-model="itinerary1Top" label="旅程" rows="1" outlined />
-                        </td>
-                        <td width="20%"><v-text-field v-model="accommodations1" label="宿泊施設" outlined /></td>
-                      </tr>
-                      <tr class="thick-border">
-                        <td width="10%" align="right">{{ dispatchTime }}発</td>
-                        <td width="70%"><v-textarea v-model="timeschedule1Top" label="発着予定時刻" rows="1" outlined /></td>
-                        <td width="20%"><v-text-field v-model="accommodationsTel1" label="電話" outlined /></td>
-                      </tr>
-                      <tr class="dashed-border">
-                        <td width="10%" align="right">日 </td>
-                        <td width="70%"><v-textarea v-model="itinerary1Bottom" label="旅程" rows="1" outlined />
-                        </td>
-                        <td width="20%" rowspan="2"><v-textarea
+                <v-table class="table-border">
+                  <thead>
+                    <tr>
+                      <th width="80%" colspan="2" class="text-center">
+                        旅程
+                      </th>
+                      <th class="text-center">
+                        宿泊場所
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="dashed-border">
+                      <td width="10%">{{ dispatchDate }} </td>
+                      <td width="70%"><v-textarea v-model="itinerary1Top" label="旅程" rows="1" outlined />
+                      </td>
+                      <td width="20%"><v-text-field v-model="accommodations1" label="宿泊施設" outlined /></td>
+                    </tr>
+                    <tr class="thick-border">
+                      <td width="10%" align="right">{{ dispatchTime }}発</td>
+                      <td width="70%"><v-textarea v-model="timeschedule1Top" label="発着予定時刻" rows="1" outlined /></td>
+                      <td width="20%"><v-text-field v-model="accommodationsTel1" label="電話" outlined /></td>
+                    </tr>
+                    <tr class="dashed-border">
+                      <td width="10%" align="right">日 </td>
+                      <td width="70%"><v-textarea v-model="itinerary1Bottom" label="旅程" rows="1" outlined />
+                      </td>
+                      <td width="20%" rowspan="2"><v-textarea
 v-model="accommodationsAddr1" label="住所" outlined
-                            rows="3" /></td>
-                      </tr>
-                      <tr class="thick-border">
-                        <td width="10%" align="right">発</td>
-                        <td width="70%"><v-textarea v-model="timeschedule1Bottom" label="発着予定時刻" rows="1" outlined />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </v-table>
+                          rows="3" />
+                      </td>
+                    </tr>
+                    <tr class="thick-border">
+                      <td width="10%" align="right">発</td>
+                      <td width="70%"><v-textarea v-model="timeschedule1Bottom" label="発着予定時刻" rows="1" outlined />
+                      </td>
+                    </tr>
+                  </tbody>
+                </v-table>
 
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="2" md="2">終着日時</v-col>
-                <v-col cols="12" sm="2" md="2" class="ma-2 pa-2">
-                  <datepicker
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="2" md="2">終着日時</v-col>
+              <v-col cols="12" sm="2" md="2" class="ma-2 pa-2">
+                <datepicker
 v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="false"
-                    format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
-                </v-col>
-                <!-- <v-col cols="12" sm="2" md="2">
+                  format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
+              </v-col>
+              <!-- <v-col cols="12" sm="2" md="2">
                   <v-text-field v-model="endingTime" label="終着時間" type="text" />
                 </v-col> -->
-                <v-col cols="12" sm="2" md="2">
-                  <v-select
+              <v-col cols="12" sm="2" md="2">
+                <v-select
 v-model="endingTimeHour" label="時間" item-title="disp" item-value="code"
-                    :items="$Const.TIME_HOUR_LIST" />
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
+                  :items="$Const.TIME_HOUR_LIST" />
+              </v-col>
+              <v-col cols="12" sm="2" md="2">
 
-                  <v-select
+                <v-select
 v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
-                    :items="$Const.TIME_MINUTE_LIST" />
-                </v-col>
+                  :items="$Const.TIME_MINUTE_LIST" />
+              </v-col>
 
-              </v-row>
+            </v-row>
 
-              <v-row>
-                <v-col cols="12" sm="2" md="2">終着場所</v-col>
-                <v-col cols="12" sm="8" md="8">
-                  <v-text-field v-model="terminalLocation" label="終着場所" type="text" />
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+            <v-row>
+              <v-col cols="12" sm="2" md="2">終着場所</v-col>
+              <v-col cols="12" sm="8" md="8">
+                <v-text-field v-model="terminalLocation" label="終着場所" type="text" />
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
 
+        <v-card variant="outlined" class="color-outline" elevation="3">
+          <v-container fluid>
+            <v-card-title class="color-title">支払い</v-card-title>
 
-    <br>
-    <v-container>
-      <v-card variant="outlined" class="color-outline" elevation="3">
-        <v-container fluid>
-          <v-card-title class="color-title">支払い</v-card-title>
-
-          <v-row>
-            <v-col cols="12" sm="6" md="6">
-              <v-row>
-                <v-col cols="12">支払方法</v-col>
-                <v-col cols="12" sm="12" md="12">
-                  <v-radio-group v-model="selectPayment" inline>
-                    <v-radio
+            <v-row>
+              <v-col cols="12" sm="6" md="6">
+                <v-row>
+                  <v-col cols="12">支払方法</v-col>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-radio-group v-model="selectPayment" inline>
+                      <v-radio
 v-for="(paymentType) in PAYMENT_TYPE" :key="paymentType.id" :value="paymentType.code"
-                      :label="paymentType.label" />
-                  </v-radio-group>
-                  <v-text-field v-if="selectPayment == '9'" v-model="selectPaymentOther" label="その他" type="text" />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">適用予定の割引</v-col>
-                <v-col v-for="(discount) in discountList" :key="discount.id" cols="12" sm="4" md="4">
-                  <v-checkbox v-model="selectDiscount" :value="discount.code" :label="discount.title" />
-                </v-col>
-                <v-text-field
+                        :label="paymentType.label" />
+                    </v-radio-group>
+                    <v-text-field v-if="selectPayment == '9'" v-model="selectPaymentOther" label="その他" type="text" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">適用予定の割引</v-col>
+                  <v-col v-for="(discount) in discountList" :key="discount.id" cols="12" sm="4" md="4">
+                    <v-checkbox v-model="selectDiscount" :value="discount.code" :label="discount.title" />
+                  </v-col>
+                  <v-text-field
 v-if="selectDiscount.some(value => value == '99')" v-model="selectDiscountOther"
-                  label="その他" type="text" />
-              </v-row>
-            </v-col>
-            <v-col cols="12" sm="6" md="6">
-              <v-card class="mx-auto" elevation="3">
-                <v-card-title>運賃・料金</v-card-title>
-                <v-card-item>
+                    label="その他" type="text" />
+                </v-row>
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-card class="mx-auto" elevation="3">
+                  <v-card-title>運賃・料金</v-card-title>
+                  <v-card-item>
 
-                  <v-text-field v-model="orderAmount" suffix="円" label="発注料金" @update:model-value="editOrderAmount" />
-                  <v-text-field v-model="actualCost" suffix="円" label="実費" @update:model-value="editActualCost" />
-                  <v-card-text>合計金額:{{ totalAmount }} 円<v-checkbox
+                    <v-text-field v-model="orderAmount" suffix="円" label="発注料金" @update:model-value="editOrderAmount" />
+                    <v-text-field v-model="actualCost" suffix="円" label="実費" @update:model-value="editActualCost" />
+                    <v-card-text>合計金額:{{ totalAmount }} 円<v-checkbox
 v-model="isTaxIn" label="税込み"
-                      @click="formatTax" /></v-card-text>
-                  <v-card-text>支払期日
-                    <datepicker
+                        @click="formatTax" /></v-card-text>
+                    <v-card-text>支払期日
+                      <datepicker
 v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
-                      :enable-time-picker="false" format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
-                  </v-card-text>
+                        :enable-time-picker="false" format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
+                    </v-card-text>
 
-                </v-card-item>
-              </v-card>
-            </v-col>
+                  </v-card-item>
+                </v-card>
+              </v-col>
 
-          </v-row>
-          <v-row>
-            <v-col cols="12" sm="6" md="6">
-              <v-textarea v-model="specialTerms" label="特約事項" rows="2" outlined />
-            </v-col>
-            <!-- <v-col cols="12" sm="6" md="6">
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="6" md="6">
+                <v-textarea v-model="specialTerms" label="特約事項" rows="2" outlined />
+              </v-col>
+              <!-- <v-col cols="12" sm="6" md="6">
               <v-text-field v-model="d" label="担当者" outlined />
             </v-col> -->
 
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea v-model="remarks" label="備考" rows="2" outlined />
-            </v-col>
-          </v-row>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-textarea v-model="remarks" label="備考" rows="2" outlined />
+              </v-col>
+            </v-row>
 
-        </v-container>
-      </v-card>
-    </v-container>
-
-
-    <v-container class="align-center" fluid>
-      <v-row justify="center" no-gutters>
-        <v-col align="center">
-          <v-btn rounded dark size="x-large" color="grey" class="mb-2 pr-8 pl-8" @click="back">
-            戻 る
-          </v-btn>
-        </v-col>
-
-        <v-col v-if="orderState == $Const.STATUS_DRAFT || orderState == ''" align="center">
-          <v-btn rounded dark size="x-large" color="green" class="mb-2 pr-8 pl-8" @click="draft">
-            一次保存
-          </v-btn>
-        </v-col>
-        <v-col
-          v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE || orderInfo.state == $Const.STATUS_PAYMENT_METHOD_CONFIRMED"
-          align="center">
-          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="edit">
-            内容を修正する
-          </v-btn>
-        </v-col>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
 
 
-        <v-spacer />
-        <v-col
-          v-if="orderInfo.state == $Const.STATUS_DRAFT || orderInfo.state == $Const.STATUS_ORDER_DENY || orderInfo.state == ''"
-          align="center">
-          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="entry">
-            運送引受会社へ依頼する
-          </v-btn>
-        </v-col>
-        <v-col v-else-if="orderInfo.state == $Const.STATUS_UNDERTAKE" align="center">
-          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="payment">
-            金額と支払方法を確定し、手配を完了する
-          </v-btn>
-        </v-col>
+    <v-row>
+      <v-col align="center">
+        <v-btn rounded dark size="x-large" color="grey" class="mb-2 pr-8 pl-8" @click="back">
+          戻 る
+        </v-btn>
+      </v-col>
 
-        <v-col v-else-if="orderInfo.state == $Const.STATUS_PAYMENT_COMPLETED" align="center">
-          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="completed">
-            案件を完了する
-          </v-btn>
-        </v-col>
+      <v-col v-if="orderState == $Const.STATUS_DRAFT || orderState == ''" align="center">
+        <v-btn rounded dark size="x-large" color="green" class="mb-2 pr-8 pl-8" @click="draft">
+          一次保存
+        </v-btn>
+      </v-col>
+      <v-col
+        v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE || orderInfo.state == $Const.STATUS_PAYMENT_METHOD_CONFIRMED"
+        align="center">
+        <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="edit">
+          内容を修正する
+        </v-btn>
+      </v-col>
 
 
-        <v-col align="center">
-          <v-btn rounded dark size="x-large" color="success" class="mb-2 pr-8 pl-8" @click="confirm">
-            申込内容確認(帳票形式)
-          </v-btn>
-        </v-col>
+      <v-spacer />
+      <v-col
+        v-if="orderInfo.state == $Const.STATUS_DRAFT || orderInfo.state == $Const.STATUS_ORDER_DENY || orderInfo.state == ''"
+        align="center">
+        <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="entry">
+          運送引受会社へ依頼する
+        </v-btn>
+      </v-col>
+      <v-col v-else-if="orderInfo.state == $Const.STATUS_UNDERTAKE" align="center">
+        <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="payment">
+          金額と支払方法を確定し、手配を完了する
+        </v-btn>
+      </v-col>
 
-      </v-row>
-    </v-container>
-  </div>
+      <v-col v-else-if="orderInfo.state == $Const.STATUS_PAYMENT_COMPLETED" align="center">
+        <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="completed">
+          案件を完了する
+        </v-btn>
+      </v-col>
+
+
+      <v-col align="center">
+        <v-btn rounded dark size="x-large" color="success" class="mb-2 pr-8 pl-8" @click="confirm">
+          申込内容確認(帳票形式)
+        </v-btn>
+      </v-col>
+
+    </v-row>
+  </v-container>
 </template>
 <script setup>
 
@@ -655,7 +665,7 @@ const customerSerch = () => {
     selectDiscountOther: utils.toBlank(selectDiscountOther.value),
     orderAmount: utils.toBlank(orderAmount.value),
     actualCost: utils.toBlank(actualCost.value),
-    paymentDueDate:utils.toBlank(paymentDueDate.value),
+    paymentDueDate: utils.toBlank(paymentDueDate.value),
     specialTerms: utils.toBlank(specialTerms.value),
     remarks: utils.toBlank(remarks.value),
 
@@ -724,7 +734,7 @@ const deliverySerch = () => {
     selectDiscountOther: utils.toBlank(selectDiscountOther.value),
     orderAmount: utils.toBlank(orderAmount.value),
     actualCost: utils.toBlank(actualCost.value),
-    paymentDueDate:utils.toBlank(paymentDueDate.value),
+    paymentDueDate: utils.toBlank(paymentDueDate.value),
     specialTerms: utils.toBlank(specialTerms.value),
     remarks: utils.toBlank(remarks.value),
 
@@ -816,7 +826,7 @@ const draft = async () => {
       selectDiscountOther: utils.toBlank(selectDiscountOther.value),
       orderAmount: utils.toBlank(orderAmount.value),
       actualCost: utils.toBlank(actualCost.value),
-      paymentDueDate:utils.toBlank(paymentDueDate.value),
+      paymentDueDate: utils.toBlank(paymentDueDate.value),
       specialTerms: utils.toBlank(specialTerms.value),
       remarks: utils.toBlank(remarks.value),
 
@@ -871,7 +881,7 @@ const draft = async () => {
       selectDiscountOther: utils.toBlank(selectDiscountOther.value),
       orderAmount: utils.toBlank(orderAmount.value),
       actualCost: utils.toBlank(actualCost.value),
-      paymentDueDate:utils.toBlank(paymentDueDate.value),
+      paymentDueDate: utils.toBlank(paymentDueDate.value),
       specialTerms: utils.toBlank(specialTerms.value),
       remarks: utils.toBlank(remarks.value),
       createdAt: new Date(),
@@ -1039,7 +1049,7 @@ const confirm = async () => {
     selectDiscountOther: utils.toBlank(selectDiscountOther.value),
     orderAmount: utils.toBlank(orderAmount.value),
     actualCost: utils.toBlank(actualCost.value),
-    paymentDueDate:utils.toBlank(paymentDueDate.value),
+    paymentDueDate: utils.toBlank(paymentDueDate.value),
     specialTerms: utils.toBlank(specialTerms.value),
     remarks: utils.toBlank(remarks.value),
 
@@ -1252,7 +1262,7 @@ const entry = async () => {
       selectDiscountOther: utils.toBlank(selectDiscountOther.value),
       orderAmount: utils.toBlank(orderAmount.value),
       actualCost: utils.toBlank(actualCost.value),
-      paymentDueDate:utils.toBlank(paymentDueDate.value),
+      paymentDueDate: utils.toBlank(paymentDueDate.value),
       specialTerms: utils.toBlank(specialTerms.value),
       remarks: utils.toBlank(remarks.value),
       customerId: utils.toBlank(applicantCustomerId),
@@ -1299,7 +1309,7 @@ const entry = async () => {
       selectDiscountOther: utils.toBlank(selectDiscountOther.value),
       orderAmount: utils.toBlank(orderAmount.value),
       actualCost: utils.toBlank(actualCost.value),
-      paymentDueDate:utils.toBlank(paymentDueDate.value),
+      paymentDueDate: utils.toBlank(paymentDueDate.value),
       specialTerms: utils.toBlank(specialTerms.value),
       remarks: utils.toBlank(remarks.value),
       customerId: utils.toBlank(applicantCustomerId),
@@ -1499,7 +1509,7 @@ const edit = async () => {
     selectDiscountOther: utils.toBlank(selectDiscountOther.value),
     orderAmount: utils.toBlank(orderAmount.value),
     actualCost: utils.toBlank(actualCost.value),
-    paymentDueDate:utils.toBlank(paymentDueDate.value),
+    paymentDueDate: utils.toBlank(paymentDueDate.value),
     specialTerms: utils.toBlank(specialTerms.value),
     remarks: utils.toBlank(remarks.value),
     customerId: utils.toBlank(applicantCustomerId),
@@ -1570,7 +1580,7 @@ const payment = async () => {
     selectDiscountOther: utils.toBlank(selectDiscountOther.value),
     orderAmount: utils.toBlank(orderAmount.value),
     actualCost: utils.toBlank(actualCost.value),
-    paymentDueDate:utils.toBlank(paymentDueDate.value),
+    paymentDueDate: utils.toBlank(paymentDueDate.value),
     specialTerms: utils.toBlank(specialTerms.value),
     remarks: utils.toBlank(remarks.value),
     updatedAt: new Date(),

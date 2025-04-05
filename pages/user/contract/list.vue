@@ -1,45 +1,50 @@
 <template>
-  <div>
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-          <v-card-text class="font-weight-bold text-h5">
-            <v-icon left x-large @click="back">
-              mdi-close
-            </v-icon>
-            契約情報
-          </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
-      <v-toolbar-title class="font-weight-bold">
-        登録契約一覧<v-divider />
-      </v-toolbar-title>
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col>
-          <v-card>
-            <v-row justify="center" no-gutters>
-              <v-col>
-                <v-data-table :headers="contractListHeaders" :items="contractList" :row-props="getRowClass">
-                  <template #[`item.payment`]="{ item }">
-                    <div>
-                      <a href="" @click.prevent.stop="selectContract(item)">
-                        {{ item.payment }}</a>
-                    </div>
-                  </template>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: false, to: '/user/mypage' },
+          { title: '契約管理', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
 
-                </v-data-table>
+    <v-row>
+      <v-col>
+        <v-toolbar-title class="font-weight-bold">
+          登録契約一覧<v-divider />
+        </v-toolbar-title>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-row justify="center" no-gutters>
+            <v-col>
+              <v-data-table :headers="contractListHeaders" :items="contractList" :row-props="getRowClass">
+                <template #[`item.payment`]="{ item }">
+                  <div>
+                    <a href="" @click.prevent.stop="selectContract(item)">
+                      {{ item.payment }}</a>
+                  </div>
+                </template>
 
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
+              </v-data-table>
+
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script setup>
 const router = useRouter()
@@ -49,6 +54,7 @@ const userData = useUserData();
 // ユーザ情報を保持
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
+console.log('keyUserId:' + keyUserId)
 
 // ユーザ操作情報を保持
 const { actionInfo } = useAction()
@@ -102,7 +108,7 @@ const contractListHeaders = [
 const getContractList = async () => {
 
   const statusArray = [$Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
-  const contractList = await userData.getOrderList(userInfo.value.companyId, statusArray);
+  const contractList = await userData.getOrderList(keyUserId, statusArray);
   const orderListArray = []
   for (let i = 0; i < contractList.length; i++) {
 
@@ -114,7 +120,7 @@ const getContractList = async () => {
     if (state == $Const.STATUS_PAYMENT_COMPLETED || state == $Const.STATUS_ORDER_COMPLETED) {
       payment = '支払済み(' + $Const.ORDER_STATUS_DISP[state].text + ')'
     } else {
-      payment = '支払期日:'+contractList[i].paymentDueDate
+      payment = '支払期日:' + contractList[i].paymentDueDate
     }
     // 申込会社の情報取得
     const deliveryCompanyData = await userData.getUserData(companyId)

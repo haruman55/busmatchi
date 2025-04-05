@@ -1,8 +1,7 @@
 <template>
   <div>
-    <TheUserHeader />
-
-    <v-main  class="black-background">
+    <TheNormalHeader/>
+    <v-main >
       <TheMenu />
       <slot />
     </v-main>
@@ -11,8 +10,3 @@
 
   </div>
 </template>
-<style scoped>
-.black-background {
-  background-color: white  !important;
-}
-</style>
