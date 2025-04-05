@@ -30,6 +30,7 @@ justify="center"
 </template>
 
 <script setup>
+const { $Const } = useNuxtApp()
 const router = useRouter()
 // user情報の状態管理
 const { userInfo } = useUserInfo()
@@ -41,7 +42,11 @@ const menu = ref(false);
  */
 const navigateTo = (path) => {
   menu.value = false; // メニューを閉じる
-  router.push(path);
+  if (path === '/user/mypage' && userInfo.value.category === $Const.CATEGORY_DELIVERY) {
+    router.push('/delivery/mypage')
+  } else {
+    router.push(path)
+  }
 };
 
 
