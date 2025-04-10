@@ -29,7 +29,7 @@
         <v-card>
           <v-row justify="center" no-gutters>
             <v-col>
-              <v-data-table :headers="contractListHeaders" :items="contractList" :row-props="getRowClass">
+              <v-data-table :headers="contractListHeaders" :items="contractList" :row-props="getRowClass" class="text-pre-wrap bg-background">
                 <template #[`item.payment`]="{ item }">
                   <div>
                     <a href="" @click.prevent.stop="selectContract(item)">

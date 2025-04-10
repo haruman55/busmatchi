@@ -34,7 +34,7 @@
 
     <v-row>
       <v-col cols="12" sm="3" md="3">
-        <v-btn size="x-large" value="add" color="indigo" @click="addOrder">
+        <v-btn size="x-large" value="add" color="primary" @click="addOrder">
           <v-icon>mdi-plus</v-icon>新規登録
         </v-btn>
       </v-col>
