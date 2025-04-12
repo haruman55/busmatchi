@@ -19,46 +19,37 @@
               <a href="" @click.prevent.stop="showInformation()">XXXXX社との支払確認が完了しました。</a>
             </v-col>
           </v-row>
-
         </v-card>
       </v-col>
     </v-row>
 
     <v-row>
       <v-col cols="12" sm="4" md="4">
-        <v-card class="mx-auto" width="300" height="420" elevation="15" color="indigo" dark @click="showOrder">
-          <v-card-item title="案件管理" />
-
+        <v-card class="mx-auto" width="300" height="420" elevation="15" color="primary" dark @click="showOrder">
+          <v-card-text class="py-0" align="center">
+            <v-icon size="100" color="white">mdi-pencil-circle-outline</v-icon>
+          </v-card-text>
+          <v-card-item title="案件管理" class="text-center" />
           <v-card-text class="py-0">
-            <v-row align="center" no-gutters>
-              <v-col class="text-h2" align="center" cols="6">
-                {{ orderList.length }}件
-              </v-col>
+            <v-row align="center" justify="center" no-gutters>
+              <v-col class="text-h2" align="center" cols="12"> {{ orderList.length }}件 </v-col>
             </v-row>
           </v-card-text>
-          <v-card-text class="py-0" align="right">
-            <v-img width="200" height="300" src="/img/orderIcon.png" />
-          </v-card-text>
         </v-card>
-
       </v-col>
-      <v-col cols="12" sm="4" md="4">
-        <v-card class="mx-auto" width="300" height="420" elevation="15" color="#B9F6CA" @click="showContract">
-          <v-card-item title="契約管理" />
 
+      <v-col cols="12" sm="4" md="4">
+        <v-card class="mx-auto" width="300" height="420" elevation="15" color="secondary" @click="showContract">
+          <v-card-text class="py-0" align="center">
+            <v-icon size="100" color="white">mdi-file-document-outline</v-icon>
+          </v-card-text>
+          <v-card-item title="契約管理" class="text-center" />
           <v-card-text class="py-0">
-            <v-row align="center" no-gutters>
-              <v-col class="text-h2" align="center" cols="6">
-                {{ contractList.length }}件
-              </v-col>
+            <v-row align="center" justify="center" no-gutters>
+              <v-col class="text-h2" align="center" cols="12"> {{ contractList.length }}件 </v-col>
             </v-row>
           </v-card-text>
-          <v-card-text class="py-0" align="right">
-            <v-img width="200" height="300" src="/img/contractIcon.png" />
-          </v-card-text>
-
         </v-card>
-
       </v-col>
       <v-divider thickness="1" vertical />
 
@@ -68,37 +59,29 @@
 
           <v-card-text class="py-0">
             <v-row align="center" no-gutters>
-              <v-col class="text-h2" align="center" cols="6">
-                {{ customerList.length }}社
-              </v-col>
+              <v-col class="text-h2" align="center" cols="6"> {{ customerList.length }}社 </v-col>
               <v-icon color="yellow" icon="mdi-card-account-details-outline" size="70" />
-
             </v-row>
           </v-card-text>
         </v-card>
-        <br>
+        <br />
 
         <v-card class="mx-auto" width="300" height="200" elevation="15">
           <v-card-item title="運送引受会社" />
 
           <v-card-text class="py-0">
             <v-row align="center" no-gutters>
-              <v-col class="text-h2" align="center" cols="6">
-                {{ deliveryUserList.length }}社
-              </v-col>
-              <v-icon color="red" icon="mdi-bus" size="70" />
-
+              <v-col class="text-h2" align="center" cols="6"> {{ deliveryUserList.length }}社 </v-col>
+              <v-icon icon="mdi-bus" size="70" />
             </v-row>
           </v-card-text>
         </v-card>
-
       </v-col>
     </v-row>
-
   </v-container>
 </template>
 <script setup>
-const { $swal } = useNuxtApp()
+const { $swal } = useNuxtApp()  
 const router = useRouter()
 const { $Const } = useNuxtApp()
 // user情報の状態管理
@@ -109,19 +92,27 @@ const { userInfo } = userState
 const { editActionInfo } = useAction()
 
 // DB操作
-const userData = useUserData();
+const userData = useUserData()
+const db = useFirestore()
 // 登録顧客情報取得
-const customerList = await userData.getUserCustomerList(userInfo.value.companyId);
+const customerList = await userData.getUserCustomerList(userInfo.value.companyId)
 // 登録案件情報取得
-const orderList = await userData.getOrderList(userInfo.value.companyId);
+const orderList = await userData.getOrderList(userInfo.value.companyId)
 
 // 支払～完了までの登録案件情報取得
-const statusArray = [$Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
-const contractList = await userData.getOrderList(userInfo.value.companyId, statusArray);
+const statusArray = [
+  $Const.STATUS_PAYMENT_METHOD_CONFIRMED,
+  $Const.STATUS_TRANSPORTATION_COMPLETED,
+  $Const.STATUS_PAYMENT_COMPLETED,
+  $Const.STATUS_ORDER_COMPLETED,
+]
+const contractList = await userData.getOrderList(userInfo.value.companyId, statusArray)
 
 // 運送引受会社情報(マスタ)取得
-const deliveryUserList = await userData.getDeliveryUser();
-
+const deliveryUserList = await db.getQueryDocument({
+  path: 'company',
+  where: [{ fieldPath: 'category', opStr: '==', value: '2' }],
+})
 
 /**
  * 画面初期処理
@@ -129,19 +120,17 @@ const deliveryUserList = await userData.getDeliveryUser();
 onMounted(async () => {
   // 導線の初期化
   const initAction = {
-    act: $Const.USER_ACTION_MYPAGE
+    act: $Const.USER_ACTION_MYPAGE,
   }
   editActionInfo(initAction)
 })
-
-
 
 /**
  * 案件一覧画面を表示
  */
 const showOrder = () => {
   const setAction = {
-    act: $Const.USER_ACTION_ORDER
+    act: $Const.USER_ACTION_ORDER,
   }
   editActionInfo(setAction)
 
@@ -153,24 +142,20 @@ const showOrder = () => {
  */
 const showContract = () => {
   const setAction = {
-    act: $Const.USER_ACTION_CONTRACT
+    act: $Const.USER_ACTION_CONTRACT,
   }
   editActionInfo(setAction)
 
   // 画面遷移
   router.push('/user/contract/list')
-
-
 }
 
 /**
  * 顧客一覧画面を表示
  */
 const showCustomer = () => {
-
   // 画面遷移
   router.push('/user/customer/list')
-
 }
 
 const showInformation = () => {
@@ -178,14 +163,11 @@ const showInformation = () => {
     text: '[未実装]インフォメーションの詳細がみれます',
     showCancelButton: false,
     confirmButtonText: 'OK',
-    icon: 'info'
+    icon: 'info',
   })
-
-
 }
 
-
 definePageMeta({
-  layout: 'user'
+  layout: 'user',
 })
 </script>
