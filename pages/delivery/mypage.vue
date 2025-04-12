@@ -1,12 +1,7 @@
 <template>
-  <div>
-    <br>
-    <!-- <v-container class="fill-height align-center" fluid>
-      <v-row><v-col><v-card-title class="text-h5">マイページ</v-card-title></v-col></v-row>
-    </v-container> -->
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col cols="12">
+  <v-container max-width="1200">
+    <v-row no-gutters>
+        <v-col cols="12" >
           <v-card-title><v-icon color="red">mdi-chat-outline</v-icon>インフォメーション</v-card-title>
           <v-card class="overflow-y-auto overflow-x-hidden">
             <v-row>
@@ -28,11 +23,9 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
-
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col cols="12" sm="3" md="3">
+      <v-row >
+        <v-col cols="12" sm="4" md="4">
+          
           <v-card class="mx-auto" width="300" height="420" elevation="15" color="indigo" dark  @click="showOrder">
             <v-card-item title="案件管理" />
             <v-card-text class="py-0">
@@ -48,7 +41,7 @@
 
           </v-card>
         </v-col>
-        <v-col cols="12" sm="3" md="3">
+        <v-col cols="12" sm="4" md="4">
           <v-card class="mx-auto" width="300" height="420" elevation="15" color="red-lighten-2" @click="showReservation">
             <v-card-item title="運行管理" />
 
@@ -60,35 +53,35 @@
             </v-card-text>
             <v-card-text class="py-0" align="right">
             <v-img  width="200" height="200" src="/img/reservationIcon.png"/>
-            <v-icon color="red" icon="mdi-bus" size="70" />
+            <!-- <v-icon color="red" icon="mdi-bus" size="70" />
                   <v-icon color="indigo" icon="mdi-card-account-details-outline" size="70" />
-                  <v-icon color="success" icon="mdi-human-female-dance" size="70" />
+                  <v-icon color="success" icon="mdi-human-female-dance" size="70" /> -->
             </v-card-text>
 
           </v-card>
         </v-col>
         <v-divider thickness="1" vertical />
 
-        <v-col cols="12" sm="6" md="6">
-          <v-row>
+        <v-col cols="12" sm="4" md="4">
+          <v-row dense>
             <v-col cols="12" sm="6" md="6">
-              <v-card class="mx-auto" width="300" height="150" elevation="15" @click="showBus">
-                <v-card-item title="バス" />
+                <v-card class="mx-auto"  elevation="15" height="210" @click="showBus">
+                  <v-card-item title="バス" />
                 <v-card-text class="py-0">
                   <v-row align="center" no-gutters>
                     <v-col class="text-h2" align="center" cols="6">
                       {{ busList.length }}台
                     </v-col>
                     <v-col class="text-right" cols="6">
-                      <v-icon color="red" icon="mdi-bus" size="70" />
+                      <v-icon color="black" icon="mdi-bus" size="70" />
                     </v-col>
                   </v-row>
                 </v-card-text>
               </v-card>
             </v-col>
             <v-col cols="12" sm="6" md="6">
-              <v-card class="mx-auto" width="300" height="150" elevation="15" @click="showParking">
-                <v-card-item title="駐車場" />
+                <v-card class="mx-auto" elevation="15" height="210"  @click="showParking">
+                  <v-card-item title="駐車場" />
                 <v-card-text class="py-0">
                   <v-row align="center" no-gutters>
                     <v-col class="text-h2" align="center" cols="6">
@@ -103,10 +96,10 @@
             </v-col>
           </v-row>
 
-          <v-row>
+          <v-row dense>
             <v-col cols="12" sm="6" md="6">
-              <v-card class="mx-auto" width="300" height="150" elevation="15" @click="showDriver">
-                <v-card-item title="ドライバー" />
+                <v-card class="mx-auto"  elevation="15" height="210"  @click="showDriver">
+                  <v-card-item title="ドライバー" />
                 <v-card-text class="py-0">
                   <v-row align="center" no-gutters>
                     <v-col class="text-h2" align="center" cols="6">
@@ -120,8 +113,8 @@
               </v-card>
             </v-col>
             <v-col cols="12" sm="6" md="6">
-              <v-card class="mx-auto" width="300" height="150" elevation="15" @click="showGuide">
-                <v-card-item title="バスガイド" />
+                <v-card class="mx-auto" elevation="15" height="210"  @click="showGuide">
+                  <v-card-item title="バスガイド" />
                 <v-card-text class="py-0">
                   <v-row align="center" no-gutters>
                     <v-col class="text-h2" align="center" cols="6">
@@ -140,11 +133,6 @@
     </v-container>
 
 
-    <br>
-    <v-divider />
-
-
-  </div>
 </template>
 <script setup>
 const { $swal } = useNuxtApp()
@@ -152,7 +140,6 @@ const router = useRouter()
 const { $Const } = useNuxtApp()
 // user情報の状態管理
 const { userInfo } = useUserInfo()
-// const keyUserDocId = userInfo.value.id
 const keyUserId = userInfo.value.companyId
 const loading = ref(false)
 // ユーザ操作情報の状態管理

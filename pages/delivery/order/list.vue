@@ -1,22 +1,22 @@
 <template>
-  <div>
-    <v-container fluid class="bg-grey-lighten-4 mb-6">
-      <v-row justify="center">
-        <v-col>
-          <v-sheet>
-            <v-card-text class="text-h5 ">
-              <v-icon left x-large @click="back">
-                mdi-close
-              </v-icon>
-              運送依頼一覧
-            </v-card-text>
-            <v-divider :thickness="2" class="border-opacity-100" />
-          </v-sheet>
-        </v-col>
-      </v-row>
-      <v-divider />
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
+    <v-container max-width="1200">
+      <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: false, to: '/delivery/mypage' },
+          { title: '案件管理', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
+
       <v-row no-gutters>
         <v-col v-for="(order) in orderList" :key="order.id" >
           <v-card elevation="20" class="ma-2 pa-2" height="250" width="350" @click="selectOrder(order)">
@@ -33,7 +33,6 @@
 
 
     </v-container>
-  </div>
 </template>
 <script setup>
 const router = useRouter()
@@ -271,12 +270,6 @@ const selectOrder = async (order) => {
 
 }
 
-
-/** 前の画面へ戻る */
-const back = () => {
-  // 画面遷移
-  router.push('/delivery/mypage')
-}
 
 definePageMeta({
   layout: 'user'

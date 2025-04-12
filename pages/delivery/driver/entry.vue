@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <v-container class="fill-height align-center" fluid>
+  <!-- <v-container class="fill-height align-center" fluid>
       <v-row no-gutters>
         <v-col>
           <v-card-text class="font-weight-bold text-h5">
@@ -11,45 +10,62 @@
           </v-card-text>
         </v-col>
       </v-row>
-    </v-container>
+    </v-container> -->
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: true },
+          { title: '運転手管理', disabled: false, to: '/delivery/driver/list' },
+          { title: '運転手登録', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
 
-    <v-container>
-      <v-form ref="entry_form">
-        <v-row justify="center" no-gutters>
-          <v-col>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="driverName" label="氏名" outlined />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="driverNameKana" label="氏名(カナ)" outlined />
-                  </v-col>
+    <!-- <v-container>
+      <v-form ref="entry_form"> -->
+    <v-row justify="center" no-gutters>
+      <v-col>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field v-model="driverName" label="氏名" outlined />
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field v-model="driverNameKana" label="氏名(カナ)" outlined />
+              </v-col>
 
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="contact" label="連絡先" outlined />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="remarks" label="備考" outlined />
-                  </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-text-field v-model="contact" label="連絡先" outlined />
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field v-model="remarks" label="備考" outlined />
+              </v-col>
 
-                </v-row>
-              </v-container>
-            </v-card-text>
-          </v-col>
-        </v-row>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-col>
+    </v-row>
 
-        <v-row justify="center" no-gutters>
-          <v-col align="center">
-            <v-btn block rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="entry">
-              登 録
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
-    </v-container>
-  </div>
+    <v-row justify="center" no-gutters>
+      <v-col align="center">
+        <v-btn block rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="entry">
+          登 録
+        </v-btn>
+      </v-col>
+    </v-row>
+    <!-- </v-form> -->
+  </v-container>
 </template>
 <script setup>
 const { $swal } = useNuxtApp()

@@ -1,57 +1,59 @@
 <template>
-  <div>
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-          <v-card-text class="font-weight-bold text-h5">
-            <v-icon left x-large @click="back">
-              mdi-close
-            </v-icon>
-            駐車地情報を更新する
-          </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: true },
+          { title: '駐車地管理', disabled: false, to: '/delivery/parking/list' },
+          { title: '駐車地編集', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
 
-    <v-container>
-      <v-form ref="entry_form">
-        <v-row justify="center" no-gutters>
-          <v-col>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="parking" label="駐車地名" outlined />
-                  </v-col>
+    <v-row class="pb-10" no-gutters>
+      <v-col align="center">
+        <div>
+          <h3 class="font-weight-bold text-h5">駐車地情報を入力してください</h3>
 
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="parkingAddr" label="住所" outlined />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="remarks" label="備考" outlined />
-                  </v-col>
+          <v-sheet class="py-10 mx-auto text-start" max-width="500" color="transparent">
+            <v-form>
+              <v-row no-gutters>
+                <v-col v-for="form in parkingForms" :key="form.key" class="pa-2" :cols="form.cols">
+                  <p>
+                    <span class="text-body-2">{{ form.title }}</span>
+                    <v-chip v-if="form.required" class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                      必須
+                    </v-chip>
+                  </p>
+                  <v-text-field
+v-model="form.value" :prepend-inner-icon="form.icon" :placeholder="form.placeholder"
+                    :hint="form.hint" persistent-hint :error-messages="form.errorMessage" density="comfortable" />
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-sheet>
+          <div>
+            <v-btn class="ml-4" color="primary" size="x-large" flat rounded @click="update">更 新</v-btn>
+          </div>
+        </div>
 
-                </v-row>
-              </v-container>
-            </v-card-text>
-          </v-col>
-        </v-row>
-
-        <v-row justify="center" no-gutters>
-          <v-col align="center">
-            <v-btn block rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="entry">
-              登 録
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
-    </v-container>
-  </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script setup>
 const { $swal } = useNuxtApp()
 const router = useRouter()
-const userData = useUserData();
+const db = useFirestore()
+
 // 共通関数の呼び出し
 const utils = useUtils();
 // user情報の状態管理
@@ -61,45 +63,49 @@ const keyUserId = userInfo.value.companyId
 // 登録駐車場情報の保持
 const { parkingInfo } = useParkingInfo()
 
-//画面入力項目
-const parking = ref(parkingInfo.value.parking)
-const parkingAddr = ref(parkingInfo.value.parkingAddr)
-const remarks = ref(parkingInfo.value.remarks)
+// 駐車地情報の入力状態管理フォーム
+const parkingForms = ref([
+  {
+    title: '駐車地名',
+    key: 'parking',
+    value: parkingInfo.value.parking,
+    required: true,
+    icon: 'mdi-office-building-outline',
+    placeholder: '',
+    cols: 12,
+  },
+  {
+    title: '駐車地住所',
+    key: 'parkingAddr',
+    value: parkingInfo.value.parkingAddr,
+    required: true,
+    icon: 'mdi-office-building-marker-outline',
+    placeholder: '',
+    cols: 12,
+  },
+  {
+    title: '備考',
+    key: 'remarks',
+    value: parkingInfo.value.remarks,
+    required: false,
+    icon: 'mdi-note-outline',
+    placeholder: '',
+    cols: 12,
+  },
+])
 
-/** 前の画面へ戻る */
-const back = () => {
-
-  // 画面遷移
-  router.push('/delivery/parking/list')
-}
 /**
- * 
+ * 更新処理
  */
-const entry = async () => {
-  if (parking.value === '') {
-    $swal.fire({
-      text: '駐車地名を入力してください。',
-      confirmButtonColor: "#00BCD4",
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    return
-  }
-  if (parkingAddr.value === '') {
-    $swal.fire({
-      text: '駐車地住所を入力してください。',
-      confirmButtonColor: "#00BCD4",
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    return
-  }
+const update = async () => {
+
+  for (const f of parkingForms.value) f.errorMessage = f.required && !f.value ? '必須入力です' : ''
+  if (parkingForms.value.some((f) => !!f.errorMessage)) return
+
 
   let confirmRes = false
   await $swal.fire({
-    text: '入力した内容で駐車地情報を登録します。よろしいですか？',
+    text: '入力した内容で駐車地情報を更新します。よろしいですか？',
     showCancelButton: true,
     confirmButtonColor: "#00BCD4",
     cancelButtonColor: "#CFD8DC",
@@ -113,15 +119,21 @@ const entry = async () => {
     return
   }
 
-  const object = {
-    id: parkingInfo.value.id,
-    companyId: keyUserId,
-    parking: parking.value,
-    parkingAddr: parkingAddr.value,
-    remarks: remarks.value,
-    updatedAt: new Date(),
-  }
-  await userData.updateParking(object)
+  const getValue = (forms, key) => utils.toBlank(forms.value.find((f) => f.key === key).value)
+  const items = []
+  items.push({
+    method: 'update',
+    path: 'parking',
+    docId: parkingInfo.value.id,
+    data: {
+      parking: getValue(parkingForms, 'parking'),
+      parkingAddr: getValue(parkingForms, 'parkingAddr'),
+      remarks: getValue(parkingForms, 'remarks'),
+      updatedAt: new Date(),
+    },
+  })
+
+  await db.writeTransaction(items)
 
   router.push('/delivery/parking/list')
 }
