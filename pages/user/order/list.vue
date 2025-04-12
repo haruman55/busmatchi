@@ -34,7 +34,7 @@
 
     <v-row>
       <v-col cols="12" sm="3" md="3">
-        <v-btn size="x-large" value="add" color="primary" @click="addOrder">
+        <v-btn  value="add" color="primary" @click="addOrder">
           <v-icon>mdi-plus</v-icon>新規登録
         </v-btn>
       </v-col>
@@ -221,14 +221,6 @@ const selectOrder = async (order) => {
   }
   editOrderOperationInfo(orderOperationInfoObject)
 
-  // if (order.state == $Const.STATUS_DRAFT || order.state == $Const.STATUS_UNDERTAKE || order.state == $Const.STATUS_ORDER_DENY) {
-  //   router.push('/user/order/entry')
-
-  // } else if (order.state == $Const.STATUS_REQUEST) {
-  //   router.push('/user/order/entryConfirm')
-  // } else {
-  //   router.push('/user/order/entryConfirm')
-  // }
   router.push('/user/order/entry')
 
 

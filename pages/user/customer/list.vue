@@ -21,14 +21,8 @@
 
 
     <v-row dense>
-      <v-col>
-        <v-toolbar-title class="font-weight-bold">
-          登録顧客一覧
-        </v-toolbar-title>
-      </v-col>
-      <v-divider />
       <v-col align="right" class="d-flex justify-end">
-        <v-btn rounded color="success" size="x-large" @click="entry">
+        <v-btn rounded color="primary" @click="entry">
           新規顧客登録
         </v-btn>
       </v-col>
@@ -48,7 +42,7 @@
                 </template>
 
                 <template #[`item.editItem`]="{ item }">
-                  <v-btn color="primary" fab small rounded dark @click="editItemInfo(item)">
+                  <v-btn color="secondary" fab small rounded dark @click="editItemInfo(item)">
                     編 集
                   </v-btn>
                 </template>
@@ -159,7 +153,6 @@ const selectCustomer = async (item) => {
     return
   }
   const selectCustomer = {
-    // id: item.raw.id,
     id: item.id,
     customerId: item.customerId,
     customerName: item.customerName,
