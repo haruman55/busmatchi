@@ -36,7 +36,7 @@
                 </template>
 
                 <template #[`item.editItem`]="{ item }">
-                  <v-btn color="primary" fab small rounded dark @click="editItemInfo(item)">
+                  <v-btn color="secondary" fab small rounded dark @click="editItemInfo(item)">
                     編 集
                   </v-btn>
                 </template>

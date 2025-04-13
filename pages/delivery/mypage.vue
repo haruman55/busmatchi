@@ -53,9 +53,6 @@
             </v-card-text>
             <v-card-text class="py-0" align="right">
             <v-img  width="200" height="200" src="/img/reservationIcon.png"/>
-            <!-- <v-icon color="red" icon="mdi-bus" size="70" />
-                  <v-icon color="indigo" icon="mdi-card-account-details-outline" size="70" />
-                  <v-icon color="success" icon="mdi-human-female-dance" size="70" /> -->
             </v-card-text>
 
           </v-card>

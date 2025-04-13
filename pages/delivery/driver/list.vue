@@ -30,12 +30,8 @@
           <v-row justify="center" no-gutters>
             <v-col>
               <v-data-table :headers="driverListHeaders" :items="driverList" class="text-pre-wrap bg-background">
-                <template #[`item.driverName`]="{ item }">
-                  {{ item.driverName }}
-                </template>
-
                 <template #[`item.editItem`]="{ item }">
-                  <v-btn color="primary" fab small rounded dark @click="editItemInfo(item)">
+                  <v-btn color="secondary" fab small rounded dark @click="editItemInfo(item)">
                     編 集
                   </v-btn>
                 </template>
