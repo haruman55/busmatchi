@@ -61,7 +61,7 @@
           <v-card>
             <v-row justify="center" no-gutters>
               <v-col>
-                <v-data-table :headers="deliveryUserHeaders" :items="deliveryUserList" class="text-pre-wrap">
+                <v-data-table :headers="deliveryUserHeaders" :items="deliveryCompanyList" class="text-pre-wrap">
                   <template #[`item.companyName`]="{ item }">
                     <a href="" @click.prevent.stop="selectDeliveryUser(item)">
                       {{ item.companyName }}</a>
@@ -82,6 +82,8 @@ const router = useRouter()
 const { $Const } = useNuxtApp()
 const { $swal } = useNuxtApp()
 const userData = useUserData();
+const db = useFirestore()
+
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
@@ -96,7 +98,10 @@ const { orderInfo, editOrderInfo, clearOrderInfo } = useOrderInfo()
 /**
    * 運送引受会社情報取得
    */
-const deliveryUserList = await userData.getDeliveryUser();
+const deliveryCompanyList = await db.getQueryDocument({
+    path: 'company',
+    where: [{ fieldPath: 'category', opStr: '==', value: $Const.CATEGORY_DELIVERY }],
+  })
 
 // 画面選択された申込運送引受会社情報を保持
 const { orderDeliveryUserInfo, editOrderDeliveryUserInfo, clearOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
@@ -129,11 +134,12 @@ const deliveryUserHeaders = [
     key: 'companyFax',
     sortable: true
   },
-  {
-    title: 'e-mailアドレス',
-    key: 'companyEmail',
-    sortable: true
-  },
+  // TODO:運送引受会社の代表e-mailは必要か？
+  // {
+  //   title: 'e-mailアドレス',
+  //   key: 'companyEmail',
+  //   sortable: true
+  // },
 
 ]
 // 運送引受会社-駐車地のデータテーブルヘッダ定義
@@ -162,18 +168,18 @@ const deliveryUserParkinParkinHeaders = [
 const getDeliveryUserParkingInfos = async () => {
 
   const deliveryUerBusParkingArray = []
-  for (let i = 0; i < deliveryUserList.length; i++) {
-    const companyId = deliveryUserList[i].companyId
+  for (let i = 0; i < deliveryCompanyList.length; i++) {
+    const companyId = deliveryCompanyList[i].id
     const parkingList = await userData.getParkingList(companyId)
     // const parkingArray = []
     for (let j = 0; j < parkingList.length; j++) {
       const parkingInfo = {
-        companyId: deliveryUserList[i].companyId,
-        companyName: deliveryUserList[i].companyName,
-        companyAddr: deliveryUserList[i].companyAddr,
-        companyEmail: deliveryUserList[i].companyEmail,
-        companyFax: deliveryUserList[i].companyFax,
-        companyTel: deliveryUserList[i].companyTel,
+        id: deliveryCompanyList[i].id,
+        companyName: deliveryCompanyList[i].companyName,
+        companyAddr: deliveryCompanyList[i].companyAddr,
+        // companyEmail: deliveryUserList[i].companyEmail,TODO:運送引受会社の代表e-mailは必要か？
+        companyFax: deliveryCompanyList[i].companyFax,
+        companyTel: deliveryCompanyList[i].companyTel,
         parkingId: parkingList[j].id,
         parking: parkingList[j].parking,
         parkingAddr: parkingList[j].parkingAddr,
@@ -209,7 +215,7 @@ const selectDeliveryUser = async (item) => {
   }
   const selectObject = {
     id: item.id,
-    companyId: item.companyId,
+    companyId: item.id,
     companyName: item.companyName,
     companyAddr: item.companyAddr,
     companyTel: item.companyTel,

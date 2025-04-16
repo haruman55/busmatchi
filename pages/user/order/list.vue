@@ -47,6 +47,7 @@
 const router = useRouter()
 const { $Const } = useNuxtApp()
 const userData = useUserData();
+const db = useFirestore()
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
@@ -178,15 +179,17 @@ const selectOrder = async (order) => {
   const { editOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
   if (order.deliveryCompanyId != null && order.deliveryCompanyId != '') {
     const deliveryCompanyDocId = order.deliveryCompanyId
-    const orderDeliveryUser = await userData.getUserData(deliveryCompanyDocId)
+    // const orderDeliveryUser = await userData.getUserData(deliveryCompanyDocId)
+    const orderDeliveryCompany = await db.getDocument({ path: 'company', docId: deliveryCompanyDocId })
+
     const deliveryUser = {
       id: deliveryCompanyDocId,
-      companyId: orderDeliveryUser.companyId,
-      companyName: orderDeliveryUser.companyName,
-      companyAddr: orderDeliveryUser.companyAddr,
-      companyTel: orderDeliveryUser.companyTel,
-      companyFax: orderDeliveryUser.companyFax,
-      companyEmail: orderDeliveryUser.companyEmail,
+      companyId: orderDeliveryCompany.id,
+      companyName: orderDeliveryCompany.companyName,
+      companyAddr: orderDeliveryCompany.companyAddr,
+      companyTel: orderDeliveryCompany.companyTel,
+      companyFax: orderDeliveryCompany.companyFax,
+      // companyEmail: orderDeliveryCompany.companyEmail,
       dispatchDate: order.dispatchDate,
       dispatchTime: dispatchTime,
       dispatchTimeHour: order.dispatchTimeHour,
