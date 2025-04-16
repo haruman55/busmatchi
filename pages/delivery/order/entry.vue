@@ -3,12 +3,11 @@
     <v-row no-gutters>
       <v-col>
         <v-breadcrumbs
-          :items="[
-            { title: 'マイページ', disabled: true },
-            { title: '案件管理', disabled: false, click: () => back() },
-            { title: '案件登録 ', disabled: true },
-          ]"
-        >
+:items="[
+          { title: 'マイページ', disabled: true },
+          { title: '案件管理', disabled: false, click: () => back() },
+          { title: '案件登録 ', disabled: true },
+        ]">
           <template #prepend>
             <v-icon icon="mdi-home" size="small" />
           </template>
@@ -21,6 +20,14 @@
             </v-breadcrumbs-item>
           </template>
         </v-breadcrumbs>
+      </v-col>
+    </v-row>
+
+    <v-row no-gutters>
+      <v-col align="center">
+        <div>
+          <h3 class="font-weight-bold text-h5">内容を確認し配車登録をしてください。</h3>
+        </div>
       </v-col>
     </v-row>
 
@@ -102,7 +109,7 @@
       <v-col cols="12" sm="6" md="6">
         <div>
           <v-sheet class="py-10 mx-auto text-start" max-width="500" color="transparent">
-            <p class="mb-2 font-weight-bold">配車情報</p>
+            <p class="mb-2 font-weight-bold">配車依頼内容</p>
             <v-divider class="mb-2 border-opacity-100" />
             <div class="py-2 d-flex justify-space-between">
               <span>乗車人員</span>
@@ -128,15 +135,19 @@
               <span>　マイクロ</span>
               <span>{{ orderInfo.vehicleTypeMicroAmount }}両</span>
             </div>
+            <div class="py-2 d-flex justify-space-between">
+              <span>座席</span>
+              <span>前向き</span>
+            </div>
 
-            
+
           </v-sheet>
         </div>
       </v-col>
       <v-col cols="12" sm="6" md="6">
         <div>
           <v-sheet class="py-10 mx-auto text-start" max-width="500" color="transparent">
-            <p class="mb-2 font-weight-bold">配車情報</p>
+            <p class="mb-2 font-weight-bold">配車依頼内容</p>
             <v-divider class="mb-2 border-opacity-100" />
             <div class="py-2 d-flex justify-space-between">
               <span>配車日時</span>
@@ -155,196 +166,153 @@
               <span>地図</span>
               <span></span>
             </div>
+            <div class="py-2 d-flex justify-space-between">
+              <span>有料道路</span>
+              <span>利用なし</span>
+            </div>
+            <div class="py-2 d-flex justify-space-between">
+              <span>駐車場</span>
+              <span>手配有/立替</span>
+            </div>
+            <div class="py-2 d-flex justify-space-between">
+              <span>ガイド</span>
+              <span>有</span>
+            </div>
+
           </v-sheet>
         </div>
       </v-col>
     </v-row>
-
     <v-row no-gutters>
-      <v-col>
-        <!-- <v-table class="table-border">
-          <tbody>
-            <tr>
-              <td colspan="2" align="center">申込日</td>
-              <td>令和7年3月14日</td>
-              <td>再FAX</td>
-              <td>/</td>
-              <td>/</td>
-              <td>/</td>
-              <td>/</td>
-              <td>ファイナル</td>
-              <td>/</td>
-            </tr>
-          </tbody>
-        </v-table> -->
-        <!-- <v-table class="table-border"> -->
-        <!-- <tbody>
-            <tr align="center">
-              <td rowspan="4">申込者</td>
-              <td rowspan="2">名称</td>
-              <td colspan="2" rowspan="2">{{ orderInfo.applicantCompanyName }}</td>
-              <td rowspan="2">申込者</td>
-              <td colspan="2" rowspan="2">{{ orderInfo.applicant }}</td>
-              <td>電話</td>
-              <td colspan="2">{{ orderInfo.applicantCompanyTel }}</td>
-            </tr>
-            <tr align="center">
-              <td>FAX</td>
-              <td colspan="2">{{ orderInfo.applicantCompanyFax }}</td>
-            </tr>
-            <tr align="center">
-              <td rowspan="2">住所</td>
-              <td colspan="5" rowspan="2">{{ orderInfo.applicantCompanyAddr }}</td>
-              <td>緊急連絡先</td>
-              <td>{{ orderInfo.emergencyContact }}</td>
-            </tr>
-            <tr align="center">
-              <td>e-mail</td>
-              <td>{{ orderInfo.applicantCompanyEmail }}</td>
-            </tr>
-          </tbody>
-          <tbody>
-            <tr align="center">
-              <td rowspan="5" align="center">お客様名</td>
-              <td>団体名</td>
-              <td class="text-h4" colspan="5">{{ orderInfo.tourOrganization }}</td>
-              <td colspan="2">{{ orderInfo.customerRemarks }}</td>
-            </tr>
-            <tr align="center">
-              <td rowspan="2">氏名<br />名称</td>
-              <td colspan="5" rowspan="2">{{ applicantCustomerInfo.customerName }}</td>
-              <td>電話</td>
-              <td>{{ applicantCustomerInfo.customerTel }}</td>
-            </tr>
-            <tr align="center">
-              <td>FAX</td>
-              <td>{{ applicantCustomerInfo.customerFax }}</td>
-            </tr>
-            <tr align="center">
-              <td rowspan="2">住所</td>
-              <td colspan="5" rowspan="2">{{ applicantCustomerInfo.customerAddr }}</td>
-              <td>直通</td>
-              <td>{{ applicantCustomerInfo.customerId }}</td>
-            </tr>
-            <tr align="center">
-              <td>e-mail</td>
-              <td>{{ applicantCustomerInfo.customerMail }}</td>
-            </tr>
-          </tbody> -->
-        <!-- <tbody>
-            <tr align="center">
-              <td rowspan="2" align="center">申込乗車人員</td>
-              <td rowspan="2">{{ orderInfo.passengers }}人</td>
-              <td colspan="2" rowspan="2">乗車定員別又は<br />車種別車両数</td>
-              <td>リフト</td>
-              <td>中型車</td>
-              <td>小型車</td>
-              <td>マイクロ</td>
-              <td>計</td>
-            </tr>
-            <tr align="center">
-              <td>{{ orderInfo.vehicleTypeLiftAmount }}両</td>
-              <td>{{ orderInfo.vehicleTypeMediumAmount }}両</td>
-              <td>{{ orderInfo.vehicleTypeSmallAmount }}両</td>
-              <td>{{ orderInfo.vehicleTypeMicroAmount }}両</td>
-              <td>{{ totalvehicleAmount }}両</td>
-            </tr>
-          </tbody> -->
 
-        <!-- <tbody>
-            <tr align="center">
-              <td rowspan="2" align="center">配車日時</td>
-              <td>日程</td>
-              <td colspan="3" class="text-h4">{{ orderInfo.dispatchDate }}</td>
-              <td rowspan="2" align="center">配車場所</td>
-              <td rowspan="2" align="center">{{ orderInfo.deliveryLocation }}</td>
-              <td rowspan="2" align="center">地図</td>
-              <td rowspan="2" align="center">有</td>
-            </tr>
-            <tr align="center">
-              <td>配車</td>
-              <td class="text-h4">{{ orderInfo.dispatchTime }}</td>
-              <td>出発</td>
-              <td class="text-h4">{{ orderInfo.departureTime }}</td>
-            </tr>
-          </tbody> -->
-        <!-- </v-table> -->
-        <v-table class="table-border">
-          <tbody>
-            <tr>
-              <td>有料道路</td>
-              <td colspan="3">利用なし(TODO:入力項目なし)</td>
-              <td rowspan="2">座席</td>
-              <td rowspan="2">前向き(TODO:入力項目なし)</td>
-              <td rowspan="2">ガイド</td>
-              <td rowspan="2">無(TODO:入力項目なし)</td>
-            </tr>
-            <tr>
-              <td>駐車場</td>
-              <td>立替(TODO:入力項目なし)</td>
-              <td>駐車場の手配</td>
-              <td>有(TODO:入力項目なし)</td>
-            </tr>
-          </tbody>
-        </v-table>
+      <v-col cols="12" sm="6" md="6">
+        <div>
+          <v-sheet class="py-10 mx-auto text-start" max-width="500" color="transparent">
+            <p class="mb-2 font-weight-bold">旅程</p>
+            <v-divider class="mb-2 border-opacity-100" />
+            <div class="py-2 d-flex justify-space-between">
+              <v-table class="text-pre-wrap bg-background">
+                <tbody>
+                  <tr class="dashed-border" align="center">
+                    <td>{{ orderInfo.dispatchDate }}</td>
+                    <td>{{ orderOperationInfo.itinerary1Top }}</td>
+                  </tr>
+                  <tr class="dashed-border" align="center">
+                    <td>{{ orderInfo.dispatchTime }}発</td>
+                    <td>{{ orderOperationInfo.timeschedule1Top }}</td>
+                  </tr>
+
+                  <tr class="thick-border" align="center">
+                    <td>日</td>
+                    <td>{{ orderOperationInfo.itinerary1Bottom }}</td>
+                  </tr>
+                  <tr class="thick-border" align="center">
+                    <td>発</td>
+                    <td>{{ orderOperationInfo.timeschedule1Bottom }}</td>
+                  </tr>
+                  <tr class="thick-border" align="center">
+                    <td>終着</td>
+                    <td>{{ orderOperationInfo.endDate }} {{ orderOperationInfo.endingTime }}</td>
+                  </tr>
+                  <tr class="thick-border" align="center">
+                    <td>場所</td>
+                    <td>{{ orderOperationInfo.terminalLocation }}</td>
+                  </tr>
+
+                </tbody>
+              </v-table>
+            </div>
+          </v-sheet>
+        </div>
       </v-col>
+      <v-col cols="12" sm="6" md="6">
+        <div>
+          <v-sheet class="py-10 mx-auto text-start" max-width="500" color="transparent">
+            <p class="mb-2 font-weight-bold">宿泊場所</p>
+            <v-divider class="mb-2 border-opacity-100" />
+            <div class="py-2 d-flex justify-space-between">
+              <span>名称</span>
+              <span>{{ orderOperationInfo.accommodations1 }} </span>
+            </div>
+            <div class="py-2 d-flex justify-space-between">
+              <span>電話</span>
+              <span>{{ orderOperationInfo.accommodationsTel1 }} </span>
+            </div>
+            <div class="py-2 d-flex justify-space-between">
+              <span>住所</span>
+              <span>{{ orderOperationInfo.accommodationsAddr1 }} </span>
+            </div>
+          </v-sheet>
+        </div>
+      </v-col>
+
     </v-row>
 
-    <!-- </v-container> -->
 
     <!-- TODO:以下 運行情報 については一旦日帰りで実装。数日の旅程の場合はデータの持ち方や表示を検討必要 -->
-    <!-- <v-container> -->
-    <v-row>
-      <v-table class="table-border">
-        <thead>
-          <tr align="center">
-            <th width="80%" colspan="2" class="text-center">旅程</th>
-            <th class="text-center" colspan="2">宿泊場所</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="dashed-border" align="center">
-            <td>{{ orderInfo.dispatchDate }}</td>
-            <td>{{ orderOperationInfo.itinerary1Top }}</td>
-            <td>名称</td>
-            <td>{{ orderOperationInfo.accommodations1 }}</td>
-          </tr>
-          <tr class="thick-border" align="center">
-            <td>{{ orderInfo.dispatchTime }}発</td>
-            <td>{{ orderOperationInfo.timeschedule1Top }}</td>
-            <td>電話</td>
-            <td>{{ orderOperationInfo.accommodationsTel1 }}</td>
-          </tr>
-          <tr class="dashed-border" align="center">
-            <td align="right">日</td>
-            <td>{{ orderOperationInfo.itinerary1Bottom }}</td>
+    <!-- <v-row>
+      <v-col cols="12">
+        <div>
+          <v-sheet class="py-10 mx-auto text-start" max-width="1000" color="transparent">
+            <p class="mb-2 font-weight-bold">旅程</p>
+            <v-divider class="mb-2 border-opacity-100" />
 
-            <td rowspan="2">住所</td>
-            <td rowspan="2">{{ orderOperationInfo.accommodationsAddr1 }}</td>
-          </tr>
-          <tr class="thick-border" align="center">
-            <td>発</td>
-            <td>{{ orderOperationInfo.timeschedule1Bottom }}</td>
-          </tr>
-        </tbody>
-        <tbody>
-          <tr class="dashed-border" align="center">
-            <td>終着</td>
-            <td class="text-h4">{{ orderOperationInfo.endDate }} {{ orderOperationInfo.endingTime }}</td>
-            <td>場所</td>
-            <td>{{ orderOperationInfo.terminalLocation }}</td>
-          </tr>
-        </tbody>
-      </v-table>
-    </v-row>
-    <!-- </v-container>
+            <v-table class="text-pre-wrap bg-background">
+              <thead>
+                <tr align="center">
+                  <th width="80%" colspan="2" class="text-center">旅程</th>
+                  <th class="text-center" colspan="2">宿泊場所</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="dashed-border" align="center">
+                  <td>{{ orderInfo.dispatchDate }}</td>
+                  <td>{{ orderOperationInfo.itinerary1Top }}</td>
+                  <td>名称</td>
+                  <td>{{ orderOperationInfo.accommodations1 }}</td>
+                </tr>
+                <tr class="thick-border" align="center">
+                  <td>{{ orderInfo.dispatchTime }}発</td>
+                  <td>{{ orderOperationInfo.timeschedule1Top }}</td>
+                  <td>電話</td>
+                  <td>{{ orderOperationInfo.accommodationsTel1 }}</td>
+                </tr>
+                <tr class="dashed-border" align="center">
+                  <td align="right">日</td>
+                  <td>{{ orderOperationInfo.itinerary1Bottom }}</td>
 
-    <v-container> -->
+                  <td rowspan="2">住所</td>
+                  <td rowspan="2">{{ orderOperationInfo.accommodationsAddr1 }}</td>
+                </tr>
+                <tr class="thick-border" align="center">
+                  <td>発</td>
+                  <td>{{ orderOperationInfo.timeschedule1Bottom }}</td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr class="dashed-border" align="center">
+                  <td>終着</td>
+                  <td class="text-h4">{{ orderOperationInfo.endDate }} {{ orderOperationInfo.endingTime }}</td>
+                  <td>場所</td>
+                  <td>{{ orderOperationInfo.terminalLocation }}</td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-sheet>
+        </div>
+      </v-col>
+    </v-row> -->
+
     <v-row>
-      <v-col>
+      <v-col col="12">
         <v-card variant="outlined" class="color-outline" elevation="3">
           <v-container fluid>
-            <v-card-title class="color-title">運送引受会社</v-card-title>
+            <v-card-title class="color-title">運送引受会社
+              <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                必須
+              </v-chip>
+
+            </v-card-title>
             <v-row>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field v-model="counterPersonMain" label="担当者①" outlined />
@@ -355,183 +323,143 @@
             </v-row>
 
             <v-btn
-              v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE"
-              rounded
-              dark
-              size="x-large"
-              color="yellow"
-              class="mb-2 pr-8 pl-8"
-              @click="entry"
-            >
+v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE" rounded
+              dark color="yellow" class="mb-2 pr-8 pl-8" @click="entry">
               配車情報を登録する
             </v-btn>
             <v-overlay :model-value="loading" class="align-center justify-center">
               <v-progress-circular color="primary" size="150" width="20" indeterminate />
             </v-overlay>
 
-            <v-table class="table-border">
-              <tbody>
-                <tr>
-                  <!-- <td rowspan="6">運送引受会社</td> -->
-                  <td>名称</td>
-                  <td class="text-h5" colspan="5">
-                    {{ orderDeliveryUserInfo.companyName }} {{ orderDeliveryUserInfo.companyTel }}
-                  </td>
-                  <!-- <td>ご担当者様</td>
-                      <td colspan="2"><v-text-field v-model="counterPersonMain" class="mt-4" outlined /></td> -->
-                </tr>
-                <tr>
-                  <td>住所</td>
-                  <td colspan="5">{{ orderDeliveryUserInfo.companyAddr }}</td>
-                  <!-- <td>ご担当者様</td>
-                      <td colspan="2"><v-text-field v-model="counterPersonSub" class="mt-4" outlined /></td> -->
-                </tr>
-                <tr>
-                  <td rowspan="2" />
-                  <td colspan="3" rowspan="2" />
-                  <td>電話</td>
-                  <td colspan="2">{{ orderDeliveryUserInfo.companyTel }}</td>
-                </tr>
-                <tr>
-                  <td>FAX</td>
-                  <td colspan="2">{{ orderDeliveryUserInfo.companyFax }}</td>
-                </tr>
-                <tr>
-                  <td rowspan="2">事業許可</td>
-                  <td colspan="3">昭和 年 月 日 第 号</td>
-                  <td>車庫番</td>
-                  <td colspan="2" />
-                </tr>
-                <tr>
-                  <td colspan="3">営業区域：</td>
-                  <td>e-mail</td>
-                  <td colspan="2">{{ orderDeliveryUserInfo.companyEmail }}</td>
-                </tr>
-              </tbody>
-            </v-table>
-            <v-table v-if="dispatchInfo.busList.length > 0">
-              <thead>
-                <tr align="center">
-                  <th colspan="5" class="text-center">配車</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(bus, index) in dispatchInfo.busList" :key="bus.id">
-                  <td>車両{{ index + 1 }}</td>
-                  <td colspan="2">{{ bus.vehicleNo }}</td>
-                  <td colspan="2">{{ $Const.VEHICLE_TYPE_DISP[bus.vehicleType].text }}</td>
-                </tr>
-              </tbody>
+            <v-row v-if="dispatchInfo.busList.length > 0" class="mb-4">
+              <!-- 配車情報 -->
+              <v-col v-for="(bus, index) in dispatchInfo.busList" :key="bus.id" cols="12" sm="6" md="4" class="py-2">
+                <v-card
+outlined prepend-icon="mdi-bus" :title="$Const.VEHICLE_TYPE_DISP[bus.vehicleType].text"
+                  :subtitle="bus.vehicleNo" color="background" class="text-body-2">
+                  <template #append>
+                    <v-icon size="small" @click="removeBus(index)">
+                      mdi-close
+                    </v-icon>
+                  </template>
+                </v-card>
+              </v-col>
+            </v-row>
 
-              <thead>
-                <tr align="center">
-                  <th colspan="5" class="text-center">乗務員</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(driver, index) in dispatchInfo.driverList" :key="driver.id">
-                  <td>ドライバー{{ index + 1 }}</td>
-                  <td colspan="2">{{ driver.driverName }}</td>
-                  <td>連絡先</td>
-                  <td colspan="2">{{ driver.contact }}</td>
-                </tr>
-                <tr v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id">
-                  <td>ガイド{{ index + 1 }}</td>
-                  <td colspan="2">{{ guide.guideName }}</td>
-                </tr>
-              </tbody>
-            </v-table>
+            <v-row v-if="dispatchInfo.driverList.length > 0" class="mb-4">
+              <!-- 乗務員情報 -->
+              <v-col
+v-for="(driver, index) in dispatchInfo.driverList" :key="driver.id" cols="12" sm="6" md="4"
+                class="py-2">
+                <v-card
+outlined prepend-icon="mdi-card-account-details-outline" :title="driver.driverName"
+                  :subtitle="driver.contact" color="background" class="text-body-2">
+                  <template #append>
+                    <v-icon size="small" @click="removeDriver(index)">
+                      mdi-close
+                    </v-icon>
+                  </template>
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-row v-if="dispatchInfo.guideList.length > 0" class="mb-4">
+              <!-- ガイド情報 -->
+              <v-col
+v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id" cols="12" sm="6" md="4"
+                class="py-2">
+                <v-card
+outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName" color="background"
+                  class="text-body-2">
+                  <template #append>
+                    <v-icon size="small" @click="removeGuide(index)">
+                      mdi-close
+                    </v-icon>
+                  </template>
+
+                </v-card>
+
+              </v-col>
+            </v-row>
+
           </v-container>
         </v-card>
       </v-col>
     </v-row>
-    <!-- </v-container> -->
-
-    <!-- <v-container> -->
     <v-row>
-      <v-card variant="outlined" class="color-outline" elevation="3">
-        <v-container fluid>
-          <v-card-title class="color-title">支払い</v-card-title>
+      <v-col col="12">
+        <v-card variant="outlined" class="color-outline" elevation="3" color="background">
+          <v-container fluid>
+            <v-card-title class="color-title">支払い</v-card-title>
 
-          <v-row>
-            <v-col cols="12" sm="6" md="6">
-              <v-row>
-                <v-col cols="12">
-                  <v-table class="table-border">
-                    <tbody>
-                      <tr>
-                        <td>運賃及び料金の支払い方法</td>
-                        <td colspan="4">{{ dispPaymentType }}</td>
-                      </tr>
-                      <tr>
-                        <td>適用を受けようとする割引</td>
-                        <td colspan="4">{{ dispDiscount }}</td>
-                      </tr>
-                      <tr>
-                        <td>特約事項</td>
-                        <td colspan="4">{{ orderInfo.specialTerms }}</td>
-                      </tr>
-                      <tr>
-                        <td>備考</td>
-                        <td colspan="4">{{ orderInfo.remarks }}</td>
-                      </tr>
-                    </tbody>
-                  </v-table>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col cols="12" sm="6" md="6">
-              <v-card class="mx-auto" elevation="3">
-                <v-card-title>運賃・料金</v-card-title>
-                <v-card-item>
-                  <v-text-field v-model="orderAmount" suffix="円" label="料 金" @update:model-value="editOrderAmount" />
-                  <v-text-field v-model="actualCost" suffix="円" label="実 費" @update:model-value="editActualCost" />
-                  <v-card-text
-                    >合計金額:{{ totalAmount }} 円<v-checkbox v-model="isTaxIn" label="税込み" @click="formatTax"
-                  /></v-card-text>
-                  <v-card-text
-                    >支払期日
-                    <datepicker
-                      v-model="paymentDueDate"
-                      :teleport="true"
-                      locale="jp"
-                      auto-apply
-                      :enable-time-picker="false"
-                      format="yyyy/MM/dd"
-                      model-type="yyyy/MM/dd"
-                    />
+            <v-row>
+              <v-col cols="12" sm="6" md="6">
+                <v-card class="mx-auto" elevation="3" color="background">
+                  <v-card-title>運賃及び料金の支払い方法</v-card-title>
+                  <v-card-text>
+                    <div class="py-2 d-flex justify-space-between">
+                      <span>運賃及び料金の支払い方法</span>
+                      <span>{{ dispPaymentType }}</span>
+                    </div>
+                    <div class="py-2 d-flex justify-space-between">
+                      <span>適用を受けようとする割引</span>
+                      <span>{{ dispDiscount }}</span>
+                    </div>
+                    <div class="py-2 d-flex justify-space-between">
+                      <span>特約事項</span>
+                      <span>{{ orderInfo.specialTerms }}</span>
+                    </div>
+                    <div class="py-2 d-flex justify-space-between">
+                      <span>備考</span>
+                      <span>{{ orderInfo.remarks }}</span>
+                    </div>
                   </v-card-text>
-                </v-card-item>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-      <!-- </v-container> -->
+                </v-card>
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-card class="mx-auto" elevation="3" color="background">
+                  <v-card-title>運賃・料金</v-card-title>
+                  <v-card-item>
+                    <v-text-field v-model="orderAmount" suffix="円" label="料 金" @update:model-value="editOrderAmount" />
+                    <v-text-field v-model="actualCost" suffix="円" label="実 費" @update:model-value="editActualCost" />
+                    <v-card-text>合計金額:{{ totalAmount }} 円<v-checkbox
+v-model="isTaxIn" label="税込み"
+                        @click="formatTax" /></v-card-text>
+                    <v-card-text>支払期日
+                      <datepicker
+v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
+                        :enable-time-picker="false" format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
+                    </v-card-text>
+                  </v-card-item>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-col>
     </v-row>
 
     <br />
 
-    <!-- <v-container class="align-center" fluid> -->
     <v-row justify="center" no-gutters>
       <v-col align="center">
-        <v-btn rounded dark size="x-large" color="grey" class="mb-2 pr-8 pl-8" @click="back"> 戻 る </v-btn>
+        <v-btn rounded dark color="grey" class="mb-2 pr-8 pl-8" @click="back"> 戻 る </v-btn>
       </v-col>
       <v-spacer />
 
       <v-col v-if="orderInfo.state == $Const.STATUS_REQUEST" align="center">
-        <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="undertake">
+        <v-btn rounded dark color="primary" class="mb-2 pr-8 pl-8" @click="undertake">
           運送手配を引き受ける
         </v-btn>
       </v-col>
       <v-col v-else-if="orderInfo.state == $Const.STATUS_PAYMENT_METHOD_CONFIRMED" align="center">
-        <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="settlement">
+        <v-btn rounded dark color="primary" class="mb-2 pr-8 pl-8" @click="settlement">
           運送の完了報告と実費精算
         </v-btn>
       </v-col>
 
       <v-col v-else-if="orderInfo.state == $Const.STATUS_TRANSPORTATION_COMPLETED" align="center">
-        <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="confirmation">
+        <v-btn rounded dark color="primary" class="mb-2 pr-8 pl-8" @click="confirmation">
           入金を確認しました
         </v-btn>
       </v-col>
@@ -539,14 +467,8 @@
       <v-spacer />
       <v-col align="center">
         <v-btn
-          v-if="orderInfo.state == $Const.STATUS_REQUEST"
-          rounded
-          dark
-          size="x-large"
-          color="red"
-          class="mb-2 pr-8 pl-8"
-          @click="deny"
-        >
+v-if="orderInfo.state == $Const.STATUS_REQUEST" rounded dark color="secondary" class="mb-2 pr-8 pl-8"
+          @click="deny">
           運送手配を断る
         </v-btn>
       </v-col>
@@ -751,6 +673,27 @@ const entry = () => {
   // 画面遷移
   router.push('/delivery/order/dispatch')
 }
+
+/**
+ * 配車情報を削除する関数
+ */
+const removeBus = (index) => {
+  dispatchInfo.value.busList.splice(index, 1); // 指定したインデックスの配車情報を削除
+};
+
+/**
+ * 乗務員情報を削除する関数
+ */
+const removeDriver = (index) => {
+  dispatchInfo.value.driverList.splice(index, 1); // 指定したインデックスの乗務員情報を削除
+};
+/**
+ * ガイド情報を削除する関数
+ */
+const removeGuide = (index) => {
+  dispatchInfo.value.guideList.splice(index, 1); // 指定したインデックスのガイド情報を削除
+};
+
 
 /** 運送依頼を引き受ける */
 const undertake = async () => {
