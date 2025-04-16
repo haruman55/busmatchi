@@ -1,86 +1,94 @@
 <template>
-  <div>
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-          <v-card-text class="font-weight-bold text-h5">
-            <v-icon left x-large @click="back">
-              mdi-close
-            </v-icon>
-            バス情報を登録する
-          </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: true },
+          { title: 'バス管理', disabled: false, to: '/delivery/bus/list' },
+          { title: 'バス登録', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
+    <v-row class="pb-10" no-gutters>
+      <v-col align="center">
+        <div>
+          <h3 class="font-weight-bold text-h5">バス情報を入力してください</h3>
 
-    <v-container>
-      <v-form ref="entry_form">
-        <v-row justify="center" no-gutters>
-          <v-col>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="vehicleNo" label="車両ナンバー" outlined />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-select
-v-model="vehicleType" label="車両タイプ" item-title="disp" item-value="code"
-                      :items="$Const.VEHICLE_TYPE" class="ma-2 pa-2" />
-                  </v-col>
-
-
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="remarks" label="備考" outlined />
-                  </v-col>
-
-                </v-row>
-              </v-container>
-            </v-card-text>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col>
-            <v-card>
-              <v-row justify="center" no-gutters>
-                <v-col>
-                  <v-data-table :headers="parkingListHeaders" :items="parkigList" class="text-pre-wrap">
-                    <template #[`item.checkItem`]="{ item }">
-                      <v-radio-group v-model="selectPaking" inline class="mt-4 ">
-                        <v-radio :value="item.id"  @click="setParking(item)" />
-                      </v-radio-group>
-                      <!-- {{ item.parking }} -->
-                      <!-- <div v-if="act == $Const.USER_ACTION_ORDER"> -->
-                      <!-- <a href="" @click.prevent.stop="selectDriver(item)">
-                      {{ item.driverName }}</a> -->
-
-                    </template>
-                  </v-data-table>
-
+          <v-sheet class="py-10 mx-auto text-start" max-width="500" color="transparent">
+            <v-form>
+              <v-row no-gutters>
+                <v-col v-for="form in busForms" :key="form.key" class="pa-2" :cols="form.cols">
+                  <p>
+                    <span class="text-body-2">{{ form.title }}</span>
+                    <v-chip v-if="form.required" class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                      必須
+                    </v-chip>
+                  </p>
+                  <!-- v-text-fieldを表示 -->
+                  <v-text-field
+v-if="form.type !== 'select'" v-model="form.value" :prepend-inner-icon="form.icon"
+                    :placeholder="form.placeholder" :label="form.title" :hint="form.hint" persistent-hint
+                    :error-messages="form.errorMessage" density="comfortable" />
+                  <!-- v-selectを表示 -->
+                  <v-select
+v-else v-model="form.value" :prepend-inner-icon="form.icon" :placeholder="form.placeholder"
+                    :label="form.title" :items="$Const.VEHICLE_TYPE" item-title="disp" item-value="code"
+                    :hint="form.hint" persistent-hint :error-messages="form.errorMessage" density="comfortable" />
                 </v-col>
               </v-row>
-            </v-card>
-          </v-col>
-        </v-row>
+            </v-form>
+          </v-sheet>
+        </div>
+      </v-col>
 
-        <br>
+    </v-row>
 
-        <v-row justify="center" no-gutters>
-          <v-col align="center">
-            <v-btn block rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="entry">
-              登 録
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
-    </v-container>
-  </div>
+
+    <v-row dense>
+      <v-col>
+        <v-card>
+          <v-row justify="center" no-gutters>
+            <v-col>
+              <v-data-table :headers="parkingListHeaders" :items="parkigList" class="text-pre-wrap bg-background">
+                <template #[`item.checkItem`]="{ item }">
+                  <v-radio-group v-model="selectPaking" inline class="mt-4 ">
+                    <v-radio :value="item.id" @click="setParking(item)" />
+                  </v-radio-group>
+                </template>
+              </v-data-table>
+
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <br>
+
+    <v-row justify="center" no-gutters>
+      <v-col align="center">
+        <div>
+          <v-btn class="ml-4" color="primary" flat rounded @click="entry">登 録</v-btn>
+        </div>
+
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script setup>
 const { $Const } = useNuxtApp();
 const { $swal } = useNuxtApp()
 const router = useRouter()
+const db = useFirestore()
+
 const userData = useUserData();
 // 共通関数の呼び出し
 const utils = useUtils();
@@ -88,10 +96,42 @@ const utils = useUtils();
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
 
-//画面入力項目
-const vehicleNo = ref('')
-const vehicleType = ref('')
-const remarks = ref('')
+// バス情報の入力状態管理フォーム
+const busForms = ref([
+  {
+    title: '車両ナンバー',
+    key: 'vehicleNo',
+    value: '',
+    required: true,
+    icon: 'mdi-office-building-outline',
+    placeholder: '',
+    type: 'text',
+    cols: 12,
+  },
+  {
+    title: '車両タイプ',
+    key: 'vehicleType',
+    value: '',
+    required: true,
+    icon: 'mdi-office-building-marker-outline',
+    placeholder: '',
+    type: 'select',
+    cols: 12,
+  },
+  {
+    title: '備考',
+    key: 'remarks',
+    value: '',
+    required: false,
+    icon: 'mdi-note-outline',
+    placeholder: '',
+    type: 'text',
+    cols: 12,
+  },
+])
+
+
+
 // 選択用の駐車場情報
 const parkigList = await userData.getParkingList(keyUserId)
 const selectPaking = ref('')
@@ -124,40 +164,17 @@ const setParking = (item) => {
   selectPaking.value = item.id
 
 }
-/** 前の画面へ戻る */
-const back = () => {
 
-  // 画面遷移
-  router.push('/delivery/bus/list')
-}
 /**
  * バス情報を登録する
  */
 const entry = async () => {
-  if (vehicleNo.value === '') {
-    $swal.fire({
-      text: '車両ナンバーを入力してください。',
-      confirmButtonColor: "#00BCD4",
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    return
-  }
-  if (vehicleType.value === '') {
-    $swal.fire({
-      text: '車両タイプを選択してください。',
-      confirmButtonColor: "#00BCD4",
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    return
-  }
+  for (const f of busForms.value) f.errorMessage = f.required && !f.value ? '必須入力です' : ''
+  if (busForms.value.some((f) => !!f.errorMessage)) return
 
   if (selectPaking.value === '') {
     $swal.fire({
-      html: '駐車場が選択されていません。選択してください。<br>選択肢がない場合はマイページから駐車場を選択して登録してください。',
+      html: '駐車地が選択されていません。選択してください。<br>選択肢がない場合はマイページから駐車地を登録してください。',
       confirmButtonColor: "#00BCD4",
       showCancelButton: false,
       confirmButtonText: 'OK',
@@ -165,9 +182,6 @@ const entry = async () => {
     })
     return
   }
-
-
-
 
   let confirmRes = false
   await $swal.fire({
@@ -184,19 +198,27 @@ const entry = async () => {
   if (!confirmRes) {
     return
   }
+  const getValue = (forms, key) => utils.toBlank(forms.value.find((f) => f.key === key).value)
+  const items = []
 
-  const object = {
-    companyId: keyUserId,
-    vehicleNo: vehicleNo.value,
-    vehicleType: vehicleType.value,
-    remarks: remarks.value,
+  const busDocId = db.createDocId('bus')
+  items.push({
+    method: 'set',
+    path: 'bus',
+    docId: busDocId,
+    data: {
+      companyId: keyUserId,
+      vehicleNo: getValue(busForms, 'vehicleNo'),
+      vehicleType: getValue(busForms, 'vehicleType'),
+      remarks: getValue(busForms, 'remarks'),
     // バスが配置されている駐車場のdocid
     parkingId: selectPaking.value,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-  await userData.addBus(object)
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  })
 
+  await db.writeTransaction(items)
   router.push('/delivery/bus/list')
 }
 

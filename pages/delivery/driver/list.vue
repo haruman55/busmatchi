@@ -1,66 +1,57 @@
 <template>
-  <div>
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-          <v-card-text class="font-weight-bold text-h5">
-            <v-icon left x-large @click="back">
-              mdi-close
-            </v-icon>
-            バス運転手
-          </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
-      <v-toolbar-title class="font-weight-bold">
-        運転手一覧<v-divider />
-      </v-toolbar-title>
-      <v-btn rounded color="success" size="x-large" @click="entry">
-        運転手登録
-      </v-btn>
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col>
-          <v-card>
-            <v-row justify="center" no-gutters>
-              <v-col>
-                <v-data-table :headers="driverListHeaders" :items="driverList" class="text-pre-wrap">
-                  <template #[`item.driverName`]="{ item }">
-                    <!-- <div v-if="act == $Const.USER_ACTION_ORDER"> -->
-                    <!-- <a href="" @click.prevent.stop="selectDriver(item)">
-                      {{ item.driverName }}</a> -->
-                    {{ item.driverName }}
-                  </template>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: false, to: '/delivery/mypage' },
+          { title: '運転手管理', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
 
-                  <template #[`item.editItem`]="{ item }">
-                    <v-btn color="primary" fab small rounded dark @click="editItemInfo(item)">
-                      編 集
-                    </v-btn>
-                  </template>
-                </v-data-table>
+    <v-row no-gutters>
+      <v-col align="right">
+        <v-btn rounded color="primary" @click="entry">
+          運転手登録
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-row justify="center" no-gutters>
+            <v-col>
+              <v-data-table :headers="driverListHeaders" :items="driverList" class="text-pre-wrap bg-background">
+                <template #[`item.editItem`]="{ item }">
+                  <v-btn color="secondary" fab small rounded dark @click="editItemInfo(item)">
+                    編 集
+                  </v-btn>
+                </template>
+              </v-data-table>
 
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+  <!-- </div> -->
 </template>
 <script setup>
 const router = useRouter()
-const { $Const } = useNuxtApp()
-const { $swal } = useNuxtApp()
 const userData = useUserData();
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
 
-// ユーザ操作情報を保持
-const { actionInfo } = useAction()
-const act = actionInfo.value.act
 
 // 運転手情報オブジェクトを保持
 const { editDriverInfo } = useDriverInfo()
@@ -102,53 +93,6 @@ const driverListHeaders = [
   },
 ]
 
-/**
- * バス運転手を選択する
- */
-const selectDriver = async (item) => {
-  let confirmRes = false
-  await $swal.fire({
-    text: 'バス運転手を選択します。よろしいですか？',
-    showCancelButton: true,
-    confirmButtonColor: "#00BCD4",
-    cancelButtonColor: "#CFD8DC",
-    confirmButtonText: 'はい。',
-    cancelButtonText: 'キャンセル',
-    icon: 'info'
-  }).then((res) => {
-    confirmRes = res.isConfirmed
-  })
-  if (!confirmRes) {
-    return
-  }
-  const selectDriver = {
-    id: item.id,
-    companyId: item.companyId,
-    driverName: item.driverName,
-    driverNameKana: item.driverNameKana,
-    contact: item.contact,
-    remarks: item.remarks
-  }
-  // 画面設定値をStateへ情報保存
-  editDriverInfo(selectDriver)
-
-  // 画面遷移
-  router.push('/user/order/entryBaseInfo')
-
-}
-/** 前の画面へ戻る */
-const back = () => {
-  // if (act == $Const.USER_ACTION_ORDER) {
-  // 画面遷移
-  // router.push('/user/order/entryBaseInfo')
-  router.push('/delivery/mypage')
-
-  // } else {
-  //   // 画面遷移
-  //   router.push('/delivery/mypage')
-
-  // }
-}
 /**
    * バス運転手登録画面へ遷移
    */
