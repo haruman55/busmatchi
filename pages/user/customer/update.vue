@@ -1,74 +1,137 @@
 <template>
-  <div>
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-          <v-card-text class="font-weight-bold text-h5">
-            <v-icon left x-large @click="back">
-              mdi-close
-            </v-icon>
-            顧客情報を更新する
-          </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs :items="breadcrumbs">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+          <template #item="{ item }">
+            <v-breadcrumbs-item :disabled="item.disabled" @click="item.click && item.click()">
+              {{ item.title }}
+            </v-breadcrumbs-item>
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
+    <v-row class="pb-10" no-gutters>
+      <v-col align="center">
+        <div>
+          <h3 class="font-weight-bold text-h5">お客様情報を編集してください</h3>
 
-    <v-container>
-      <v-form ref="entry_form">
-        <v-row justify="center" no-gutters>
-          <v-col>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="customerName" label="顧客名" outlined />
-                  </v-col>
+          <v-sheet class="py-10 mx-auto text-start" max-width="500" color="transparent">
+            <v-form>
+              <v-row no-gutters>
+                <v-col v-for="form in customerForms" :key="form.key" class="pa-2" :cols="form.cols">
+                  <p>
+                    <span class="text-body-2">{{ form.title }}</span>
+                    <v-chip v-if="form.required" class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                      必須
+                    </v-chip>
+                  </p>
+                  <v-text-field
+v-model="form.value" :prepend-inner-icon="form.icon" :placeholder="form.placeholder"
+                    :hint="form.hint" persistent-hint :error-messages="form.errorMessage" density="comfortable" />
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-sheet>
+          <div>
+            <v-btn class="ml-4" color="primary" size="x-large" flat rounded @click="update">更 新</v-btn>
+          </div>
+        </div>
 
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="customerAddr" label="住所" outlined />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="customerTel" label="Tel" outlined />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="customerFax" label="Fax" outlined />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field v-model="customerMail" label="e-Mail" outlined />
-                  </v-col>
+      </v-col>
+    </v-row>
 
-
-                </v-row>
-              </v-container>
-            </v-card-text>
-          </v-col>
-        </v-row>
-
-        <v-row justify="center" no-gutters>
-          <v-col align="center">
-            <v-btn block rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="update">
-              更 新
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
-    </v-container>
-  </div>
+  </v-container>
 </template>
 <script setup>
 const { $swal } = useNuxtApp()
+const { $Const } = useNuxtApp()
 const router = useRouter()
-const userData = useUserData();
+const db = useFirestore()
+
 // 共通関数の呼び出し
 const utils = useUtils();
+// ユーザ操作情報を保持
+const { actionInfo } = useAction()
+const act = actionInfo.value.act
+
+// 遷移元によるパンくずの表示切替
+const breadcrumbs = computed(() => {
+  if (act === $Const.USER_ACTION_ORDER) {
+    return [
+      { title: 'マイページ', disabled: true },
+      { title: '案件管理', disabled: true },
+      { title: '案件登録', disabled: true },
+      { title: '顧客管理', disabled: false, click: () => back() },
+      { title: '顧客編集', disabled: true },
+    ];
+  } else {
+    return [
+      { title: 'マイページ', disabled: true },
+      { title: '顧客管理', disabled: false, click: () => back() },
+      { title: '顧客編集', disabled: true },
+    ];
+  }
+});
+
 // 顧客情報の状態管理
 const { customerInfo, clearCustomerInfo } = useCustomerInfo()
 
-const customerName = ref(customerInfo.value.customerName)
-const customerAddr = ref(customerInfo.value.customerAddr)
-const customerTel = ref(customerInfo.value.customerTel)
-const customerFax = ref(customerInfo.value.customerFax)
-const customerMail = ref(customerInfo.value.customerMail)
+// 顧客情報の入力状態管理フォーム
+const customerForms = ref([
+  {
+    title: '顧客名',
+    key: 'customerName',
+    value: customerInfo.value.customerName,
+    required: true,
+    icon: 'mdi-office-building-outline',
+    placeholder: '',
+    cols: 12,
+  },
+  {
+    title: '住所',
+    key: 'customerAddr',
+    value: customerInfo.value.customerAddr,
+    required: false,
+    icon: 'mdi-office-building-marker-outline',
+    placeholder: '',
+    cols: 12,
+  },
+  {
+    title: '電話番号',
+    key: 'customerTel',
+    value: customerInfo.value.customerTel,
+    required: false,
+    icon: 'mdi-phone-outline',
+    placeholder: '',
+    cols: 6,
+  },
+  {
+    title: 'FAX',
+    key: 'customerFax',
+    value: customerInfo.value.customerFax,
+    required: false,
+    icon: 'mdi-fax',
+    placeholder: '',
+    cols: 6,
+  },
+  {
+    title: 'Emailアドレス',
+    key: 'customerMail',
+    value: customerInfo.value.customerMail,
+    required: false,
+    icon: 'mdi-email-outline',
+    placeholder: '',
+    cols: 12,
+  },
+])
+
 
 
 /** 前の画面へ戻る */
@@ -83,16 +146,13 @@ const back = () => {
  * 顧客情報を更新する。
  */
 const update = async () => {
-  if (customerName.value === '') {
-    $swal.fire({
-      text: '顧客名を入力してください。',
-      confirmButtonColor: "#00BCD4",
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning'
-    })
-    return
-  }
+  for (const f of customerForms.value) f.errorMessage = f.required && !f.value ? '必須入力です' : ''
+  if (customerForms.value.some((f) => !!f.errorMessage)) return
+
+  const email = customerForms.value.find((f) => f.key === 'customerMail')
+  if (!/.+@.+\..+/.test(email.value)) email.errorMessage = '有効なメールアドレスではありません'
+  if (customerForms.value.some((f) => !!f.errorMessage)) return
+
 
   let confirmRes = false
   await $swal.fire({
@@ -109,17 +169,23 @@ const update = async () => {
   if (!confirmRes) {
     return
   }
+  const getValue = (forms, key) => utils.toBlank(forms.value.find((f) => f.key === key).value)
+  const items = []
+  items.push({
+    method: 'update',
+    path: 'customer',
+    docId: customerInfo.value.id,
+    data: {
+      customerName: getValue(customerForms, 'customerName'),
+      customerAddr: getValue(customerForms, 'customerAddr'),
+      customerTel: getValue(customerForms, 'customerTel'),
+      customerFax: getValue(customerForms, 'customerFax'),
+      customerMail: getValue(customerForms, 'customerMail'),
+      updatedAt: new Date(),
+    },
+  })
 
-  const updateObject = {
-    id: customerInfo.value.id,
-    customerName: customerName.value,
-    customerAddr: utils.toBlank(customerAddr.value),
-    customerTel: utils.toBlank(customerTel.value),
-    customerFax: utils.toBlank(customerFax.value),
-    customerMail: utils.toBlank(customerMail.value),
-    updatedAt: new Date(),
-  }
-  await userData.updateCustomer(updateObject)
+  await db.writeTransaction(items)
 
   router.push('/user/customer/list')
 }
