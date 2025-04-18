@@ -38,8 +38,8 @@
               </p>
 
               <v-combobox
-v-model="applicant" :items="applicantUserList" item-title="name" item-value="id"
-                outlined clearable   @update:model-value="handleApplicantChange"/>
+v-model="applicant" :items="applicantUserList" item-title="name" item-value="id" outlined
+                clearable @update:model-value="handleApplicantChange" />
             </v-col>
             <v-col cols="12" sm="4" md="4" class="pa-2">
               <p>
@@ -262,30 +262,47 @@ v-model="departureTimeMinute" label="分" item-title="disp" item-value="code"
                 </v-card>
               </v-col>
               <v-col cols="12" sm="6" md="6">
-                <v-card-item>
-                  <v-table v-if="keydispatchId != null && keydispatchId != ''">
-                    <thead>
-                      <tr align="center">
-                        <th colspan="5" class="text-left">
-                          乗務員
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(driver, index) in dispatchInfo.driverList" :key="driver.id">
-                        <td>ドライバー{{ index + 1 }}</td>
-                        <td colspan="2"> {{ driver.driverName }}</td>
-                        <td>連絡先</td>
-                        <td colspan="2">{{ driver.contact }}</td>
-                      </tr>
-                      <tr v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id">
-                        <td>ガイド{{ index + 1 }}</td>
-                        <td colspan="2"> {{ guide.guideName }}</td>
-                      </tr>
-                    </tbody>
-                  </v-table>
-                </v-card-item>
+                <div v-if="keydispatchId != null && keydispatchId != ''">
+                  <v-row v-if="dispatchInfo.busList.length > 0" class="mb-4">
+                    <!-- 配車情報 -->
+                    <v-col
+v-for="(bus) in dispatchInfo.busList" :key="bus.id" cols="12" sm="6" md="4"
+                      class="py-2">
+                      <v-card
+outlined prepend-icon="mdi-bus" :title="$Const.VEHICLE_TYPE_DISP[bus.vehicleType].text"
+                        :subtitle="bus.vehicleNo" color="background" class="text-body-2">
+                      </v-card>
+                    </v-col>
+                  </v-row>
+
+                  <v-row v-if="dispatchInfo.driverList.length > 0" class="mb-4">
+                    <!-- 乗務員情報 -->
+                    <v-col
+v-for="(driver) in dispatchInfo.driverList" :key="driver.id" cols="12" sm="6" md="4"
+                      class="py-2">
+                      <v-card
+outlined prepend-icon="mdi-card-account-details-outline" :title="driver.driverName"
+                        :subtitle="driver.contact" color="background" class="text-body-2">
+                      </v-card>
+                    </v-col>
+                  </v-row>
+
+                  <v-row v-if="dispatchInfo.guideList.length > 0" class="mb-4">
+                    <!-- ガイド情報 -->
+                    <v-col
+v-for="(guide) in dispatchInfo.guideList" :key="guide.id" cols="12" sm="6" md="4"
+                      class="py-2">
+                      <v-card
+outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName" color="background"
+                        class="text-body-2">
+
+                      </v-card>
+
+                    </v-col>
+                  </v-row>
+                </div>
               </v-col>
+
             </v-row>
           </v-container>
         </v-card>
@@ -360,9 +377,6 @@ v-model="accommodationsAddr1" label="住所" outlined
 v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="false"
                   format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
               </v-col>
-              <!-- <v-col cols="12" sm="2" md="2">
-                  <v-text-field v-model="endingTime" label="終着時間" type="text" />
-                </v-col> -->
               <v-col cols="12" sm="2" md="2" class="mt-8">
                 <v-select
 v-model="endingTimeHour" label="時間" item-title="disp" item-value="code"
@@ -511,20 +525,20 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
 
     <v-row>
       <v-col align="center">
-        <v-btn rounded dark size="x-large" color="grey" class="mb-2 pr-8 pl-8" @click="back">
+        <v-btn rounded dark color="grey" class="mb-2 pr-8 pl-8" @click="back">
           戻 る
         </v-btn>
       </v-col>
 
       <v-col v-if="orderState == $Const.STATUS_DRAFT || orderState == ''" align="center">
-        <v-btn rounded dark size="x-large" color="secondary" class="mb-2 pr-8 pl-8" @click="draft">
+        <v-btn rounded dark  color="secondary" class="mb-2 pr-8 pl-8" @click="draft">
           一次保存
         </v-btn>
       </v-col>
       <v-col
         v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE || orderInfo.state == $Const.STATUS_PAYMENT_METHOD_CONFIRMED"
         align="center">
-        <v-btn rounded dark size="x-large" color="secondary" class="mb-2 pr-8 pl-8" @click="edit">
+        <v-btn rounded dark  color="secondary" class="mb-2 pr-8 pl-8" @click="edit">
           内容を修正する
         </v-btn>
       </v-col>
@@ -534,18 +548,18 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
       <v-col
         v-if="orderInfo.state == $Const.STATUS_DRAFT || orderInfo.state == $Const.STATUS_ORDER_DENY || orderInfo.state == ''"
         align="center">
-        <v-btn rounded dark size="x-large" color="primary" class="mb-2 pr-8 pl-8" @click="entry">
+        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="entry">
           運送引受会社へ依頼する
         </v-btn>
       </v-col>
       <v-col v-else-if="orderInfo.state == $Const.STATUS_UNDERTAKE" align="center">
-        <v-btn rounded dark size="x-large" color="primary" class="mb-2 pr-8 pl-8" @click="payment">
+        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="payment">
           金額と支払方法を確定し、手配を完了する
         </v-btn>
       </v-col>
 
       <v-col v-else-if="orderInfo.state == $Const.STATUS_PAYMENT_COMPLETED" align="center">
-        <v-btn rounded dark size="x-large" color="primary" class="mb-2 pr-8 pl-8" @click="completed">
+        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="completed">
           案件を完了する
         </v-btn>
       </v-col>
@@ -894,6 +908,7 @@ const deliverySerch = () => {
   router.push('/delivery/list')
 
 }
+
 
 /** 登録した案件情報を一次保存して終了 */
 const draft = async () => {

@@ -369,7 +369,7 @@ outlined prepend-icon="mdi-card-account-details-outline" :title="driver.driverNa
 v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id" cols="12" sm="6" md="4"
                 class="py-2">
                 <v-card
-outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName" color="background"
+outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName" :subtitle="guide.contact" color="background"
                   class="text-body-2">
                   <template #append>
                     <v-icon size="small" @click="removeGuide(index)">

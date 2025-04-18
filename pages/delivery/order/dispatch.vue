@@ -1,159 +1,157 @@
 <template>
-  <div>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: true },
+          { title: '案件管理', disabled: true },
+          { title: '案件登録 ', disabled: false, to: '/delivery/order/entry' },
+          { title: '配車管理 ', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
 
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-          <v-card-text class="font-weight-bold text-h5">
-            <v-icon left x-large @click="back">
-              mdi-close
-            </v-icon>
-            配車管理 ※申込内容で対応可能なバス、乗務員を表示します。
-          </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-table class="table-border">
-            <tbody>
-              <tr align="center">
-                <td rowspan="2" align="center">申込乗車人員</td>
-                <td rowspan="2">{{ orderInfo.passengers }}人</td>
-                <td colspan="2" rowspan="2">乗車定員別又は<br>車種別車両数</td>
-                <td>リフト</td>
-                <td>中型車</td>
-                <td>小型車</td>
-                <td>マイクロ</td>
-                <td>計</td>
-              </tr>
-              <tr align="center">
-                <td>{{ orderInfo.vehicleTypeLiftAmount }}両</td>
-                <td>{{ orderInfo.vehicleTypeMediumAmount }}両</td>
-                <td>{{ orderInfo.vehicleTypeSmallAmount }}両</td>
-                <td>{{ orderInfo.vehicleTypeMicroAmount }}両</td>
-                <td>{{ totalvehicleAmount }}両</td>
-              </tr>
-            </tbody>
+    <v-row>
+      <v-col>
+        <v-table class="table-border bg-background">
+          <tbody>
+            <tr align="center">
+              <td rowspan="2" align="center">申込乗車人員</td>
+              <td rowspan="2">{{ orderInfo.passengers }}人</td>
+              <td colspan="2" rowspan="2">乗車定員別又は<br>車種別車両数</td>
+              <td>リフト</td>
+              <td>中型車</td>
+              <td>小型車</td>
+              <td>マイクロ</td>
+              <td>計</td>
+            </tr>
+            <tr align="center">
+              <td>{{ orderInfo.vehicleTypeLiftAmount }}両</td>
+              <td>{{ orderInfo.vehicleTypeMediumAmount }}両</td>
+              <td>{{ orderInfo.vehicleTypeSmallAmount }}両</td>
+              <td>{{ orderInfo.vehicleTypeMicroAmount }}両</td>
+              <td>{{ totalvehicleAmount }}両</td>
+            </tr>
+          </tbody>
 
-            <tbody>
-              <tr align="center">
-                <td rowspan="2" align="center">配車日時</td>
-                <td colspan="3" class="text-h4">{{ orderInfo.dispatchDate }} {{ orderInfo.dispatchTime }}</td>
-                <td rowspan="2" align="center">配車場所</td>
-                <td rowspan="2" colspan="4" align="center">{{ orderInfo.deliveryLocation }}</td>
-              </tr>
-            </tbody>
-            <tbody>
-              <tr class="dashed-border" align="center">
-                <td>終着日時</td>
-                <td colspan="3" class="text-h4">{{ orderOperationInfo.endDate }} {{ orderOperationInfo.endingTime }}
-                </td>
-                <td rowspan="2" align="center">終着場所</td>
-                <td rowspan="2" colspan="4" align="center">{{ orderOperationInfo.terminalLocation }}</td>
-              </tr>
-            </tbody>
+          <tbody>
+            <tr align="center">
+              <td rowspan="2" align="center">配車日時</td>
+              <td colspan="3" class="text-h4">{{ orderInfo.dispatchDate }} {{ orderInfo.dispatchTime }}</td>
+              <td rowspan="2" align="center">配車場所</td>
+              <td rowspan="2" colspan="4" align="center">{{ orderInfo.deliveryLocation }}</td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr class="dashed-border" align="center">
+              <td>終着日時</td>
+              <td colspan="3" class="text-h4">{{ orderOperationInfo.endDate }} {{ orderOperationInfo.endingTime }}
+              </td>
+              <td rowspan="2" align="center">終着場所</td>
+              <td rowspan="2" colspan="4" align="center">{{ orderOperationInfo.terminalLocation }}</td>
+            </tr>
+          </tbody>
 
-          </v-table>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container class="fill-height align-center" fluid>
+        </v-table>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-toolbar-title class="font-weight-bold">
         配車可能リスト <v-btn icon @click="showAllResource">
-          <v-icon>mdi-apps</v-icon>
+          <v-icon>mdi-bus-clock</v-icon>
         </v-btn><v-divider />
       </v-toolbar-title>
       <v-overlay :model-value="loading" class="align-center justify-center">
         <v-progress-circular color="primary" size="150" width="20" indeterminate />
       </v-overlay>
+    </v-row>
 
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col>
-          <v-card>
-            <v-row justify="center" no-gutters>
-              <v-col>
-                <v-data-table :headers="busListHeaders" :items="busList" hide-default-footer class="text-pre-wrap">
-                  <template #[`item.selectBus`]="{ item }">
-                    <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectBus" />
-                    <div v-else>予約中</div>
-                  </template>
-                  <template #[`item.vehicleType`]="{ item }">
-                    {{ $Const.VEHICLE_TYPE_DISP[item.vehicleType].text }}
-                  </template>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-row justify="center" no-gutters>
+            <v-col>
+              <v-data-table
+:headers="busListHeaders" :items="busList" hide-default-footer
+                class="text-pre-wrap bg-background">
+                <template #[`item.selectBus`]="{ item }">
+                  <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectBus" />
+                  <div v-else>予約中</div>
+                </template>
+                <template #[`item.vehicleType`]="{ item }">
+                  {{ $Const.VEHICLE_TYPE_DISP[item.vehicleType].text }}
+                </template>
 
-                </v-data-table>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col>
-          <v-card>
-            <v-row justify="center" no-gutters>
-              <v-col>
-                <v-data-table
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-row justify="center" no-gutters>
+            <v-col>
+              <v-data-table
 :headers="driverListHeaders" :items="driverList" hide-default-footer
-                  class="text-pre-wrap">
-                  <template #[`item.selectDriver`]="{ item }">
-                    <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectDriver" />
-                    <div v-else>予約中</div>
-                  </template>
-                </v-data-table>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+                class="text-pre-wrap bg-background">
+                <template #[`item.selectDriver`]="{ item }">
+                  <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectDriver" />
+                  <div v-else>予約中</div>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-row justify="center" no-gutters>
+            <v-col>
+              <v-data-table
+:headers="guideListHeaders" :items="guideList" hide-default-footer
+                class="text-pre-wrap bg-background">
+                <template #[`item.selectGuide`]="{ item }">
+                  <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectGuide" />
+                  <div v-else>予約中</div>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+    <br>
+    <v-row justify="center" no-gutters>
+      <v-col align="center">
+        <v-btn rounded dark color="secondary" class="mb-2 pr-8 pl-8" @click="back">
+          戻 る
+        </v-btn>
+      </v-col>
+      <v-spacer />
 
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col>
-          <v-card>
-            <v-row justify="center" no-gutters>
-              <v-col>
-                <v-data-table :headers="guideListHeaders" :items="guideList" hide-default-footer class="text-pre-wrap">
-                  <template #[`item.selectGuide`]="{ item }">
-                    <v-checkbox-btn v-if="!item.isReservation" v-model="item.selectGuide" />
-                    <div v-else>予約中</div>
-                  </template>
-                </v-data-table>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-container class="align-center" fluid>
-      <v-row justify="center" no-gutters>
-        <v-col align="center">
-          <v-btn rounded dark size="x-large" color="grey" class="mb-2 pr-8 pl-8" @click="back">
-            戻 る
-          </v-btn>
-        </v-col>
-        <v-spacer />
+      <v-col align="center">
+        <v-btn rounded dark color="primary" class="mb-2 pr-8 pl-8" @click="dispatch">
+          配車登録する
+        </v-btn>
+      </v-col>
+      <v-spacer />
 
-        <v-col align="center">
-          <v-btn rounded dark size="x-large" color="indigo darken-4" class="mb-2 pr-8 pl-8" @click="dispatch">
-            配車登録する
-          </v-btn>
-        </v-col>
-        <v-spacer />
-
-      </v-row>
-    </v-container>
+    </v-row>
+  </v-container>
 
 
-  </div>
 </template>
 <script setup>
 const router = useRouter()

@@ -1,6 +1,6 @@
 <template>
   <v-container max-width="1200">
-    <v-row no-gutters>
+    <!-- <v-row no-gutters>
       <v-col cols="12">
         <v-card-title><v-icon color="red">mdi-chat-outline</v-icon>インフォメーション</v-card-title>
         <v-card class="overflow-y-auto overflow-x-hidden">
@@ -22,7 +22,7 @@
         </v-card>
       </v-col>
     </v-row>
-
+ -->
     <v-row>
       <v-col cols="12" sm="4" md="4">
         <v-card class="mx-auto" width="300" height="420" elevation="15" color="primary" dark @click="showOrder">
@@ -54,7 +54,7 @@
       <v-divider thickness="1" vertical />
 
       <v-col cols="12" sm="4" md="4">
-        <v-card class="mx-auto" width="300" height="200" elevation="15" @click="showCustomer">
+        <v-card class="mx-auto" width="300" height="200" elevation="15" color="background" @click="showCustomer">
           <v-card-item title="ご利用顧客" />
 
           <v-card-text class="py-0">
@@ -66,7 +66,7 @@
         </v-card>
         <br />
 
-        <v-card class="mx-auto" width="300" height="200" elevation="15">
+        <v-card class="mx-auto" width="300" height="200" elevation="15" color="background">
           <v-card-item title="運送引受会社" />
 
           <v-card-text class="py-0">
@@ -158,14 +158,14 @@ const showCustomer = () => {
   router.push('/user/customer/list')
 }
 
-const showInformation = () => {
-  $swal.fire({
-    text: '[未実装]インフォメーションの詳細がみれます',
-    showCancelButton: false,
-    confirmButtonText: 'OK',
-    icon: 'info',
-  })
-}
+// const showInformation = () => {
+//   $swal.fire({
+//     text: '[未実装]インフォメーションの詳細がみれます',
+//     showCancelButton: false,
+//     confirmButtonText: 'OK',
+//     icon: 'info',
+//   })
+// }
 
 definePageMeta({
   layout: 'user',
