@@ -31,36 +31,6 @@ const endingTimeMinute = ref(0)
 const category = ref(props.category)
 const reservationId = ref(props.reservationId)
 const title = ref("")
-const inputForms = ref([
-  {
-    title: 'タイトル',
-    key: 'title',
-    value: '',
-    required: true,
-    icon: 'mdi-account-outline',
-    placeholder: '',
-    cols: 12,
-  },
-  {
-    title: '開始日',
-    key: 'dispatchDate',
-    value: '',
-    required: true,
-    icon: 'mdi-email-outline',
-    placeholder: '',
-    cols: 12,
-  },
-  {
-    title: '終了日',
-    key: 'endDate',
-    value: '',
-    required: true,
-    icon: 'mdi-lock-outline',
-    placeholder: '半角英数字で6文字以上',
-    type: 'password',
-    cols: 12,
-  },
-])
 
 
 /**
@@ -383,8 +353,6 @@ class="ml-8" rounded color="secondary" dark
         </v-row>
 
       </v-container>
-
-      <!-- </div> -->
     </div>
   </Teleport>
 </template>
@@ -405,7 +373,7 @@ class="ml-8" rounded color="secondary" dark
   /* これでモーダル内は操作可能 */
 }
 
-/* オーバーレイ（背景をクリックで閉じる） */
+/* オーバーレイ */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -418,6 +386,5 @@ class="ml-8" rounded color="secondary" dark
   justify-content: center;
   z-index: 1000;
   pointer-events: auto;
-  /* これでクリックを受け付ける */
 }
 </style>
