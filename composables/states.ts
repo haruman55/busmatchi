@@ -906,3 +906,53 @@ const clearMemberInfo = (memberInfo: Ref<MemberInfo>) => () => {
     memberInfo
   }
 }
+
+// 運送引受会社ユーザ専用-マスタ情報保持オブジェクト
+type DeliveryUserMasterhInfo = {
+  companyId: string;
+  busList: []
+  driverList: []
+  guideList: []
+  parkingList: []
+
+}
+
+/** 運送引受会社ユーザ専用-保有バス、運転手、ガイド、駐車場の情報を扱うState */
+export const useDeliveryUserMasterhInfo = () => {
+  const deliveryUserMasterhInfo = useState<DeliveryUserMasterhInfo>("deliveryUserMasterhInfo", () => ({
+    companyId: '',
+    busList: [],
+    driverList: [],
+    guideList: [],
+    parkingList: [],
+  }));
+
+  return {
+    deliveryUserMasterhInfo,
+    editDeliveryUserMasterhInfo: editDeliveryUserMasterhInfo(deliveryUserMasterhInfo),
+    clearDeliveryUserMasterhInfo: clearDeliveryUserMasterhInfo(deliveryUserMasterhInfo),
+  };
+};
+
+/** 運送引受会社ユーザ専用-保有バス、運転手、ガイド、駐車場の情報の編集(最新化)を行うSetter */
+const editDeliveryUserMasterhInfo =
+  (deliveryUserMasterhInfo: Ref<DeliveryUserMasterhInfo>) => (editDeliveryUserMasterhInfo: DeliveryUserMasterhInfo) => {
+    deliveryUserMasterhInfo.value = editDeliveryUserMasterhInfo;
+    return {
+      deliveryUserMasterhInfo,
+    };
+  };
+
+/** 運送引受会社ユーザ専用-保有バス、運転手、ガイド、駐車場の情報の初期化する */
+const clearDeliveryUserMasterhInfo = (deliveryUserMasterhInfo: Ref<DeliveryUserMasterhInfo>) => () => {
+  deliveryUserMasterhInfo.value = {
+    companyId: '',
+    busList: [],
+    driverList: [],
+    guideList: [],
+    parkingList: [],
+  };
+  return {
+    deliveryUserMasterhInfo,
+  };
+};
