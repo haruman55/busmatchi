@@ -121,6 +121,11 @@ const loading = ref(false)
 // ユーザ操作情報の状態管理
 const { editActionInfo } = useAction()
 
+// ユーザマスタ情報の状態管理
+const { editDeliveryUserMasterhInfo } = useDeliveryUserMasterhInfo()
+
+
+
 // DB操作
 const userData = useUserData()
 // 登録案件情報取得
@@ -152,6 +157,14 @@ onMounted(async () => {
     act: $Const.USER_ACTION_MYPAGE,
   }
   editActionInfo(initAction)
+  // 取得した保有マスタ情報をstateに格納
+  const masterData = {
+    busList: busList,
+    guideList: guideList,
+    driverList: driverList,
+    parkingList: parkingList,
+  }
+  editDeliveryUserMasterhInfo(masterData)
 })
 
 /**

@@ -7,7 +7,7 @@
           { title: 'マイページ', disabled: true },
           { title: '案件管理', disabled: true },
           { title: '案件登録 ', disabled: false, to: '/delivery/order/entry' },
-          { title: '配車管理 ', disabled: true },
+          { title: '配車登録 ', disabled: true },
         ]">
           <template #prepend>
             <v-icon icon="mdi-home" size="small" />
@@ -163,6 +163,8 @@ const { $dayjs } = useNuxtApp();
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
 
+// ユーザマスタ情報の状態管理
+const { deliveryUserMasterhInfo } = useDeliveryUserMasterhInfo()
 
 // 案件情報を保持
 const { orderInfo } = useOrderInfo()
@@ -198,7 +200,9 @@ const totalvehicleAmount = computed(() => {
  */
 const getBusInfoList = async () => {
 
-  const busList = await userData.getBusList(keyUserId);
+  // TODO:stateからの情報取得に変更（しばらく動作確認） const busList = await userData.getBusList(keyUserId);
+  const busList = deliveryUserMasterhInfo.value.busList
+
   // 既に配車選択済みのバス情報一覧(チェック状態にするための処理)
   const dispatchBusList = dispatchInfo.value.busList
   const busInfoListArray = []
@@ -226,7 +230,11 @@ const getBusInfoList = async () => {
 
     // バスが配置されている駐車場のdocid
     const parkingId = busList[i].parkingId
-    const parkingData = await userData.getParkingData(parkingId)
+    // TODO:stateからの情報取得に変更（しばらく動作確認） const parkingData = await userData.getParkingData(parkingId)
+    const parkingData = deliveryUserMasterhInfo.value.parkingList.find(
+      (parking) => parking.id === parkingId
+    );
+
     const busInfoObj = {
       id: busId,
       companyId: busList[i].companyId,
@@ -247,7 +255,6 @@ const getBusInfoList = async () => {
   }
   return busInfoListArray
 }
-const busList = await getBusInfoList();
 
 // バス情報のデータテーブルヘッダ定義
 const busListHeaders = [
@@ -288,7 +295,9 @@ const busListHeaders = [
  * 運転手情報取得の一覧を取得する。
  */
 const getDriverInfoList = async () => {
-  const driverList = await userData.getDriverList(keyUserId);
+  // TODO:stateからの情報取得に変更（しばらく動作確認）const driverList = await userData.getDriverList(keyUserId);
+  const driverList = deliveryUserMasterhInfo.value.driverList
+
   // 既に配車選択済みの運転手情報一覧(チェック状態にするための処理)
   const dispatchDriverList = dispatchInfo.value.driverList
   const driverInfoListArray = []
@@ -330,7 +339,6 @@ const getDriverInfoList = async () => {
   }
   return driverInfoListArray
 }
-const driverList = await getDriverInfoList();
 
 
 // バス運転手のデータテーブルヘッダ定義
@@ -372,7 +380,9 @@ const driverListHeaders = [
  * バス情報取得の一覧を取得する。
  */
 const getGuideInfoList = async () => {
-  const guideList = await userData.getGuideList(keyUserId);
+  //  TODO:stateからの情報取得に変更（しばらく動作確認）const guideList = await userData.getGuideList(keyUserId);
+  const guideList = deliveryUserMasterhInfo.value.guideList
+
   // 既に配車選択済みの運転手情報一覧(チェック状態にするための処理)
   const dispatchGuideList = dispatchInfo.value.guideList
   const guideInfoListArray = []
@@ -416,7 +426,6 @@ const getGuideInfoList = async () => {
   }
   return guideInfoListArray
 }
-const guideList = await getGuideInfoList();
 
 
 // バスガイドのデータテーブルヘッダ定義
@@ -453,6 +462,12 @@ const guideListHeaders = [
     sortable: false
   },
 ]
+// [速度Upのため、Promise.allでまとめて取得]
+const [busList, driverList, guideList] = await Promise.all([
+  getBusInfoList(),
+  getDriverInfoList(),
+  getGuideInfoList(),
+]);
 
 const dispatch = async () => {
   const checkedBusItems = busList.filter(item => item.selectBus);
