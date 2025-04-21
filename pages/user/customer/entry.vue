@@ -150,7 +150,7 @@ const entry = async () => {
   if (customerForms.value.some((f) => !!f.errorMessage)) return
 
   const email = customerForms.value.find((f) => f.key === 'customerMail')
-  if (!/.+@.+\..+/.test(email.value)) email.errorMessage = '有効なメールアドレスではありません'
+  if (email.value && !/.+@.+\..+/.test(email.value)) email.errorMessage = '有効なメールアドレスではありません'
   if (customerForms.value.some((f) => !!f.errorMessage)) return
 
 

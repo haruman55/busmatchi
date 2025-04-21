@@ -1,52 +1,56 @@
 <template>
-  <v-toolbar density="compact" color="indigo-lighten-3">
+  <v-toolbar density="compact" color="#ccd9d3">
 
     <h3 class="ml-10"> {{ userInfo.companyName }} </h3>
     <v-spacer />
+    <!-- <v-btn color="#4f4f4f" icon class="ma-2" @click="navigateTo('/user/mypage')">
+      <v-tooltip location="bottom" activator="parent">
+        <span>マイページ</span>
+      </v-tooltip>
+      <v-icon size="36">mdi-home</v-icon>
+    </v-btn> -->
 
-    <v-menu v-model="menu" open-on-hover location="bottom" offset="0">
-      <template #activator="{ props }">
-        <v-btn icon="mdi-dots-grid" size="x-large" v-bind="props"></v-btn>
-      </template>
-      <v-sheet width="300" height="150" class="pa-2" color="white" style="overflow-x: hidden;"> 
-        <v-row
-justify="center"
-           class="text-center">
-          <v-col cols="auto">
-            <v-icon icon="mdi-home" size="36" @click="navigateTo('/user/mypage')" />
-            <div>マイページ</div>
-          </v-col>
-          <v-col v-if="auth === 1" cols="auto">
-            <v-icon icon="mdi-account-plus-outline" size="36" @click="navigateTo('/manager/member/list')" />
-            <div>利用者管理</div>
-          </v-col>
-        </v-row>
-      </v-sheet>
-    </v-menu>
 
+    <v-btn color="#4f4f4f" icon class="ma-2">
+      <v-tooltip location="bottom" activator="parent">
+        <span>インフォメーション</span>
+      </v-tooltip>
+      <v-icon size="36">mdi-email-outline</v-icon>
+    </v-btn>
+
+
+
+    <v-btn v-if="auth === 1" color="#4f4f4f" class="ma-2" cols="auto" icon @click="navigateTo('/company')">
+      <v-tooltip location="bottom" activator="parent">
+        <span>会社情報</span>
+      </v-tooltip>
+      <v-icon size="36">mdi-office-building-outline</v-icon>
+    </v-btn>
+
+    <v-btn color="#4f4f4f" icon class="ma-2"  @click="navigateTo('/company/member')">
+      <v-tooltip location="bottom" activator="parent">
+        <span>個人情報</span>
+      </v-tooltip>
+      <v-icon size="36">mdi-account-outline</v-icon>
+    </v-btn>
+
+    
 
   </v-toolbar>
 
 </template>
 
 <script setup>
-const { $Const } = useNuxtApp()
 const router = useRouter()
 // user情報の状態管理
 const { userInfo } = useUserInfo()
 const auth = userInfo.value.auth
-const menu = ref(false);
 /**
  * 指定画面を表示
  * @param path 遷移先のパス
  */
 const navigateTo = (path) => {
-  menu.value = false; // メニューを閉じる
-  if (path === '/user/mypage' && userInfo.value.category === $Const.CATEGORY_DELIVERY) {
-    router.push('/delivery/mypage')
-  } else {
     router.push(path)
-  }
 };
 
 

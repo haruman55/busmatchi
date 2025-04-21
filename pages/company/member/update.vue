@@ -4,7 +4,7 @@
       <v-col>
         <v-breadcrumbs
 :items="[
-          { title: '利用者管理', disabled: false, to: '/manager/member/list' },
+          { title: '会社情報', disabled: false, to: '/company' },
           { title: '利用者更新', disabled: true },
         ]">
           <template #prepend>
@@ -50,7 +50,6 @@ v-model="form.value" :placeholder="form.placeholder" :prepend-inner-icon="form.i
           </v-sheet>
 
           <div>
-            <!-- <v-btn class="mr-4" variant="tonal" size="x-large" rounded @click="step = 2">前へ</v-btn> -->
             <v-btn class="ml-4" color="primary" size="x-large" flat rounded @click="submitUser()">次へ</v-btn>
           </div>
         </div>
@@ -70,7 +69,7 @@ v-model="form.value" :placeholder="form.placeholder" :prepend-inner-icon="form.i
               <span>{{ form.value }}</span>
             </div>
 
-            <p class="mt-10 mb-2 font-weight-bold">ログイン情報</p>
+            <p class="mt-10 mb-2 font-weight-bold">利用者情報</p>
             <v-divider class="mb-2 border-opacity-100" />
             <div
 v-for="form in userForms.filter((e) => e.key !== 'pass2' && e.key !== 'auth')" :key="form.key"
@@ -201,7 +200,7 @@ const userForms = ref([
 
 
 /**
- * ログイン情報の確認
+ * 入力情報の確認
  */
 const submitUser = async () => {
   for (const f of userForms.value) f.errorMessage = f.required && !f.value ? '必須入力です' : ''
@@ -225,6 +224,24 @@ const submitUser = async () => {
       limit: 1,
     })
     if (user) return (email.errorMessage = '既に使用されています')
+  }
+
+  // 管理者が会社内に一人もいなくなってしまってないかチェック
+  const auth = userForms.value.find((f) => f.key === 'auth')
+  if (!auth.value) {
+    const authUser = await db.getQueryDocument({
+      path: 'user',
+      where: [{ fieldPath: 'companyId', opStr: '==', value: keyCompanyId },{ fieldPath: 'auth', opStr: '==', value: 1 }],
+    })
+    if (authUser && authUser.length <= 1) {
+      $swal.fire({
+        text: '管理者は必ず１名必要です。',
+        showCancelButton: false,
+        confirmButtonText: 'OK',
+        icon: 'warning'
+      })
+      return
+    }
   }
   // 画面遷移
   step.value = 2
@@ -262,12 +279,10 @@ const registData = async () => {
     path: 'user',
     docId: keyMemberId,
     data: {
-      companyId: keyCompanyId,
       name: getValue(userForms, 'name'),
       email: getValue(userForms, 'email'),
       pass: getValue(userForms, 'pass'),
       auth: userForms.value.find((f) => f.key === 'auth').value ? 1 : 0,  // 1:管理者, 0:一般
-      createdAt: new Date(),
       updatedAt: new Date(),
     },
   })
@@ -276,7 +291,7 @@ const registData = async () => {
   processing.value = false
 
   // 画面遷移
-  router.push('/manager/member/list')
+  router.push('/company')
 }
 </script>
 

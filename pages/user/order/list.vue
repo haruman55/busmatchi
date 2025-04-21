@@ -189,7 +189,7 @@ const selectOrder = async (order) => {
       companyAddr: orderDeliveryCompany.companyAddr,
       companyTel: orderDeliveryCompany.companyTel,
       companyFax: orderDeliveryCompany.companyFax,
-      // companyEmail: orderDeliveryCompany.companyEmail,
+      companyEmail: orderDeliveryCompany.companyEmail,
       dispatchDate: order.dispatchDate,
       dispatchTime: dispatchTime,
       dispatchTimeHour: order.dispatchTimeHour,
@@ -230,11 +230,6 @@ const selectOrder = async (order) => {
 }
 
 
-/** 前の画面へ戻る */
-const back = () => {
-  // 画面遷移
-  router.push('/user/mypage')
-}
 
 definePageMeta({
   layout: 'user'

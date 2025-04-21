@@ -4,7 +4,7 @@
       <v-col>
         <v-breadcrumbs
           :items="[
-            { title: '利用者管理', disabled: false, to: '/manager/member/list' },
+            { title: '会社情報', disabled: false, to: '/company' },
             { title: '利用者登録', disabled: true },
           ]"
         >
@@ -51,7 +51,6 @@
           </v-sheet>
 
           <div>
-            <!-- <v-btn class="mr-4" variant="tonal" size="x-large" rounded @click="step = 2">前へ</v-btn> -->
             <v-btn class="ml-4" color="primary" size="x-large" flat rounded @click="submitUser()">次へ</v-btn>
           </div>
         </div>
@@ -71,7 +70,7 @@
               <span>{{ form.value }}</span>
             </div>
 
-            <p class="mt-10 mb-2 font-weight-bold">ログイン情報</p>
+            <p class="mt-10 mb-2 font-weight-bold">利用者情報</p>
             <v-divider class="mb-2 border-opacity-100" />
             <div
               v-for="form in userForms.filter((e) => e.key !== 'pass2')"
@@ -264,7 +263,7 @@ const registData = async () => {
   processing.value = false
 
   // 画面遷移
-  router.push('/manager/member/list')
+  router.push('/company')
 }
 </script>
 

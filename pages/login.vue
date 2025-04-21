@@ -41,7 +41,7 @@ v-model="email" label="ユーザーID（メールアドレス）" prepend-inner-
               <v-text-field
 v-model="pass" label="password" prepend-inner-icon="mdi-lock-outline"
                 :append-inner-icon="show ? 'mdi-eye' : 'mdi-eye-off'" :type="show ? 'text' : 'password'"
-                :error-messages="passError" width="400" @click:append="show = !show" />
+                :error-messages="passError" width="400" @click:append-inner="show = !show" />
             </v-card-text>
 
             <v-card-actions class="d-flex justify-center">
@@ -60,10 +60,8 @@ variant="flat" color="primary" rounded="xl" size="x-large" :disabled="loading" :
 
 <script setup>
 const { $Const } = useNuxtApp()
-const { $swal } = useNuxtApp()
 const router = useRouter()
 // DB接続
-const userData = useUserData()
 const db = useFirestore()
 
 const email = ref('')
@@ -72,6 +70,7 @@ const show = ref(false)
 const loading = ref(false)
 const mailError = ref('')
 const passError = ref('')
+
 
 /**
  * ログイン処理
@@ -111,7 +110,7 @@ const login = async () => {
 
   // ログインで取得したユーザ情報をstateに設定する
   const editUser = {
-    id: loginCompany.id,
+    id: loginUser.id,
     category: loginCompany.category,
     companyId: loginUser.companyId,
     companyName: loginCompany.companyName,
