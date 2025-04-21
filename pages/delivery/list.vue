@@ -84,16 +84,9 @@ const { $swal } = useNuxtApp()
 const userData = useUserData();
 const db = useFirestore()
 
-// ログインユーザーのキーID
-const { userInfo } = useUserInfo()
-const keyUserId = userInfo.value.companyId
-
-// ユーザ操作情報を保持
-const { actionInfo } = useAction()
-const act = actionInfo.value.act
 
 // 画面入力(設定)された申込情報を保持
-const { orderInfo, editOrderInfo, clearOrderInfo } = useOrderInfo()
+const { orderInfo } = useOrderInfo()
 
 /**
    * 運送引受会社情報取得
@@ -104,7 +97,7 @@ const deliveryCompanyList = await db.getQueryDocument({
   })
 
 // 画面選択された申込運送引受会社情報を保持
-const { orderDeliveryUserInfo, editOrderDeliveryUserInfo, clearOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
+const { orderDeliveryUserInfo, editOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
 
 // 画面入力-Map選択可否
 const deliveryChoice = ref(false)
@@ -134,12 +127,11 @@ const deliveryUserHeaders = [
     key: 'companyFax',
     sortable: true
   },
-  // TODO:運送引受会社の代表e-mailは必要か？
-  // {
-  //   title: 'e-mailアドレス',
-  //   key: 'companyEmail',
-  //   sortable: true
-  // },
+  {
+    title: 'e-mailアドレス',
+    key: 'companyEmail',
+    sortable: true
+  },
 
 ]
 // 運送引受会社-駐車地のデータテーブルヘッダ定義
@@ -177,7 +169,7 @@ const getDeliveryUserParkingInfos = async () => {
         id: deliveryCompanyList[i].id,
         companyName: deliveryCompanyList[i].companyName,
         companyAddr: deliveryCompanyList[i].companyAddr,
-        // companyEmail: deliveryUserList[i].companyEmail,TODO:運送引受会社の代表e-mailは必要か？
+        companyEmail: deliveryCompanyList[i].companyEmail,
         companyFax: deliveryCompanyList[i].companyFax,
         companyTel: deliveryCompanyList[i].companyTel,
         parkingId: parkingList[j].id,

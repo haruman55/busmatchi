@@ -367,7 +367,7 @@ v-model="accommodationsAddr1" label="住所" outlined
               <!-- <v-col cols="12" sm="2" md="2">終着日時</v-col> -->
               <v-col cols="12" sm="2" md="2" class="ma-2 pa-2">
                 <p>
-                  <span class="text-body-2">配車日時</span>
+                  <span class="text-body-2">終着日時</span>
                   <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
                     必須
                   </v-chip>

@@ -44,7 +44,6 @@ const userData = useUserData()
 const db = useFirestore()
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
-const keyUserDocId = userInfo.value.id
 const keyUserId = userInfo.value.companyId
 
 /**
@@ -59,7 +58,7 @@ const getOrderDeliveryList = async () => {
     $Const.STATUS_PAYMENT_COMPLETED,
     $Const.STATUS_ORDER_COMPLETED,
   ]
-  const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray)
+  const orderList = await userData.getOrderDeliveryList(keyUserId, statusArray)
   const orderListArray = []
   for (let i = 0; i < orderList.length; i++) {
     const applicantCompanyId = orderList[i].companyId
@@ -77,7 +76,7 @@ const getOrderDeliveryList = async () => {
       applicantCompanyTel: orderApplicantCompany.companyTel,
       applicantCompanyFax: orderApplicantCompany.companyFax,
       applicantCompanyAddr: orderApplicantCompany.companyAddr,
-      // applicantCompanyEmail: orderApplicantCompany.companyEmail, tODO:会社の代表e-mailは必要か？
+      applicantCompanyEmail: orderApplicantCompany.companyEmail, 
       emergencyContact: orderList[i].emergencyContact,
       tourOrganization: orderList[i].tourOrganization,
       customerRemarks: orderList[i].customerRemarks,
@@ -241,7 +240,7 @@ const selectOrder = async (order) => {
       companyAddr: orderDeliveryCompany.companyAddr,
       companyTel: orderDeliveryCompany.companyTel,
       companyFax: orderDeliveryCompany.companyFax,
-      // companyEmail: orderDeliveryCompany.companyEmail, TODO:運送引受会社の代表e-mailは必要か？
+      companyEmail: orderDeliveryCompany.companyEmail, 
       dispatchDate: order.dispatchDate,
       dispatchTime: dispatchTime,
       dispatchTimeHour: order.dispatchTimeHour,
