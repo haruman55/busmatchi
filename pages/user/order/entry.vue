@@ -22,14 +22,12 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row >
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
-
-          <!-- <v-container fluid> -->
+        <v-card flat rounded="xl" variant="outlined"  class="color-outline">
           <v-card-title class="color-title">申込者情報</v-card-title>
-          <v-row no-gutters dense>
-            <v-col cols="12" sm="4" md="4" class="pa-2">
+          <v-row no-gutters dense >
+            <v-col cols="12" sm="4" md="4" class="pa-2" >
               <p>
                 <span class="text-body-2">申込担当者名</span>
                 <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
@@ -48,15 +46,13 @@ v-model="applicant" :items="applicantUserList" item-title="name" item-value="id"
               <v-text-field v-model="emergencyContact" outlined />
             </v-col>
           </v-row>
-          <!-- </v-container> -->
         </v-card>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
-          <v-container fluid>
-            <v-row>
+        <v-card flat rounded="xl"  variant="outlined"  class="color-outline">
+            <v-row dense>
               <v-card-title class="color-title">お客様情報</v-card-title>
               <v-btn rounded dark color="yellow" class="mt-2 mb-2 pr-8 pl-8" @click="customerSerch">
                 顧客選択
@@ -83,7 +79,6 @@ v-if="applicantCustomerId != '' && applicantCustomerId != null" cols="12" sm="6"
                   </v-card-item>
                 </v-card>
               </v-col>
-              <!-- <v-col cols="12" sm="6" md="6"> -->
               <v-col cols="12" sm="6" md="6" class="pa-2">
                 <p>
                   <span class="text-body-2">団体名</span>
@@ -98,14 +93,12 @@ v-if="applicantCustomerId != '' && applicantCustomerId != null" cols="12" sm="6"
                 <v-textarea v-model="customerRemarks" rows="2" outlined />
               </v-col>
             </v-row>
-          </v-container>
         </v-card>
       </v-col>
     </v-row>
-    <v-row no-gutters>
+    <v-row >
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
-          <v-container fluid>
+        <v-card flat rounded="xl" variant="outlined"  class="color-outline">
             <v-card-title class="color-title">申込情報</v-card-title>
 
             <v-row dense>
@@ -216,13 +209,12 @@ v-model="departureTimeMinute" label="分" item-title="disp" item-value="code"
               </v-col>
             </v-row>
 
-          </v-container>
         </v-card>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
+        <v-card flat rounded="xl" variant="outlined"  class="color-outline">
           <v-container fluid>
 
             <v-row>
@@ -315,7 +307,7 @@ outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName" color="b
     <!-- TODO:以下 運行情報 については一旦日帰りで実装。数日の旅程の場合はデータの持ち方や表示を検討必要 -->
     <v-row>
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
+        <v-card flat rounded="xl" variant="outlined"  class="color-outline">
           <v-container fluid>
             <v-card-title class="color-title">旅程</v-card-title>
             <v-row>
@@ -410,7 +402,7 @@ v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
     <v-row dense>
       <v-col>
 
-        <v-card variant="outlined" class="color-outline" elevation="3">
+        <v-card flat rounded="xl" variant="outlined"  class="color-outline">
           <!-- <v-container fluid> -->
           <v-card-title class="color-title">支払い</v-card-title>
 
@@ -525,20 +517,20 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
 
     <v-row>
       <v-col align="center">
-        <v-btn rounded dark color="grey" class="mb-2 pr-8 pl-8" @click="back">
+        <v-btn rounded dark  size="large" color="grey" class="mb-2 pr-8 pl-8" @click="back">
           戻 る
         </v-btn>
       </v-col>
 
       <v-col v-if="orderState == $Const.STATUS_DRAFT || orderState == ''" align="center">
-        <v-btn rounded dark  color="secondary" class="mb-2 pr-8 pl-8" @click="draft">
+        <v-btn rounded dark  size="large"  color="secondary" class="mb-2 pr-8 pl-8" @click="draft">
           一次保存
         </v-btn>
       </v-col>
       <v-col
         v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE || orderInfo.state == $Const.STATUS_PAYMENT_METHOD_CONFIRMED"
         align="center">
-        <v-btn rounded dark  color="secondary" class="mb-2 pr-8 pl-8" @click="edit">
+        <v-btn rounded dark  size="large"  color="secondary" class="mb-2 pr-8 pl-8" @click="edit">
           内容を修正する
         </v-btn>
       </v-col>
@@ -548,18 +540,18 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
       <v-col
         v-if="orderInfo.state == $Const.STATUS_DRAFT || orderInfo.state == $Const.STATUS_ORDER_DENY || orderInfo.state == ''"
         align="center">
-        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="entry">
+        <v-btn rounded dark  size="large"  color="primary" class="mb-2 pr-8 pl-8" @click="entry">
           運送引受会社へ依頼する
         </v-btn>
       </v-col>
       <v-col v-else-if="orderInfo.state == $Const.STATUS_UNDERTAKE" align="center">
-        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="payment">
+        <v-btn rounded dark  size="large"  color="primary" class="mb-2 pr-8 pl-8" @click="payment">
           金額と支払方法を確定し、手配を完了する
         </v-btn>
       </v-col>
 
       <v-col v-else-if="orderInfo.state == $Const.STATUS_PAYMENT_COMPLETED" align="center">
-        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="completed">
+        <v-btn rounded dark size="large"  color="primary" class="mb-2 pr-8 pl-8" @click="completed">
           案件を完了する
         </v-btn>
       </v-col>

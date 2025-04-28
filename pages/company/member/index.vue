@@ -64,7 +64,7 @@ v-model="form.value" :placeholder="form.placeholder" :prepend-inner-icon="form.i
           </v-sheet>
 
           <div>
-            <v-btn class="mr-4" color="secondary" size="x-large" flat rounded @click="back()">キャンセル</v-btn>
+            <v-btn class="mr-4" color="secondary" size="large" flat rounded @click="back()">キャンセル</v-btn>
             <v-btn
 class="ml-4" color="primary" size="x-large" :disabled="!isSaveButtonEnabled" flat rounded
               @click="registData()">保存</v-btn>

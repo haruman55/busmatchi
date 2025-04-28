@@ -24,7 +24,7 @@
     </v-row> -->
     <v-row>
       <v-col cols="12" sm="4" md="4" >
-        <v-card class="mx-auto" width="300" height="420" elevation="15" color="primary" dark @click="showOrder">
+        <v-card flat rounded="xl" class="mx-auto" width="300" height="420" color="primary" dark @click="showOrder">
           <v-card-text class="py-2" align="center">
             <v-icon size="100" color="white">mdi-pencil-circle-outline</v-icon>
           </v-card-text>
@@ -37,7 +37,7 @@
         </v-card>
       </v-col>
       <v-col cols="12" sm="4" md="4">
-        <v-card class="mx-auto" width="300" height="420" elevation="15" color="secondary" dark @click="showReservation">
+        <v-card flat rounded="xl"  class="mx-auto" width="300" height="420" color="secondary" dark @click="showReservation">
           <v-card-text class="py-2" align="center">
             <v-icon size="100">mdi-bus-clock</v-icon>
           </v-card-text>
@@ -49,7 +49,7 @@
       <v-col cols="12" sm="4" md="4">
         <v-row dense>
           <v-col cols="12" sm="6" md="6">
-            <v-card class="mx-auto" color="background" elevation="15" height="210" @click="showBus">
+            <v-card flat rounded="xl"  class="mx-auto" height="210" @click="showBus">
               <v-card-item title="バス" />
               <v-card-text class="py-0">
                 <v-row align="center" no-gutters>
@@ -62,7 +62,7 @@
             </v-card>
           </v-col>
           <v-col cols="12" sm="6" md="6">
-            <v-card class="mx-auto" color="background"  elevation="15" height="210" @click="showParking">
+            <v-card flat rounded="xl"  class="mx-auto" height="210" @click="showParking">
               <v-card-item title="駐車場" />
               <v-card-text class="py-0">
                 <v-row align="center" no-gutters>
@@ -80,7 +80,7 @@
 
         <v-row dense>
           <v-col cols="12" sm="6" md="6">
-            <v-card class="mx-auto" color="background"  elevation="15" height="210" @click="showDriver">
+            <v-card flat rounded="xl"  class="mx-auto" height="210" @click="showDriver">
               <v-card-item title="ドライバー" />
               <v-card-text class="py-0">
                 <v-row align="center" no-gutters>
@@ -93,7 +93,7 @@
             </v-card>
           </v-col>
           <v-col cols="12" sm="6" md="6">
-            <v-card class="mx-auto" color="background"  elevation="15" height="210" @click="showGuide">
+            <v-card flat rounded="xl"  class="mx-auto" height="210" @click="showGuide">
               <v-card-item title="バスガイド" />
               <v-card-text class="py-0">
                 <v-row align="center" no-gutters>

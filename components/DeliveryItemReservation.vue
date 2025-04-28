@@ -337,11 +337,11 @@ v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
         <v-row no-gutters>
           <v-col align="center">
             <div>
-              <v-btn class="mr-4" rounded color="secondary" dark  @click="$emit('close')">閉じる</v-btn>
-              <v-btn class="ml-4" rounded color="primary" dark  @click="reservation">保存</v-btn>
+              <v-btn size="large"  class="mr-4" rounded color="secondary" dark  @click="$emit('close')">閉じる</v-btn>
+              <v-btn size="large"  class="ml-4" rounded color="primary" dark  @click="reservation">保存</v-btn>
               <v-btn
 v-if="reservationId != ''"
-class="ml-8" rounded color="secondary" dark 
+size="large" class="ml-8" rounded color="secondary" dark 
                 @click="cancel">削除</v-btn>
             </div>
 

@@ -132,7 +132,7 @@ v-if="isOpenReservation" :dispatch-date="dispatchDate" :category="selectedCatego
     <br>
     <v-row justify="center" no-gutters>
       <v-col align="center">
-        <v-btn rounded dark color="secondary" class="mb-2 pr-8 pl-8" @click="back">
+        <v-btn  size="large" rounded dark color="secondary" class="mb-2 pr-8 pl-8" @click="back">
           閉じる
         </v-btn>
       </v-col>

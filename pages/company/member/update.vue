@@ -50,7 +50,7 @@ v-model="form.value" :placeholder="form.placeholder" :prepend-inner-icon="form.i
           </v-sheet>
 
           <div>
-            <v-btn class="ml-4" color="primary" size="x-large" flat rounded @click="submitUser()">次へ</v-btn>
+            <v-btn class="ml-4" color="primary" size="large" flat rounded @click="submitUser()">次へ</v-btn>
           </div>
         </div>
 
@@ -85,8 +85,8 @@ v-for="form in userForms.filter((e) => e.key !== 'pass2' && e.key !== 'auth')" :
           </v-sheet>
 
           <div>
-            <v-btn class="mr-4" variant="tonal" size="x-large" rounded @click="step = 1">前へ</v-btn>
-            <v-btn class="ml-4" color="primary" size="x-large" flat rounded @click="registData()">確認</v-btn>
+            <v-btn class="mr-4" variant="tonal" size="large" rounded @click="step = 1">前へ</v-btn>
+            <v-btn class="ml-4" color="primary" size="large" flat rounded @click="registData()">確認</v-btn>
           </div>
         </div>
       </v-col>

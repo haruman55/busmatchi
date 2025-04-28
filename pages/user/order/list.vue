@@ -19,8 +19,8 @@
 
     <v-row no-gutters>
       <v-col v-for="(order) in orderList" :key="order.id">
-        <v-card elevation="20" class="ma-2 pa-2 " height="250" width="350" @click="selectOrder(order)">
-          <v-card-item :class="'bg-' + $Const.ORDER_STATUS_DISP[order.state].color">{{
+        <v-card flat rounded="xl" class="ma-2 pa-2 " height="250" width="350" @click="selectOrder(order)">
+          <v-card-item :class="'bg-' + $Const.ORDER_STATUS_DISP[order.state].color + ' rounded-xl'">{{
             $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-item>
           <v-card-text align="center" class="text-h5">{{ order.tourOrganization }}</v-card-text>
           <v-card-text align="center">日程:{{ order.dispatchDate }} {{ order.dispatchTimeHour
@@ -34,7 +34,7 @@
 
     <v-row>
       <v-col cols="12" sm="3" md="3">
-        <v-btn  value="add" color="primary" @click="addOrder">
+        <v-btn  value="add" size="large"  color="primary" @click="addOrder">
           <v-icon>mdi-plus</v-icon>新規登録
         </v-btn>
       </v-col>

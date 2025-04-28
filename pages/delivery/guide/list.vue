@@ -20,7 +20,7 @@
 
     <v-row no-gutters>
       <v-col align="right">
-        <v-btn rounded color="primary" @click="entry"> バスガイド登録 </v-btn>
+        <v-btn rounded  size="large" color="primary" @click="entry"> バスガイド登録 </v-btn>
       </v-col>
     </v-row>
     <v-row>

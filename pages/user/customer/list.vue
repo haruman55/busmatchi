@@ -22,7 +22,7 @@
 
     <v-row dense>
       <v-col align="right" class="d-flex justify-end">
-        <v-btn rounded color="primary" @click="entry">
+        <v-btn rounded  size="large" color="primary" @click="entry">
           新規顧客登録
         </v-btn>
       </v-col>
@@ -42,7 +42,7 @@
                 </template>
 
                 <template #[`item.editItem`]="{ item }">
-                  <v-btn color="secondary" fab small rounded dark @click="editItemInfo(item)">
+                  <v-btn color="secondary"   fab small rounded dark @click="editItemInfo(item)">
                     編 集
                   </v-btn>
                 </template>

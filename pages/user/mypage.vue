@@ -25,7 +25,7 @@
  -->
     <v-row>
       <v-col cols="12" sm="4" md="4">
-        <v-card class="mx-auto" width="300" height="420" elevation="15" color="primary" dark @click="showOrder">
+        <v-card flat rounded="xl"  class="mx-auto" width="300" height="420" color="primary" dark @click="showOrder">
           <v-card-text class="py-0" align="center">
             <v-icon size="100" color="white">mdi-pencil-circle-outline</v-icon>
           </v-card-text>
@@ -39,9 +39,9 @@
       </v-col>
 
       <v-col cols="12" sm="4" md="4">
-        <v-card class="mx-auto" width="300" height="420" elevation="15" color="secondary" @click="showContract">
+        <v-card flat rounded="xl" class="mx-auto" width="300" height="420" color="secondary" @click="showContract">
           <v-card-text class="py-0" align="center">
-            <v-icon size="100" color="white">mdi-file-document-outline</v-icon>
+            <v-icon size="100" >mdi-file-document-outline</v-icon>
           </v-card-text>
           <v-card-item title="契約管理" class="text-center" />
           <v-card-text class="py-0">
@@ -54,7 +54,7 @@
       <v-divider thickness="1" vertical />
 
       <v-col cols="12" sm="4" md="4">
-        <v-card class="mx-auto" width="300" height="200" elevation="15" color="background" @click="showCustomer">
+        <v-card  flat rounded="xl" class="mx-auto" width="300" height="200" @click="showCustomer">
           <v-card-item title="ご利用顧客" />
 
           <v-card-text class="py-0">
@@ -66,7 +66,7 @@
         </v-card>
         <br />
 
-        <v-card class="mx-auto" width="300" height="200" elevation="15" color="background">
+        <v-card flat rounded="xl"  class="mx-auto" width="300" height="200" >
           <v-card-item title="運送引受会社" />
 
           <v-card-text class="py-0">

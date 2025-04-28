@@ -41,7 +41,7 @@ v-model="form.value" :prepend-inner-icon="form.icon" :placeholder="form.placehol
             </v-form>
           </v-sheet>
           <div>
-            <v-btn class="ml-4" color="primary"  flat rounded @click="entry">登 録</v-btn>
+            <v-btn size="large"  class="ml-4" color="primary"  flat rounded @click="entry">登 録</v-btn>
           </div>
         </div>
 

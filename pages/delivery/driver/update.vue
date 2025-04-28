@@ -47,7 +47,7 @@
             </v-form>
           </v-sheet>
           <div>
-            <v-btn class="ml-4" color="primary" flat rounded @click="update">更 新</v-btn>
+            <v-btn class="ml-4"  size="large" color="primary" flat rounded @click="update">更 新</v-btn>
           </div>
         </div>
       </v-col>

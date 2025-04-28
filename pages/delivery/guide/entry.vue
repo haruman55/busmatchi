@@ -47,7 +47,7 @@
             </v-form>
           </v-sheet>
           <div>
-            <v-btn class="ml-4" color="primary" flat rounded @click="entry">登 録</v-btn>
+            <v-btn class="ml-4" size="large"  color="primary" flat rounded @click="entry">登 録</v-btn>
           </div>
         </div>
       </v-col>
