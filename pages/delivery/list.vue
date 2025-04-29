@@ -21,22 +21,20 @@
 
     <v-row>
       <v-col>
-        <v-textarea v-model="deliveryLocation" label="配車場所" rows="2" outlined />
-        <v-btn @click="updateDeliveryLocationMarker">変更した配車場所で再検索</v-btn>
-
-
-        <v-checkbox v-model="deliveryChoice" label="配車場所からの経路で選択" />
+        <v-text-field v-model="deliveryLocation" label="配車場所" outlined :append-inner-icon="'mdi-magnify'" @click:append-inner="updateDeliveryLocationMarker"/>
+        <!-- <v-textarea v-model="deliveryLocation" label="配車場所" rows="2" outlined :append-inner-icon="'mdi-magnify'" @click:append-inner="updateDeliveryLocationMarker"/> -->
+        <!-- <v-checkbox v-model="deliveryChoice" label="配車場所からの経路で選択" /> -->
       </v-col>
     </v-row>
 
-    <v-row v-show="deliveryChoice">
+    <v-row >
       <v-col cols="12" md="8">
         <div ref="mapContainer" class="map-container" />
       </v-col>
 
       <v-col cols="12" md="4">
-        <v-card v-if="destinationParkinInfo">
-          <v-card-title class="text-h6 font-weight-bold">
+        <v-card v-if="destinationParkinInfo && destinationParkinInfo.companyName" flat>
+          <v-card-title  class="text-h6 font-weight-bold">
             <a href="#" class="text-decoration-none" @click.prevent="selectDeliveryUser(destinationParkinInfo)">
               {{ destinationParkinInfo.companyName }}
             </a>
@@ -69,36 +67,19 @@
     </v-row>
 
     <br>
-    <v-row v-show="deliveryChoice">
+    <v-row >
       <v-col>
         <v-card>
+          <v-card-title class="text-h6 font-weight-bold bg-background">運送引受会社一覧</v-card-title>
           <v-row justify="center" no-gutters>
             <v-col>
               <v-data-table
 :headers="deliveryUserParkinParkinHeaders" :items="deliveryUerBusParkingList"
-                class="text-pre-wrap">
+                class="text-pre-wrap bg-background">
                 <template #[`item.companyName`]="{ item }">
-                  <a href="" @click.prevent.stop="selectDeliveryUser(item)">
+                  <a href="" @click.prevent.stop="selectDeliveryItem(item)">
                     {{ item.companyName }}</a>
                 </template>
-              </v-data-table>
-
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row v-show="!deliveryChoice">
-      <v-col>
-        <v-card>
-          <v-row justify="center" no-gutters>
-            <v-col>
-              <v-data-table :headers="deliveryUserHeaders" :items="deliveryUserList" class="text-pre-wrap">
-                <template #[`item.companyName`]="{ item }">
-                  <a href="" @click.prevent.stop="selectDeliveryUser(item)">
-                    {{ item.companyName }}</a>
-                </template>
-
               </v-data-table>
 
             </v-col>
@@ -119,12 +100,9 @@ const userData = useUserData();
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
 
-// ユーザ操作情報を保持
-const { actionInfo } = useAction()
-const act = actionInfo.value.act
 
 // 画面入力(設定)された申込情報を保持
-const { orderInfo, editOrderInfo, clearOrderInfo } = useOrderInfo()
+const { orderInfo } = useOrderInfo()
 
 /**
    * 運送引受会社情報取得
@@ -132,10 +110,10 @@ const { orderInfo, editOrderInfo, clearOrderInfo } = useOrderInfo()
 const deliveryUserList = await userData.getDeliveryUser();
 
 // 画面選択された申込運送引受会社情報を保持
-const { orderDeliveryUserInfo, editOrderDeliveryUserInfo, clearOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
+const { orderDeliveryUserInfo, editOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
 
 // 画面入力-Map選択可否
-const deliveryChoice = ref(false)
+// const deliveryChoice = ref(false)
 
 // 画面入力-配車場所
 const deliveryLocation = ref(orderInfo.value.deliveryLocation)
@@ -173,7 +151,7 @@ const deliveryUerBusParkingList = await reactive(getDeliveryUserParkingInfos())
 
 /** GoogleMap関連の定義 */
 // Google Maps APIのロード
-const apiKey = 'XXXXXXX';
+const apiKey = 'AIzaSyCWfa5BfqqpzkjLbgyl0iyWa-OUmg7W7xs';
 const mapContainer = ref(null);
 const map = ref(null);
 const google = ref(null);
@@ -276,7 +254,7 @@ const setDeliveryLocationMarker = (locationName) => {
           url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', // 青のピン
         },
         label: {
-          text: '配車場所', // デフォルトの A の代わりに「配車場所」と表示
+          text: '配車場所', 
           color: 'red',
           fontWeight: 'bold',
         }
@@ -377,7 +355,6 @@ const calculateRoute = (destinationLatLng, mapInstance, place) => {
     if (status === google.value.maps.DirectionsStatus.OK) {
       directionsRenderer.value.setDirections(result);
       const leg = result.routes[0].legs[0];
-      // travelTime.value = result.routes[0].legs[0].duration.text;
       travelTime.value = leg.duration.text;
       travelDistance.value = leg.distance.text;
       destinationParkinInfo.value = place;
@@ -420,35 +397,6 @@ const calculateRoute = (destinationLatLng, mapInstance, place) => {
 onMounted(initMap);
 
 
-// 運送引受会社のデータテーブルヘッダ定義
-const deliveryUserHeaders = [
-  {
-    title: '運送引受会社名',
-    key: 'companyName',
-    sortable: true
-  },
-  {
-    title: '住所',
-    key: 'companyAddr',
-    sortable: true
-  },
-  {
-    title: 'TEL',
-    key: 'companyTel',
-    sortable: true
-  },
-  {
-    title: 'Fax',
-    key: 'companyFax',
-    sortable: true
-  },
-  {
-    title: 'e-mailアドレス',
-    key: 'companyEmail',
-    sortable: true
-  },
-
-]
 // 運送引受会社-駐車地のデータテーブルヘッダ定義
 const deliveryUserParkinParkinHeaders = [
   {
@@ -508,7 +456,7 @@ const selectDeliveryUser = async (item) => {
     dispatchDate: orderDeliveryUserInfo.value.dispatchDate,
     dispatchTime: orderDeliveryUserInfo.value.dispatchTime,
     departureTime: orderDeliveryUserInfo.value.departureTime,
-    deliveryChoice: deliveryChoice,
+    // deliveryChoice: deliveryChoice,
   }
   // 画面設定値をStateへ情報保存
   editOrderDeliveryUserInfo(selectObject)
@@ -519,7 +467,37 @@ const selectDeliveryUser = async (item) => {
 }
 
 
+/**
+ * 一覧から運送引受会社を選択する
+ */
+ const selectDeliveryItem = async (item) => {
+  if (!item.parkingAddr) {
+    $swal.fire({
+      text: '駐車地住所が設定されていません。',
+      icon: 'warning',
+      confirmButtonText: 'OK',
+    });
+    return;
+  }
 
+  // Geocodingを使って駐車地住所を緯度経度に変換
+  geocoder.value.geocode({ address: item.parkingAddr }, (results, status) => {
+    if (status === google.value.maps.GeocoderStatus.OK && results[0]) {
+      const location = results[0].geometry.location;
+
+      // 経路情報を計算して表示
+      calculateRoute(location, map.value, item);
+
+    } else {
+      $swal.fire({
+        text: '駐車地住所が特定できませんでした。住所を確認してください。',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+      console.error(`Geocoding failed for ${item.parkingAddr}: ${status}`);
+    }
+  });
+};
 </script>
 
 <style scoped>
