@@ -152,7 +152,7 @@ const deliveryUerBusParkingList = await reactive(getDeliveryUserParkingInfos())
 
 /** GoogleMap関連の定義 */
 // Google Maps APIのロード
-const apiKey = 'AIzaSyCWfa5BfqqpzkjLbgyl0iyWa-OUmg7W7xs';
+const apiKey = 'xxxxxxxxxxxxxxxx';
 const mapContainer = ref(null);
 const map = ref(null);
 const google = ref(null);
