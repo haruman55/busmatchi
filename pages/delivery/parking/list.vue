@@ -1,34 +1,37 @@
 <template>
-  <div>
-    <v-container class="fill-height align-center" fluid>
+    <v-container max-width="1200">
       <v-row no-gutters>
-        <v-col>
-          <v-card-text class="font-weight-bold text-h5">
-            <v-icon left x-large @click="back">
-              mdi-close
-            </v-icon>
-            駐車地
-          </v-card-text>
+      <v-col>
+        <v-breadcrumbs
+:items="[
+          { title: 'マイページ', disabled: false, to: '/delivery/mypage' },
+          { title: '駐車地管理', disabled: true },
+        ]">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
+      <v-row no-gutters>
+        <v-col align="right">
+          <v-btn rounded color="primary" @click="entry">
+            駐車地登録
+          </v-btn>
         </v-col>
-      </v-row>
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
-      <v-toolbar-title class="font-weight-bold">
-        駐車地一覧<v-divider />
-      </v-toolbar-title>
-      <v-btn rounded color="success" size="x-large" @click="entry">
-        駐車地登録
-      </v-btn>
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
+     </v-row>
+
       <v-row>
         <v-col>
           <v-card>
             <v-row justify="center" no-gutters>
               <v-col>
-                <v-data-table :headers="parkingListHeaders" :items="parkingList" class="text-pre-wrap">
+                <v-data-table :headers="parkingListHeaders" :items="parkingList" class="text-pre-wrap bg-background" :items-per-page="5" hide-default-footer>
                   <template #[`item.editItem`]="{ item }">
-                    <v-btn color="primary" fab small rounded dark @click="editItemInfo(item)">
+                    <v-btn color="secondary" fab small rounded dark @click="editItemInfo(item)">
                       編 集
                     </v-btn>
                   </template>
@@ -40,11 +43,9 @@
         </v-col>
       </v-row>
     </v-container>
-  </div>
 </template>
 <script setup>
 const router = useRouter()
-const { $Const } = useNuxtApp()
 const { $swal } = useNuxtApp()
 const userData = useUserData();
 // ログインユーザーのキーID
@@ -54,10 +55,6 @@ const keyUserId = userInfo.value.companyId
 // 登録駐車場情報の保持
 const {  editParkingInfo } = useParkingInfo()
 
-
-// ユーザ操作情報を保持
-const { actionInfo } = useAction()
-const act = actionInfo.value.act
 
 /**
    * 登録駐車地情報取得
@@ -90,51 +87,6 @@ const parkingListHeaders = [
   },
 ]
 
-/**
- * 駐車地を選択する
- */
-const selectParking = async (item) => {
-  let confirmRes = false
-  await $swal.fire({
-    text: '駐車地を選択します。よろしいですか？',
-    showCancelButton: true,
-    confirmButtonColor: "#00BCD4",
-    cancelButtonColor: "#CFD8DC",
-    confirmButtonText: 'はい。',
-    cancelButtonText: 'キャンセル',
-    icon: 'info'
-  }).then((res) => {
-    confirmRes = res.isConfirmed
-  })
-  if (!confirmRes) {
-    return
-  }
-  const selectParkingInfo = {
-    id: item.id,
-    parking: item.parking,
-    parkingAddr: item.parkingAddr,
-    remarks: item.remarks,
-  }
-  // 画面設定値をStateへ情報保存
-  editParkingInfo(selectParkingInfo)
-
-  // 画面遷移
-  router.push('/user/order/entryBaseInfo')
-
-}
-/** 前の画面へ戻る */
-const back = () => {
-  // if (act == $Const.USER_ACTION_ORDER) {
-    // 画面遷移
-    // router.push('/user/order/entryBaseInfo')
-    router.push('/delivery/mypage')
-
-  // } else {
-  //   // 画面遷移
-  //   router.push('/delivery/mypage')
-
-  // }
-}
 /**
    * 駐車地登録画面へ遷移
    */

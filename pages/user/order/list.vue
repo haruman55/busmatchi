@@ -34,7 +34,7 @@
 
     <v-row>
       <v-col cols="12" sm="3" md="3">
-        <v-btn size="x-large" value="add" color="indigo" @click="addOrder">
+        <v-btn  value="add" color="primary" @click="addOrder">
           <v-icon>mdi-plus</v-icon>新規登録
         </v-btn>
       </v-col>
@@ -47,6 +47,7 @@
 const router = useRouter()
 const { $Const } = useNuxtApp()
 const userData = useUserData();
+const db = useFirestore()
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
 const keyUserId = userInfo.value.companyId
@@ -178,15 +179,17 @@ const selectOrder = async (order) => {
   const { editOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
   if (order.deliveryCompanyId != null && order.deliveryCompanyId != '') {
     const deliveryCompanyDocId = order.deliveryCompanyId
-    const orderDeliveryUser = await userData.getUserData(deliveryCompanyDocId)
+    // const orderDeliveryUser = await userData.getUserData(deliveryCompanyDocId)
+    const orderDeliveryCompany = await db.getDocument({ path: 'company', docId: deliveryCompanyDocId })
+
     const deliveryUser = {
       id: deliveryCompanyDocId,
-      companyId: orderDeliveryUser.companyId,
-      companyName: orderDeliveryUser.companyName,
-      companyAddr: orderDeliveryUser.companyAddr,
-      companyTel: orderDeliveryUser.companyTel,
-      companyFax: orderDeliveryUser.companyFax,
-      companyEmail: orderDeliveryUser.companyEmail,
+      companyId: orderDeliveryCompany.id,
+      companyName: orderDeliveryCompany.companyName,
+      companyAddr: orderDeliveryCompany.companyAddr,
+      companyTel: orderDeliveryCompany.companyTel,
+      companyFax: orderDeliveryCompany.companyFax,
+      companyEmail: orderDeliveryCompany.companyEmail,
       dispatchDate: order.dispatchDate,
       dispatchTime: dispatchTime,
       dispatchTimeHour: order.dispatchTimeHour,
@@ -221,25 +224,12 @@ const selectOrder = async (order) => {
   }
   editOrderOperationInfo(orderOperationInfoObject)
 
-  // if (order.state == $Const.STATUS_DRAFT || order.state == $Const.STATUS_UNDERTAKE || order.state == $Const.STATUS_ORDER_DENY) {
-  //   router.push('/user/order/entry')
-
-  // } else if (order.state == $Const.STATUS_REQUEST) {
-  //   router.push('/user/order/entryConfirm')
-  // } else {
-  //   router.push('/user/order/entryConfirm')
-  // }
   router.push('/user/order/entry')
 
 
 }
 
 
-/** 前の画面へ戻る */
-const back = () => {
-  // 画面遷移
-  router.push('/user/mypage')
-}
 
 definePageMeta({
   layout: 'user'

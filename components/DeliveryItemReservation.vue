@@ -178,175 +178,181 @@ onMounted(async () => {
 <template>
   <Teleport to="body">
     <div class="modal-overlay">
-      <div class="modal">
-        <v-container class="align-center">
-          <v-row>
-            <v-col>
-              <v-card>
-                <v-row>
-                  <v-col cols="12" sm="10" md="10" />
+      <v-container class="align-center modal">
+        <v-row>
+          <v-col cols="12" sm="10" md="10" />
+          <v-col cols="12" sm="1" md="1">
+            <v-icon v-if="reservationId != ''" size="large" class="ml-8" @click="cancel">mdi-trash-can-outline</v-icon>
+            <v-tooltip v-if="reservationId != ''" activator="parent" location="bottom">予定を削除</v-tooltip>
+          </v-col>
 
-
-                  <v-col  cols="12" sm="1" md="1">
-                    <v-icon v-if="reservationId != ''" size="large" @click="cancel">mdi-trash-can-outline</v-icon>
-                    <v-tooltip v-if="reservationId != ''" activator="parent" location="bottom">予定を削除</v-tooltip>
-                  </v-col>
-
-                  <v-col cols="12" sm="1" md="1">
-                    <v-icon  size="large" @click="$emit('close')">mdi-close</v-icon>
-                    <v-tooltip activator="parent" location="bottom">閉じる</v-tooltip>
-                  </v-col>
-                </v-row>
-
-                <v-row justify="center">
-                  <v-col v-if="reservationId != ''" cols="12" sm="12" md="12">
-                    <v-card-title class="font-weight-bold">{{ props.item.title }}</v-card-title>
-                  </v-col>
-                  <v-col v-else align="center" cols="12" sm="10" md="10">
-                    <v-text-field v-model="title" label="タイトルを入力してください。" outlined />
-                  </v-col>
-                </v-row>
-                <div v-if="category === $Const.CATEGORY_BUS">
-                  <v-row>
-                    <v-col cols="12" sm="2" md="2">
-                      <v-card-text>車種</v-card-text>
-                    </v-col>
-                    <v-col>
-                      <v-card-text>
-                        {{ props.item.vehicleNo }} {{ $Const.VEHICLE_TYPE_DISP[props.item.vehicleType].text }}
-                      </v-card-text>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="2" md="2">
-                      <v-card-text>駐車場</v-card-text>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-card-text>
-                        [{{ props.item.parking }}]{{ props.item.parkingAddr }}
-                      </v-card-text>
-                    </v-col>
-                  </v-row>
-                </div>
-                <div v-else-if="category === $Const.CATEGORY_DRIVER">
-                  <v-row>
-                    <v-col cols="12" sm="2" md="2">
-                      <v-card-text>運転手</v-card-text>
-                    </v-col>
-                    <v-col>
-                      <v-card-text>
-                        {{ props.item.driverName }} {{ props.item.contact }}
-                      </v-card-text>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="2" md="2">
-                      <v-card-text>備考</v-card-text>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-card-text>
-                        {{ props.item.remarks }}
-                      </v-card-text>
-                    </v-col>
-                  </v-row>
-                </div>
-                <div v-else-if="category === $Const.CATEGORY_GUIDE">
-                  <v-row>
-                    <v-col cols="12" sm="2" md="2">
-                      <v-card-text>バスガイド</v-card-text>
-                    </v-col>
-                    <v-col>
-                      <v-card-text>
-                        {{ props.item.guideName }} {{ props.item.contact }}
-                      </v-card-text>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="2" md="2">
-                      <v-card-text>備考</v-card-text>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-card-text>
-                        {{ props.item.remarks }}
-                      </v-card-text>
-                    </v-col>
-                  </v-row>
-                </div>
-
-                <v-row>
-                  <v-col cols="12" sm="2" md="2"><v-card-text>開始日時</v-card-text>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <datepicker
-v-model="dispatchDate" :teleport="true" locale="jp" auto-apply
-                      :enable-time-picker="true" format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
-                  </v-col>
-
-                  <v-col cols="12" sm="2" md="2">
-                    <v-select
-v-model="dispatchTimeHour" label="時間" item-title="disp" item-value="code"
-                      :items="$Const.TIME_HOUR_LIST" />
-                  </v-col>
-                  <v-col cols="12" sm="2" md="2">
-
-                    <v-select
-v-model="dispatchTimeMinute" label="分" item-title="disp" item-value="code"
-                      :items="$Const.TIME_MINUTE_LIST" />
-                  </v-col>
-
-                </v-row>
-
-
-
-                <v-row>
-                  <v-col cols="12" sm="2" md="2"><v-card-text>終了日時</v-card-text>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <datepicker
-v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="true"
-                      format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
-                  </v-col>
-
-                  <v-col cols="12" sm="2" md="2">
-                    <v-select
-v-model="endingTimeHour" label="時間" item-title="disp" item-value="code"
-                      :items="$Const.TIME_HOUR_LIST" />
-                  </v-col>
-                  <v-col cols="12" sm="2" md="2">
-
-                    <v-select
-v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
-                      :items="$Const.TIME_MINUTE_LIST" />
-                  </v-col>
-
-                </v-row>
-
-                <v-row justify="center" no-gutters>
-                  <v-col align="center">
-                    <v-btn rounded color="grey" dark class="mb-2 pr-8 pl-8" @click="$emit('close')">閉じる</v-btn>
-                  </v-col>
-                  <v-spacer />
-
-                  <v-col align="center">
-                    <v-btn
-rounded size="x-large" color="indigo darken-4" dark class="mb-2 pr-8 pl-8"
-                      @click="reservation">保存</v-btn>
-                  </v-col>
-
-                  <v-col v-if="reservationId != ''" align="center">
-                    <v-btn
-rounded size="x-large" color="grey darken-4" dark class="mb-2 pr-8 pl-8"
-                      @click="cancel">削除</v-btn>
-                  </v-col>
-
-                </v-row>
-              </v-card>
+          <v-col cols="12" sm="1" md="1">
+            <v-icon size="large" class="mr-8"  @click="$emit('close')">mdi-close</v-icon>
+            <v-tooltip activator="parent" location="bottom">閉じる</v-tooltip>
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col cols="12">
+            <v-sheet class="py-2 mx-auto text-start" max-width="500" color="transparent">
+              <v-row justify="center">
+                <v-col v-if="reservationId != ''" cols="12">
+                  <v-card-title class="font-weight-bold">{{ props.item.title }}</v-card-title>
+                </v-col>
+                <v-col v-else class="pa-2" cols="12">
+                  <p>
+                    <span class="text-body-2">件名</span>
+                    <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                      必須
+                    </v-chip>
+                  </p>
+                  <v-text-field v-model="title" outlined />
+                </v-col>
+              </v-row>
+            </v-sheet>
+          </v-col>
+        </v-row>
+        <div v-if="category === $Const.CATEGORY_BUS">
+          <v-row no-gutters>
+            <v-col cols="12">
+              <div>
+                <v-sheet class="py-2 mx-auto text-start" max-width="500" color="transparent">
+                  <div class="py-2 d-flex justify-space-between">
+                    <span>車種</span>
+                    <span>{{ props.item.vehicleNo }} {{ $Const.VEHICLE_TYPE_DISP[props.item.vehicleType].text }}</span>
+                  </div>
+                  <div class="py-2 d-flex justify-space-between">
+                    <span>駐車場</span>
+                    <span>[{{ props.item.parking }}]{{ props.item.parkingAddr }}</span>
+                  </div>
+                </v-sheet>
+              </div>
+            </v-col>
+          </v-row>
+        </div>
+        <div v-else-if="category === $Const.CATEGORY_DRIVER">
+          <v-row no-gutters>
+            <v-col cols="12">
+              <div>
+                <v-sheet class="py-2 mx-auto text-start" max-width="500" color="transparent">
+                  <div class="py-2 d-flex justify-space-between">
+                    <span>運転手</span>
+                    <span> {{ props.item.driverName }} {{ props.item.contact }}</span>
+                  </div>
+                  <div class="py-2 d-flex justify-space-between">
+                    <span>備考</span>
+                    <span>{{ props.item.remarks }}</span>
+                  </div>
+                </v-sheet>
+              </div>
             </v-col>
           </v-row>
 
-        </v-container>
+        </div>
+        <div v-else-if="category === $Const.CATEGORY_GUIDE">
+          <v-row no-gutters>
+            <v-col cols="12">
+              <div>
+                <v-sheet class="py-2 mx-auto text-start" max-width="500" color="transparent">
+                  <div class="py-2 d-flex justify-space-between">
+                    <span>バスガイド</span>
+                    <span> {{ props.item.guideName }} {{ props.item.contact }}</span>
+                  </div>
+                  <div class="py-2 d-flex justify-space-between">
+                    <span>備考</span>
+                    <span>{{ props.item.remarks }}</span>
+                  </div>
+                </v-sheet>
+              </div>
+            </v-col>
+          </v-row>
 
-      </div>
+        </div>
+
+
+        <v-row no-gutters>
+          <v-col cols="12">
+            <v-sheet class="py-1 mx-auto text-start" max-width="500" color="transparent">
+              <p>
+                <span class="text-body-2">開始日時</span>
+                <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                  必須
+                </v-chip>
+              </p>
+              <v-row no-gutters align="center">
+                <!-- 日付選択 -->
+                <v-col cols="12" sm="6" md="6" class="pr-2">
+                  <datepicker
+v-model="dispatchDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="true"
+                    format="yyyy/MM/dd" model-type="yyyy/MM/dd" :clearable="false" />
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="pr-2">
+                  <v-select
+v-model="dispatchTimeHour" label="時間" item-title="disp" item-value="code"
+                    :items="$Const.TIME_HOUR_LIST" />
+                </v-col>
+                <v-col cols="12" sm="3" md="3">
+                  <v-select
+v-model="dispatchTimeMinute" label="分" item-title="disp" item-value="code"
+                    :items="$Const.TIME_MINUTE_LIST" />
+                </v-col>
+              </v-row>
+            </v-sheet>
+          </v-col>
+        </v-row>
+
+        <v-row no-gutters>
+          <v-col cols="12">
+            <v-sheet class="py-1 mx-auto text-start" max-width="500" color="transparent">
+              <p>
+                <span class="text-body-2">終了日時</span>
+                <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                  必須
+                </v-chip>
+              </p>
+              <v-row no-gutters align="center">
+                <!-- 日付選択 -->
+                <v-col cols="12" sm="6" md="6" class="pr-2">
+                  <datepicker
+v-model="endDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="true"
+                    format="yyyy/MM/dd" model-type="yyyy/MM/dd" :clearable="false" />
+                </v-col>
+                <v-col cols="12" sm="3" md="3" class="pr-2">
+                  <v-select
+v-model="endingTimeHour" label="時間" item-title="disp" item-value="code"
+                    :items="$Const.TIME_HOUR_LIST" />
+                </v-col>
+                <v-col cols="12" sm="3" md="3">
+                  <v-select
+v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
+                    :items="$Const.TIME_MINUTE_LIST" />
+                </v-col>
+              </v-row>
+            </v-sheet>
+          </v-col>
+        </v-row>
+
+
+
+
+        <v-row no-gutters>
+          <v-col align="center">
+            <div>
+              <v-btn class="mr-4" rounded color="secondary" dark  @click="$emit('close')">閉じる</v-btn>
+              <v-btn class="ml-4" rounded color="primary" dark  @click="reservation">保存</v-btn>
+              <v-btn
+v-if="reservationId != ''"
+class="ml-8" rounded color="secondary" dark 
+                @click="cancel">削除</v-btn>
+            </div>
+
+          </v-col>
+
+
+
+
+        </v-row>
+
+      </v-container>
     </div>
   </Teleport>
 </template>
@@ -355,18 +361,19 @@ rounded size="x-large" color="grey darken-4" dark class="mb-2 pr-8 pl-8"
 .modal {
   position: fixed;
   z-index: 999;
-  top: 20%;
+  top: 10%;
   left: 20%;
   right: 20%;
   width: 60%;
-  height: 90%;
-  overflow-y: scroll;
+  height: 70%;
+  overflow-y: auto;
   overflow-x: hidden;
   pointer-events: auto;
+  background-color: #f8f3ed;
   /* これでモーダル内は操作可能 */
 }
 
-/* オーバーレイ（背景をクリックで閉じる） */
+/* オーバーレイ */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -379,6 +386,5 @@ rounded size="x-large" color="grey darken-4" dark class="mb-2 pr-8 pl-8"
   justify-content: center;
   z-index: 1000;
   pointer-events: auto;
-  /* これでクリックを受け付ける */
 }
 </style>

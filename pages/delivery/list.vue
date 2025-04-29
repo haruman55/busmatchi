@@ -96,9 +96,7 @@ const router = useRouter()
 const { $Const } = useNuxtApp()
 const { $swal } = useNuxtApp()
 const userData = useUserData();
-// ログインユーザーのキーID
-const { userInfo } = useUserInfo()
-const keyUserId = userInfo.value.companyId
+const db = useFirestore()
 
 
 // 画面入力(設定)された申込情報を保持
@@ -107,7 +105,10 @@ const { orderInfo } = useOrderInfo()
 /**
    * 運送引受会社情報取得
    */
-const deliveryUserList = await userData.getDeliveryUser();
+const deliveryCompanyList = await db.getQueryDocument({
+    path: 'company',
+    where: [{ fieldPath: 'category', opStr: '==', value: $Const.CATEGORY_DELIVERY }],
+  })
 
 // 画面選択された申込運送引受会社情報を保持
 const { orderDeliveryUserInfo, editOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
@@ -124,18 +125,18 @@ const deliveryLocation = ref(orderInfo.value.deliveryLocation)
 const getDeliveryUserParkingInfos = async () => {
 
   const deliveryUerBusParkingArray = []
-  for (let i = 0; i < deliveryUserList.length; i++) {
-    const companyId = deliveryUserList[i].companyId
+  for (let i = 0; i < deliveryCompanyList.length; i++) {
+    const companyId = deliveryCompanyList[i].id
     const parkingList = await userData.getParkingList(companyId)
     // const parkingArray = []
     for (let j = 0; j < parkingList.length; j++) {
       const parkingInfo = {
-        companyId: deliveryUserList[i].companyId,
-        companyName: deliveryUserList[i].companyName,
-        companyAddr: deliveryUserList[i].companyAddr,
-        companyEmail: deliveryUserList[i].companyEmail,
-        companyFax: deliveryUserList[i].companyFax,
-        companyTel: deliveryUserList[i].companyTel,
+        id: deliveryCompanyList[i].id,
+        companyName: deliveryCompanyList[i].companyName,
+        companyAddr: deliveryCompanyList[i].companyAddr,
+        companyEmail: deliveryCompanyList[i].companyEmail,
+        companyFax: deliveryCompanyList[i].companyFax,
+        companyTel: deliveryCompanyList[i].companyTel,
         parkingId: parkingList[j].id,
         parking: parkingList[j].parking,
         parkingAddr: parkingList[j].parkingAddr,
@@ -441,7 +442,7 @@ const selectDeliveryUser = async (item) => {
   }
   const selectObject = {
     id: item.id,
-    companyId: item.companyId,
+    companyId: item.id,
     companyName: item.companyName,
     companyAddr: item.companyAddr,
     companyTel: item.companyTel,

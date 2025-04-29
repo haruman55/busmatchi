@@ -1,73 +1,82 @@
 <template>
-  <div>
-    <v-container fluid class="bg-grey-lighten-4 mb-6">
-      <v-row justify="center">
-        <v-col>
-          <v-sheet>
-            <v-card-text class="text-h5 ">
-              <v-icon left x-large @click="back">
-                mdi-close
-              </v-icon>
-              運送依頼一覧
-            </v-card-text>
-            <v-divider :thickness="2" class="border-opacity-100" />
-          </v-sheet>
-        </v-col>
-      </v-row>
-      <v-divider />
-    </v-container>
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col v-for="(order) in orderList" :key="order.id" >
-          <v-card elevation="20" class="ma-2 pa-2" height="250" width="350" @click="selectOrder(order)">
-            <v-card-item :class="'bg-' + $Const.ORDER_STATUS_DISP[order.state].color">{{
-              $Const.ORDER_STATUS_DISP[order.state].text }}</v-card-item>
-            <v-card-text align="center" class="text-h5"> {{ order.applicantCompanyName }} {{ order.applicant }}</v-card-text>
-            <v-card-text align="center" >配車日時:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{ order.dispDispatchTimeMinute
-            }}</v-card-text>
-          </v-card>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs
+          :items="[
+            { title: 'マイページ', disabled: false, to: '/delivery/mypage' },
+            { title: '案件管理', disabled: true },
+          ]"
+        >
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
 
-        </v-col>
-      </v-row>
-
-
-
-    </v-container>
-  </div>
+    <v-row no-gutters>
+      <v-col v-for="order in orderList" :key="order.id">
+        <v-card elevation="20" class="ma-2 pa-2" height="250" width="350" @click="selectOrder(order)">
+          <v-card-item :class="'bg-' + $Const.ORDER_STATUS_DISP[order.state].color">{{
+            $Const.ORDER_STATUS_DISP[order.state].text
+          }}</v-card-item>
+          <v-card-text align="center" class="text-h5">
+            {{ order.applicantCompanyName }} {{ order.applicant }}</v-card-text
+          >
+          <v-card-text align="center"
+            >配車日時:{{ order.dispatchDate }} {{ order.dispatchTimeHour }}:{{
+              order.dispDispatchTimeMinute
+            }}</v-card-text
+          >
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script setup>
 const router = useRouter()
 const { $Const } = useNuxtApp()
-const userData = useUserData();
+const userData = useUserData()
+const db = useFirestore()
 // ログインユーザーのキーID
 const { userInfo } = useUserInfo()
-const keyUserDocId = userInfo.value.id
 const keyUserId = userInfo.value.companyId
 
 /**
  * 申込会社からの案件情報の一覧を取得する。
  */
 const getOrderDeliveryList = async () => {
-
-  const statusArray = [$Const.STATUS_REQUEST, $Const.STATUS_UNDERTAKE, $Const.STATUS_PAYMENT_METHOD_CONFIRMED, $Const.STATUS_TRANSPORTATION_COMPLETED, $Const.STATUS_PAYMENT_COMPLETED, $Const.STATUS_ORDER_COMPLETED]
-  const orderList = await userData.getOrderDeliveryList(keyUserDocId, statusArray);
+  const statusArray = [
+    $Const.STATUS_REQUEST,
+    $Const.STATUS_UNDERTAKE,
+    $Const.STATUS_PAYMENT_METHOD_CONFIRMED,
+    $Const.STATUS_TRANSPORTATION_COMPLETED,
+    $Const.STATUS_PAYMENT_COMPLETED,
+    $Const.STATUS_ORDER_COMPLETED,
+  ]
+  const orderList = await userData.getOrderDeliveryList(keyUserId, statusArray)
   const orderListArray = []
   for (let i = 0; i < orderList.length; i++) {
-
-    const companyId = orderList[i].companyId
+    const applicantCompanyId = orderList[i].companyId
     // 申込会社の情報取得
-    const companyData = await userData.getUserCompanyKey(companyId)
+    // const companyData = await userData.getUserCompanyKey(companyId)
+    const orderApplicantCompany = await db.getDocument({ path: 'company', docId: applicantCompanyId })
+
     const orderInfoObj = {
       id: orderList[i].id,
       state: orderList[i].state,
-      companyId: companyId,
+      companyId: applicantCompanyId,
       // TODO:この申込会社情報がとりたい為にわざわざ getOrderDeliveryList()で実装した。
       applicant: orderList[i].applicant,
-      applicantCompanyName: companyData.companyName,
-      applicantCompanyTel: companyData.companyTel,
-      applicantCompanyFax: companyData.companyFax,
-      applicantCompanyAddr: companyData.companyAddr,
-      applicantCompanyEmail: companyData.companyEmail,
+      applicantCompanyName: orderApplicantCompany.companyName,
+      applicantCompanyTel: orderApplicantCompany.companyTel,
+      applicantCompanyFax: orderApplicantCompany.companyFax,
+      applicantCompanyAddr: orderApplicantCompany.companyAddr,
+      applicantCompanyEmail: orderApplicantCompany.companyEmail, 
       emergencyContact: orderList[i].emergencyContact,
       tourOrganization: orderList[i].tourOrganization,
       customerRemarks: orderList[i].customerRemarks,
@@ -80,7 +89,8 @@ const getOrderDeliveryList = async () => {
       dispatchTimeHour: orderList[i].dispatchTimeHour,
       dispatchTimeMinute: orderList[i].dispatchTimeMinute,
       // 画面(一覧のカード)表示用に編集
-      dispDispatchTimeMinute: $Const.TIME_MINUTE_LIST.find(item => item.code === orderList[i].dispatchTimeMinute)?.disp ?? '',
+      dispDispatchTimeMinute:
+        $Const.TIME_MINUTE_LIST.find((item) => item.code === orderList[i].dispatchTimeMinute)?.disp ?? '',
 
       departureTimeHour: orderList[i].departureTimeHour,
       departureTimeMinute: orderList[i].departureTimeMinute,
@@ -110,15 +120,12 @@ const getOrderDeliveryList = async () => {
       dispatchId: orderList[i].dispatchId,
       counterPersonMain: orderList[i].counterPersonMain,
       counterPersonSub: orderList[i].counterPersonSub,
-
     }
     orderListArray.push(orderInfoObj)
   }
   return orderListArray
 }
-const orderList = await getOrderDeliveryList();
-
-
+const orderList = await getOrderDeliveryList()
 
 /**
  * 一覧から選択した案件情報を表示する
@@ -129,18 +136,18 @@ const selectOrder = async (order) => {
   let endingTime = ''
 
   if (order.dispatchTimeHour != null && order.dispatchTimeMinute != null) {
-    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.dispatchTimeHour);
-    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.dispatchTimeMinute);
+    const time = $Const.TIME_HOUR_LIST.find((item) => item.code === order.dispatchTimeHour)
+    const min = $Const.TIME_MINUTE_LIST.find((item) => item.code === order.dispatchTimeMinute)
     dispatchTime = time.disp + ':' + min.disp
   }
   if (order.departureTimeHour != null && order.departureTimeMinute != null) {
-    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.departureTimeHour);
-    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.departureTimeMinute);
+    const time = $Const.TIME_HOUR_LIST.find((item) => item.code === order.departureTimeHour)
+    const min = $Const.TIME_MINUTE_LIST.find((item) => item.code === order.departureTimeMinute)
     departureTime = time.disp + ':' + min.disp
   }
   if (order.endingTimeHour != null && order.endingTimeMinute != null) {
-    const time = $Const.TIME_HOUR_LIST.find(item => item.code === order.endingTimeHour);
-    const min = $Const.TIME_MINUTE_LIST.find(item => item.code === order.endingTimeMinute);
+    const time = $Const.TIME_HOUR_LIST.find((item) => item.code === order.endingTimeHour)
+    const min = $Const.TIME_MINUTE_LIST.find((item) => item.code === order.endingTimeMinute)
     endingTime = time.disp + ':' + min.disp
   }
 
@@ -191,7 +198,7 @@ const selectOrder = async (order) => {
   // 配車情報があれば設定
   const { editDispatchInfo } = useDispatchInfo()
   if (order.dispatchId != null && order.dispatchId != '') {
-    const dispatchInfo = await userData.getDispatchData(order.dispatchId);
+    const dispatchInfo = await userData.getDispatchData(order.dispatchId)
     const dispatchObj = {
       id: order.dispatchId,
       companyId: dispatchInfo.companyId,
@@ -223,15 +230,17 @@ const selectOrder = async (order) => {
   const { editOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
   if (order.deliveryCompanyId != null && order.deliveryCompanyId != '') {
     const deliveryCompanyDocId = order.deliveryCompanyId
-    const orderDeliveryUser = await userData.getUserData(deliveryCompanyDocId)
+    // const orderDeliveryUser = await userData.getUserData(deliveryCompanyDocId)
+    const orderDeliveryCompany = await db.getDocument({ path: 'company', docId: deliveryCompanyDocId })
+
     const deliveryUser = {
       id: deliveryCompanyDocId,
-      companyId: orderDeliveryUser.companyId,
-      companyName: orderDeliveryUser.companyName,
-      companyAddr: orderDeliveryUser.companyAddr,
-      companyTel: orderDeliveryUser.companyTel,
-      companyFax: orderDeliveryUser.companyFax,
-      companyEmail: orderDeliveryUser.companyEmail,
+      companyId: orderDeliveryCompany.id,
+      companyName: orderDeliveryCompany.companyName,
+      companyAddr: orderDeliveryCompany.companyAddr,
+      companyTel: orderDeliveryCompany.companyTel,
+      companyFax: orderDeliveryCompany.companyFax,
+      companyEmail: orderDeliveryCompany.companyEmail, 
       dispatchDate: order.dispatchDate,
       dispatchTime: dispatchTime,
       dispatchTimeHour: order.dispatchTimeHour,
@@ -243,7 +252,6 @@ const selectOrder = async (order) => {
       deliveryLocation: order.deliveryLocation,
       counterPersonMain: order.counterPersonMain,
       counterPersonSub: order.counterPersonSub,
-
     }
     editOrderDeliveryUserInfo(deliveryUser)
   }
@@ -266,19 +274,10 @@ const selectOrder = async (order) => {
   }
   editOrderOperationInfo(orderOperationInfoObject)
 
-
   router.push('/delivery/order/entry')
-
-}
-
-
-/** 前の画面へ戻る */
-const back = () => {
-  // 画面遷移
-  router.push('/delivery/mypage')
 }
 
 definePageMeta({
-  layout: 'user'
+  layout: 'user',
 })
 </script>

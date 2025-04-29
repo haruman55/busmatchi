@@ -1,159 +1,182 @@
 <template>
-  <div>
+  <v-container max-width="1200">
+    <v-row no-gutters>
+      <v-col>
+        <v-breadcrumbs :items="breadcrumbs">
+          <template #prepend>
+            <v-icon icon="mdi-home" size="small" />
+          </template>
+          <template #divider>
+            <v-icon icon="mdi-chevron-right" />
+          </template>
+          <template #item="{ item }">
+            <v-breadcrumbs-item :disabled="item.disabled" @click="item.click && item.click()">
+              {{ item.title }}
+            </v-breadcrumbs-item>
+          </template>
+        </v-breadcrumbs>
+      </v-col>
+    </v-row>
 
-    <v-container class="fill-height align-center" fluid>
-      <v-row no-gutters>
-        <v-col>
-          <v-card-text class="font-weight-bold text-h5">
-            <v-icon left x-large @click="back">
-              mdi-close
-            </v-icon>
-            運行管理
-          </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
 
-    <v-container class="fill-height align-center" fluid>
-      <v-row>
-        <v-col cols="12" sm="1" md="1">配車日
-        </v-col>
-        <v-col cols="12" sm="2" md="2">
-          <datepicker
+    <!-- <v-row no-gutters>
+      <v-col>
+        <v-card-text class="font-weight-bold text-h5">
+          <v-icon left x-large @click="back">
+            mdi-close
+          </v-icon>
+          運行管理
+        </v-card-text>
+      </v-col>
+    </v-row> -->
+    <v-row>
+      <v-col cols="12" sm="2" md="2">
+        <datepicker
 v-model="dispatchDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="true"
-            format="yyyy/MM/dd" model-type="yyyy/MM/dd" @update:model-value="serach" />
-        </v-col>
-        <v-col cols="12" sm="2" md="2">
-          <v-btn @click="changeDate(-1)"><v-icon size="x-large">mdi-chevron-left</v-icon></v-btn>
-          <v-btn @click="changeDate(1)"><v-icon size="x-large">mdi-chevron-right</v-icon></v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
+          format="yyyy/MM/dd" model-type="yyyy/MM/dd" :clearable="false" class="ma-1 mt-3"
+          @update:model-value="serach" />
+      </v-col>
+      <v-col cols="12" sm="2" md="2">
+        <v-btn color="background" icon class="ma-1" @click="changeDate(-1)"><v-icon>mdi-chevron-left</v-icon></v-btn>
+        <v-btn color="background" icon class="ma-1" @click="changeDate(1)"><v-icon>mdi-chevron-right</v-icon></v-btn>
+      </v-col>
+    </v-row>
     <v-overlay :model-value="loading" class="align-center justify-center">
       <v-progress-circular color="primary" size="150" width="20" indeterminate />
     </v-overlay>
 
 
 
-    <v-container class="fill-height align-center" fluid>
-      <v-toolbar-title class="font-weight-bold">
-        バス一覧
-        <v-divider />
-      </v-toolbar-title>
-    </v-container>
+    <v-row>
+      <v-col>
+        <v-sheet class="py-5 mx-auto text-start" color="transparent">
+          <p class="mb-2 font-weight-bold">バス</p>
+          <v-divider class="mb-2 border-opacity-100" />
+        </v-sheet>
+      </v-col>
+    </v-row>
+    <!-- ラベル部分 -->
+    <v-row>
+      <v-col cols="12" sm="2" md="2" />
+      <v-col v-for="(label) in $Const.TIME_ARRAY" :key="label.id" class="borderline">
+        <v-sheet color="background">{{ label.index }}</v-sheet>
+      </v-col>
+    </v-row>
 
-    <v-container fluid>
-      <!-- ラベル部分 -->
-      <v-row align="center">
-        <v-col cosl="12" sm="1" md="1" />
-        <v-col v-for="(label) in $Const.TIME_ARRAY" :key="label.id" align="center" class="borderline">
-          <v-sheet>{{ label.index }}</v-sheet>
-        </v-col>
-      </v-row>
-
-      <!-- 中身 -->
-      <v-row v-for="(busInfo) in busInfoList" :key="busInfo.id" align="center">
-        <v-col cosl="12" sm="1" md="1" class="borderline"><v-card-text>{{ busInfo.vehicleNo }} {{
-          $Const.VEHICLE_TYPE_DISP[busInfo.vehicleType].text
-        }}</v-card-text></v-col>
-        <v-col
-v-for="(reservation, index) in busInfo.reservationTimeArray" :key="reservation.id" align="center"
-          class="borderline" :class="{ 'bg-grey-lighten-3': reservation != '' }"
-          @click="reservationItem($Const.CATEGORY_BUS, index, busInfo)" /></v-row>
-    </v-container>
+    <!-- 中身 -->
+    <v-row v-for="(busInfo) in busInfoList" :key="busInfo.id">
+      <v-col cols="12" sm="2" md="2" class="borderline"><span>{{ busInfo.vehicleNo }} {{
+        $Const.VEHICLE_TYPE_DISP[busInfo.vehicleType].text
+          }}</span></v-col>
+      <v-col
+v-for="(reservation, index) in busInfo.reservationTimeArray" :key="reservation.id" class="borderline"
+        :class="{ 'bg-secondary': reservation != '' }"
+        @click="reservationItem($Const.CATEGORY_BUS, index, busInfo)" /></v-row>
 
     <!--運転手一覧-->
-    <v-container class="fill-height align-center" fluid>
-      <v-toolbar-title class="font-weight-bold">
-        運転手一覧
-        <v-divider />
-      </v-toolbar-title>
-    </v-container>
+    <v-row>
+      <v-col>
+        <v-sheet class="py-5 mx-auto text-start" color="transparent">
+          <p class="mb-2 font-weight-bold">運転手</p>
+          <v-divider class="mb-2 border-opacity-100" />
+        </v-sheet>
+      </v-col>
+    </v-row>
+    <!-- ラベル部分 -->
+    <v-row align="center">
+      <v-col cols="12" sm="2" md="2" />
+      <v-col v-for="(label) in $Const.TIME_ARRAY" :key="label.id" align="center" class="borderline">
+        <v-sheet color="background">{{ label.index }}</v-sheet>
+      </v-col>
+    </v-row>
 
-    <v-container fluid>
-      <!-- ラベル部分 -->
-      <v-row align="center">
-        <v-col cosl="12" sm="1" md="1" />
-        <v-col v-for="(label) in $Const.TIME_ARRAY" :key="label.id" align="center" class="borderline">
-          <v-sheet>{{ label.index }}</v-sheet>
-        </v-col>
-      </v-row>
-
-      <!-- 中身 -->
-      <v-row v-for="(driverInfo) in driverList" :key="driverInfo.id" align="center">
-        <v-col cosl="12" sm="1" md="1" class="borderline"><v-card-text>{{ driverInfo.driverName }}</v-card-text></v-col>
-        <v-col
+    <!-- 中身 -->
+    <v-row v-for="(driverInfo) in driverList" :key="driverInfo.id" align="center">
+      <v-col cols="12" sm="2" md="2" class="borderline"><span>{{ driverInfo.driverName }}</span></v-col>
+      <v-col
 v-for="(reservation, index) in driverInfo.reservationTimeArray" :key="reservation.id" align="center"
-          class="borderline" :class="{ 'bg-grey-lighten-3': reservation != '' }"
-          @click="reservationItem($Const.CATEGORY_DRIVER, index, driverInfo)" /></v-row>
-    </v-container>
+        class="borderline" :class="{ 'bg-secondary': reservation != '' }"
+        @click="reservationItem($Const.CATEGORY_DRIVER, index, driverInfo)" /></v-row>
+    <v-row>
+      <v-col>
+        <v-sheet class="py-5 mx-auto text-start" color="transparent">
+          <p class="mb-2 font-weight-bold">ガイド</p>
+          <v-divider class="mb-2 border-opacity-100" />
+        </v-sheet>
+      </v-col>
+    </v-row>
+    <!-- ラベル部分 -->
+    <v-row align="center">
+      <v-col cols="12" sm="2" md="2" />
+      <v-col v-for="(label) in $Const.TIME_ARRAY" :key="label.id" align="center" class="borderline">
+        <v-sheet color="background">{{ label.index }}</v-sheet>
+      </v-col>
+    </v-row>
 
-    <v-container class="fill-height align-center" fluid>
-      <v-toolbar-title class="font-weight-bold">
-        ガイド一覧
-        <v-divider />
-      </v-toolbar-title>
-    </v-container>
-
-    <v-container fluid>
-      <!-- ラベル部分 -->
-      <v-row align="center">
-        <v-col cosl="12" sm="1" md="1" />
-        <v-col v-for="(label) in $Const.TIME_ARRAY" :key="label.id" align="center" class="borderline">
-          <v-sheet>{{ label.index }}</v-sheet>
-        </v-col>
-      </v-row>
-
-      <!-- 中身 -->
-      <v-row v-for="(guideInfo) in guideList" :key="guideInfo.id" align="center">
-        <v-col cosl="12" sm="1" md="1" class="borderline"><v-card-text>{{ guideInfo.guideName }} </v-card-text></v-col>
-        <v-col
+    <!-- 中身 -->
+    <v-row v-for="(guideInfo) in guideList" :key="guideInfo.id" align="center">
+      <v-col cols="12" sm="2" md="2" class="borderline"><span>{{ guideInfo.guideName }} </span></v-col>
+      <v-col
 v-for="(reservation, index) in guideInfo.reservationTimeArray" :key="reservation.id" align="center"
-          class="borderline" :class="{ 'bg-grey-lighten-3': reservation != '' }"
-          @click="reservationItem($Const.CATEGORY_GUIDE, index, guideInfo)" /></v-row>
-    </v-container>
+        class="borderline" :class="{ 'bg-secondary': reservation != '' }"
+        @click="reservationItem($Const.CATEGORY_GUIDE, index, guideInfo)" /></v-row>
 
 
     <!-- モーダルコンポーネント -->
     <DeliveryItemReservation
 v-if="isOpenReservation" :dispatch-date="dispatchDate" :category="selectedCategory"
-      :index="selectedIndex" :reservation-id="selectedReservationId" :item="selectedItem"  @close="closeModal"
+      :index="selectedIndex" :reservation-id="selectedReservationId" :item="selectedItem" @close="closeModal"
       @reload="serach" />
 
 
-    <v-container class="align-center" fluid>
-      <v-row justify="center" no-gutters>
-        <v-col align="center">
-          <v-btn rounded dark size="x-large" color="grey" class="mb-2 pr-8 pl-8" @click="back">
-            閉じる
-          </v-btn>
-        </v-col>
-        <v-spacer />
+    <br>
+    <v-row justify="center" no-gutters>
+      <v-col align="center">
+        <v-btn rounded dark color="secondary" class="mb-2 pr-8 pl-8" @click="back">
+          閉じる
+        </v-btn>
+      </v-col>
+      <v-spacer />
 
-        <v-spacer />
+      <v-spacer />
 
-      </v-row>
-    </v-container>
+    </v-row>
+  </v-container>
 
 
-  </div>
 </template>
 <script setup>
 const router = useRouter()
 const { $Const } = useNuxtApp()
-const { $swal } = useNuxtApp()
 const { $dayjs } = useNuxtApp();
 // 共通関数の呼び出し
 const utils = useUtils();
 
 const userData = useUserData();
-// ログインユーザーのキーID
-const { userInfo } = useUserInfo()
-const keyUserId = userInfo.value.companyId
+// 遷移元によるパンくずの表示切替
+const breadcrumbs = computed(() => {
+  if (act === $Const.USER_ACTION_ORDER) {
+    return [
+      { title: 'マイページ', disabled: true },
+      { title: '案件管理', disabled: true },
+      { title: '案件登録', disabled: true },
+      { title: '配車登録', disabled: false, click: () => back() },
+      { title: '運行管理', disabled: true },
+    ];
+  } else {
+    return [
+      { title: 'マイページ', disabled: false, click: () => back() },
+      { title: '運行管理', disabled: true },
+    ];
+  }
+});
 
 // ユーザ操作情報を保持
 const { actionInfo } = useAction()
 const act = actionInfo.value.act
+
+// ユーザマスタ情報の状態管理
+const { deliveryUserMasterhInfo } = useDeliveryUserMasterhInfo()
 
 // 検索基点とのなる日付
 const dispatchDate = ref($dayjs().format('YYYY/MM/DD'))
@@ -169,15 +192,35 @@ const selectedCategory = ref('')
 /**
  * 画面初期処理
  */
-onMounted( () => {
+onMounted(async () => {
+  loading.value = true
   // 案件登録の導線から呼び出された際は、該当案件の配車日を検索日として初期設定する。
-  // const { orderInfo } = useOrderInfo()
-  // if (orderInfo.value.dispatchDate != null && orderInfo.value.dispatchDate != '') {
-  //   dispatchDate.value =  orderInfo.value.dispatchDate
-  // }
-  
+  const { orderInfo } = useOrderInfo()
+  if (orderInfo.value.dispatchDate != null && orderInfo.value.dispatchDate != '') {
+    dispatchDate.value = $dayjs(orderInfo.value.dispatchDate).format('YYYY/MM/DD')
+  } else {
+    // 案件登録以外の導線から呼び出された際は、当日の日付を初期設定する。
+    dispatchDate.value = $dayjs().format('YYYY/MM/DD')
+  }
+  // 並列でデータ取得
+  const [busInfo, driverInfo, guideInfo] = await Promise.all([
+    getBusInfoList(),
+    getDriverInfoList(),
+    getGuideInfoList(),
+  ]);
+
+  // データを反映
+  busInfoList.value = busInfo;
+  driverList.value = driverInfo;
+  guideList.value = guideInfo;
+
+  loading.value = false;
+
 })
 
+/**
+ * スケジュール表示の日付変更
+ */
 const changeDate = (days) => {
   dispatchDate.value = $dayjs(dispatchDate.value, "YYYY/MM/DD")
     .add(days, "day")
@@ -226,7 +269,8 @@ const getBusInfoList = async () => {
   const SearchReservationTSFrom = new Date($dayjs(formattedSearchReservationFrom, 'YYYY-MM-DD HH:mm').valueOf());
   const SearchReservationTSTo = new Date($dayjs(formattedSearchReservationTo, 'YYYY-MM-DD HH:mm').valueOf());
 
-  const busList = await userData.getBusList(keyUserId);
+  // TODO:stateからの情報取得に変更（しばらく動作確認） const busList = await userData.getBusList(keyUserId);
+  const busList = deliveryUserMasterhInfo.value.busList
   const busInfoListArray = []
   for (let i = 0; i < busList.length; i++) {
     const busId = busList[i].id
@@ -285,7 +329,10 @@ const getBusInfoList = async () => {
     }
     // バスが配置されている駐車場のdocid
     const parkingId = busList[i].parkingId
-    const parkingData = await userData.getParkingData(parkingId)
+    // TODO:stateからの情報取得に変更（しばらく動作確認） const parkingData = await userData.getParkingData(parkingId)
+    const parkingData = deliveryUserMasterhInfo.value.parkingList.find(
+      (parking) => parking.id === parkingId
+    );
     const busInfoObj = {
       id: busId,
       companyId: busList[i].companyId,
@@ -306,7 +353,7 @@ const getBusInfoList = async () => {
 
   return busInfoListArray
 }
-const busInfoList = ref(await getBusInfoList())
+const busInfoList = ref()
 
 
 
@@ -329,8 +376,8 @@ const getDriverInfoList = async () => {
   const SearchReservationTSFrom = new Date($dayjs(formattedSearchReservationFrom, 'YYYY-MM-DD HH:mm').valueOf());
   const SearchReservationTSTo = new Date($dayjs(formattedSearchReservationTo, 'YYYY-MM-DD HH:mm').valueOf());
 
-  const driverList = await userData.getDriverList(keyUserId);
-
+  // TODO:stateからの情報取得に変更（しばらく動作確認）const driverList = await userData.getDriverList(keyUserId);
+  const driverList = deliveryUserMasterhInfo.value.driverList
   const driverInfoListArray = []
   for (let i = 0; i < driverList.length; i++) {
     const driverId = driverList[i].id
@@ -404,7 +451,8 @@ const getDriverInfoList = async () => {
   }
   return driverInfoListArray
 }
-const driverList = ref(await getDriverInfoList());
+// const driverList = ref(await getDriverInfoList());
+const driverList = ref();
 
 
 
@@ -424,9 +472,9 @@ const getGuideInfoList = async () => {
   const SearchReservationTSTo = new Date($dayjs(formattedSearchReservationTo, 'YYYY-MM-DD HH:mm').valueOf());
 
 
-  const guideList = await userData.getGuideList(keyUserId);
+  // TODO:stateからの情報取得に変更（しばらく動作確認）const guideList = await userData.getGuideList(keyUserId);
+  const guideList = deliveryUserMasterhInfo.value.guideList
   const guideInfoListArray = []
-
   for (let i = 0; i < guideList.length; i++) {
     const guideId = guideList[i].id
 
@@ -503,7 +551,7 @@ const getGuideInfoList = async () => {
   }
   return guideInfoListArray
 }
-const guideList = ref(await getGuideInfoList());
+const guideList = ref();
 
 
 /**
@@ -511,23 +559,9 @@ const guideList = ref(await getGuideInfoList());
  */
 const reservationItem = async (category, index, item) => {
 
-  let confirmRes = false
+  // let confirmRes = false
   if (item.reservationTimeArray[index] != '') {
-    await $swal.fire({
-      text: '既に配車予約している時間をしています。よろしいですか？',
-      showCancelButton: true,
-      confirmButtonColor: "#00BCD4",
-      cancelButtonColor: "#CFD8DC",
-      confirmButtonText: 'はい。',
-      cancelButtonText: 'キャンセル',
-      icon: 'info'
-    }).then((res) => {
-      confirmRes = res.isConfirmed
-      selectedReservationId.value = item.reservationTimeArray[index]
-    })
-    if (!confirmRes) {
-      return
-    }
+    selectedReservationId.value = item.reservationTimeArray[index]
   }
 
   selectedCategory.value = category
@@ -544,17 +578,30 @@ const reservationItem = async (category, index, item) => {
  * 検索/リロード用
  */
 const serach = async () => {
+  if (!dispatchDate.value) {
+    return
+  }
+
   loading.value = true;
 
-  busInfoList.value = await getBusInfoList()
-  driverList.value = await getDriverInfoList()
-  guideList.value = await getGuideInfoList()
+  // 並列でデータ取得
+  const [busInfo, driverInfo, guideInfo] = await Promise.all([
+    getBusInfoList(),
+    getDriverInfoList(),
+    getGuideInfoList(),
+  ]);
 
+  // データを反映
+  busInfoList.value = busInfo;
+  driverList.value = driverInfo;
+  guideList.value = guideInfo;
   loading.value = false;
 
 }
 
-// モーダルを閉じる処理
+/** 
+ * モーダルを閉じる処理
+ * */
 const closeModal = () => {
   isOpenReservation.value = false
   selectedIndex.value = null
@@ -583,5 +630,9 @@ const back = () => {
 <style>
 .borderline {
   border: 1px solid #ccc;
+  width: 40px;
+  height: 60px;
+  justify-content: center;
+  align-items: center
 }
 </style>

@@ -19,17 +19,10 @@
 
     <v-row>
       <v-col>
-        <v-toolbar-title class="font-weight-bold">
-          登録契約一覧<v-divider />
-        </v-toolbar-title>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
         <v-card>
           <v-row justify="center" no-gutters>
             <v-col>
-              <v-data-table :headers="contractListHeaders" :items="contractList" :row-props="getRowClass">
+              <v-data-table :headers="contractListHeaders" :items="contractList" :row-props="getRowClass" class="text-pre-wrap bg-background">
                 <template #[`item.payment`]="{ item }">
                   <div>
                     <a href="" @click.prevent.stop="selectContract(item)">
@@ -279,7 +272,6 @@ const selectContract = async (order) => {
   // 申込顧客情報があれば設定
   const { editApplicantCustomerInfo } = useApplicantCustomerInfo()
   if (order.customerId != null && order.customerId != '') {
-    // const userCustomer = await userData.getUserCustomer(keyUserId, order.customerId)
     const userCustomer = await userData.getCustomerData(order.customerId)
     const userCustomerInfo = {
       id: order.customerId,
