@@ -19,7 +19,7 @@
 
     <v-row no-gutters>
       <v-col align="right">
-        <v-btn rounded color="primary" @click="entry">
+        <v-btn rounded size="large"  color="primary" @click="entry">
           運転手登録
         </v-btn>
       </v-col>

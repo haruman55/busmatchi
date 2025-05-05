@@ -52,7 +52,7 @@
 
     <v-row dense>
       <v-col align="right" class="d-flex justify-end">
-        <v-btn rounded color="primary" @click="entry">
+        <v-btn size="large"  rounded color="primary" @click="entry">
           利用者登録
         </v-btn>
       </v-col>

@@ -305,7 +305,7 @@
 
     <v-row>
       <v-col col="12">
-        <v-card variant="outlined" class="color-outline" elevation="3">
+        <v-card flat rounded="xl" variant="outlined" class="color-outline">
           <v-container fluid>
             <v-card-title class="color-title">運送引受会社
               <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
@@ -324,7 +324,7 @@
 
             <v-btn
 v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE" rounded
-              dark color="yellow" class="mb-2 pr-8 pl-8" @click="entry">
+              dark color="yellow" size="large" class="mb-2 pr-8 pl-8" @click="entry">
               配車情報を登録する
             </v-btn>
             <v-overlay :model-value="loading" class="align-center justify-center">
@@ -369,8 +369,8 @@ outlined prepend-icon="mdi-card-account-details-outline" :title="driver.driverNa
 v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id" cols="12" sm="6" md="4"
                 class="py-2">
                 <v-card
-outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName" :subtitle="guide.contact" color="background"
-                  class="text-body-2">
+outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName"
+                  :subtitle="guide.contact" color="background" class="text-body-2">
                   <template #append>
                     <v-icon size="small" @click="removeGuide(index)">
                       mdi-close
@@ -388,49 +388,99 @@ outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName" :subtitl
     </v-row>
     <v-row>
       <v-col col="12">
-        <v-card variant="outlined" class="color-outline" elevation="3" color="background">
+        <v-card flat rounded="xl" variant="outlined" class="color-outline">
           <v-container fluid>
-            <v-card-title class="color-title">支払い</v-card-title>
-
+            <v-card-title class="color-title">支払い方法
+            <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                必須
+              </v-chip>
+            </v-card-title>
             <v-row>
               <v-col cols="12" sm="6" md="6">
-                <v-card class="mx-auto" elevation="3" color="background">
-                  <v-card-title>運賃及び料金の支払い方法</v-card-title>
+                <v-card flat rounded="xl" class="mx-auto" color="background">
+
                   <v-card-text>
-                    <div class="py-2 d-flex justify-space-between">
-                      <span>運賃及び料金の支払い方法</span>
-                      <span>{{ dispPaymentType }}</span>
-                    </div>
-                    <div class="py-2 d-flex justify-space-between">
-                      <span>適用を受けようとする割引</span>
-                      <span>{{ dispDiscount }}</span>
-                    </div>
-                    <div class="py-2 d-flex justify-space-between">
-                      <span>特約事項</span>
-                      <span>{{ orderInfo.specialTerms }}</span>
-                    </div>
-                    <div class="py-2 d-flex justify-space-between">
-                      <span>備考</span>
-                      <span>{{ orderInfo.remarks }}</span>
-                    </div>
+                    <p>
+                      <span class="font-weight-bold">運賃及び料金の支払い方法</span>
+                    </p>
+                    <v-divider class="mb-2 border-opacity-100" />
+                    <span>
+                      {{ dispPaymentType }}</span>
                   </v-card-text>
+                  <v-card-text>
+                    <p>
+                      <span class="font-weight-bold">適用を受けようとする割引</span>
+                    </p>
+                    <v-divider class="mb-2 border-opacity-100" />
+                    <span>
+                      {{ dispDiscount }}</span>
+                  </v-card-text>
+                  <v-card-text>
+                    <p>
+                      <span class="font-weight-bold">特約事項</span>
+                    </p>
+                    <v-divider class="mb-2 border-opacity-100" />
+                    <span>
+                      {{ orderInfo.specialTerms }}</span>
+                  </v-card-text>
+                  <v-card-text>
+                    <p>
+                      <span class="font-weight-bold">備考</span>
+                    </p>
+                    <v-divider class="mb-2 border-opacity-100" />
+
+                    <span>
+                      {{ orderInfo.remarks }}</span>
+                  </v-card-text>
+
+
                 </v-card>
               </v-col>
               <v-col cols="12" sm="6" md="6">
-                <v-card class="mx-auto" elevation="3" color="background">
+                <v-card color="background" class="mx-auto" elevation="3">
                   <v-card-title>運賃・料金</v-card-title>
-                  <v-card-item>
-                    <v-text-field v-model="orderAmount" suffix="円" label="料 金" @update:model-value="editOrderAmount" />
-                    <v-text-field v-model="actualCost" suffix="円" label="実 費" @update:model-value="editActualCost" />
-                    <v-card-text>合計金額:{{ totalAmount }} 円<v-checkbox
-v-model="isTaxIn" label="税込み"
-                        @click="formatTax" /></v-card-text>
-                    <v-card-text>支払期日
+
+                  <v-row dense>
+                    <v-col cols="6" class="pa-2">
+                      <p>
+                        <span class="text-body-2">料金</span>
+                      </p>
+                      <v-text-field v-model="orderAmount" suffix="円" label="料金" @update:model-value="editOrderAmount" />
+                    </v-col>
+                    <v-col cols="6" class="pa-2">
+                      <p>
+                        <span class="text-body-2">実費</span>
+                      </p>
+                      <v-text-field v-model="actualCost" suffix="円" label="実費" @update:model-value="editActualCost" />
+                    </v-col>
+                  </v-row>
+                  <v-row dense>
+                    <v-col cols="10" class="pa-2">
+                      <p>
+                        <span class="text-body-2">合計金額</span>
+                      </p>
+
+                      <div class="d-flex align-center">
+                        <p class="text-h6 mb-4">{{ totalAmount }} 円</p>
+                        <span class="ml-4">
+                          <v-checkbox v-model="isTaxIn" label="税込み" @click="formatTax" />
+                        </span>
+                      </div>
+                    </v-col>
+                  </v-row>
+
+                  <v-row dense>
+                    <v-col cols="4" class="pa-4">
+                      <p>
+                        <span class="text-body-2">支払期日</span>
+                      </p>
+
                       <datepicker
 v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
                         :enable-time-picker="false" format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
-                    </v-card-text>
-                  </v-card-item>
+
+                    </v-col>
+                  </v-row>
                 </v-card>
               </v-col>
             </v-row>
@@ -443,23 +493,23 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
 
     <v-row justify="center" no-gutters>
       <v-col align="center">
-        <v-btn rounded dark color="grey" class="mb-2 pr-8 pl-8" @click="back"> 戻 る </v-btn>
+        <v-btn rounded dark color="grey" size="large" class="mb-2 pr-8 pl-8" @click="back"> 戻 る </v-btn>
       </v-col>
       <v-spacer />
 
       <v-col v-if="orderInfo.state == $Const.STATUS_REQUEST" align="center">
-        <v-btn rounded dark color="primary" class="mb-2 pr-8 pl-8" @click="undertake">
+        <v-btn rounded dark color="primary" size="large" class="mb-2 pr-8 pl-8" @click="undertake">
           運送手配を引き受ける
         </v-btn>
       </v-col>
       <v-col v-else-if="orderInfo.state == $Const.STATUS_PAYMENT_METHOD_CONFIRMED" align="center">
-        <v-btn rounded dark color="primary" class="mb-2 pr-8 pl-8" @click="settlement">
+        <v-btn rounded dark color="primary" size="large" class="mb-2 pr-8 pl-8" @click="settlement">
           運送の完了報告と実費精算
         </v-btn>
       </v-col>
 
       <v-col v-else-if="orderInfo.state == $Const.STATUS_TRANSPORTATION_COMPLETED" align="center">
-        <v-btn rounded dark color="primary" class="mb-2 pr-8 pl-8" @click="confirmation">
+        <v-btn rounded dark color="primary" size="large" class="mb-2 pr-8 pl-8" @click="confirmation">
           入金を確認しました
         </v-btn>
       </v-col>
@@ -467,8 +517,8 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
       <v-spacer />
       <v-col align="center">
         <v-btn
-v-if="orderInfo.state == $Const.STATUS_REQUEST" rounded dark color="secondary" class="mb-2 pr-8 pl-8"
-          @click="deny">
+v-if="orderInfo.state == $Const.STATUS_REQUEST" rounded dark color="secondary" size="large"
+          class="mb-2 pr-8 pl-8" @click="deny">
           運送手配を断る
         </v-btn>
       </v-col>

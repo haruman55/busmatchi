@@ -24,12 +24,10 @@
 
     <v-row>
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
-
-          <!-- <v-container fluid> -->
+        <v-card flat rounded="xl" variant="outlined" class="color-outline">
           <v-card-title class="color-title">申込者情報</v-card-title>
           <v-row no-gutters dense>
-            <v-col cols="12" sm="4" md="4" class="pa-2">
+            <v-col cols="12" sm="6" md="6" class="pa-2">
               <p>
                 <span class="text-body-2">申込担当者名</span>
                 <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
@@ -41,188 +39,184 @@
 v-model="applicant" :items="applicantUserList" item-title="name" item-value="id" outlined
                 clearable @update:model-value="handleApplicantChange" />
             </v-col>
-            <v-col cols="12" sm="4" md="4" class="pa-2">
+            <v-col cols="12" sm="6" md="6" class="pa-2">
               <p>
                 <span class="text-body-2">緊急連絡先</span>
               </p>
               <v-text-field v-model="emergencyContact" outlined />
             </v-col>
           </v-row>
-          <!-- </v-container> -->
         </v-card>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
-          <v-container fluid>
-            <v-row>
-              <v-card-title class="color-title">お客様情報</v-card-title>
-              <v-btn rounded dark color="yellow" class="mt-2 mb-2 pr-8 pl-8" @click="customerSerch">
-                顧客選択
-              </v-btn>
+        <v-card flat rounded="xl" variant="outlined" class="color-outline">
+          <v-row dense>
+            <v-card-title class="color-title">お客様情報</v-card-title>
+            <v-btn rounded dark color="yellow" class="mt-2 mb-2 pr-8 pl-8" @click="customerSerch">
+              顧客選択
+            </v-btn>
 
-            </v-row>
-            <v-row no-gutters dense>
-              <v-col
-v-if="applicantCustomerId != '' && applicantCustomerId != null" cols="12" sm="6" md="6"
-                class="pa-2">
-                <v-card color="background" elevation="5">
-                  <v-card-item class="text-center text-h4">
-                    {{ applicantCustomerInfo.customerName }}
-                  </v-card-item>
-                  <v-card-item class="text-left" prepend-icon="mdi-map-marker-outline">
-                    {{ applicantCustomerInfo.customerAddr }}
-                  </v-card-item>
-                  <v-card-item class="text-left">
-                    <v-icon>mdi-phone-outline</v-icon>{{ applicantCustomerInfo.customerTel }}
-                    <v-icon>mdi-fax</v-icon> {{ applicantCustomerInfo.customerFax }}
-                  </v-card-item>
-                  <v-card-item class="text-left">
-                    <v-icon>mdi-email-outline</v-icon>{{ applicantCustomerInfo.customerMail }}
-                  </v-card-item>
-                </v-card>
-              </v-col>
-              <!-- <v-col cols="12" sm="6" md="6"> -->
-              <v-col cols="12" sm="6" md="6" class="pa-2">
-                <p>
-                  <span class="text-body-2">団体名</span>
-                  <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
-                    必須
-                  </v-chip>
-                </p>
-                <v-text-field v-model="tourOrganization" outlined />
-                <p>
-                  <span class="text-body-2">備考</span>
-                </p>
-                <v-textarea v-model="customerRemarks" rows="2" outlined />
-              </v-col>
-            </v-row>
-          </v-container>
+          </v-row>
+          <v-row no-gutters dense>
+            <v-col v-if="applicantCustomerId != '' && applicantCustomerId != null" cols="12" sm="6" md="6" class="pa-2">
+              <v-card color="background" elevation="5">
+                <v-card-item class="text-center text-h4">
+                  {{ applicantCustomerInfo.customerName }}
+                </v-card-item>
+                <v-card-item class="text-left" prepend-icon="mdi-map-marker-outline">
+                  {{ applicantCustomerInfo.customerAddr }}
+                </v-card-item>
+                <v-card-item class="text-left">
+                  <v-icon>mdi-phone-outline</v-icon>{{ applicantCustomerInfo.customerTel }}
+                  <v-icon>mdi-fax</v-icon> {{ applicantCustomerInfo.customerFax }}
+                </v-card-item>
+                <v-card-item class="text-left">
+                  <v-icon>mdi-email-outline</v-icon>{{ applicantCustomerInfo.customerMail }}
+                </v-card-item>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" class="pa-2">
+              <p>
+                <span class="text-body-2">団体名</span>
+                <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                  必須
+                </v-chip>
+              </p>
+              <v-text-field v-model="tourOrganization" outlined />
+              <p>
+                <span class="text-body-2">備考</span>
+              </p>
+              <v-textarea v-model="customerRemarks" rows="2" outlined />
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>
-    <v-row no-gutters>
+    <v-row>
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
-          <v-container fluid>
-            <v-card-title class="color-title">申込情報</v-card-title>
+        <v-card flat rounded="xl" variant="outlined" class="color-outline">
+          <v-card-title class="color-title">申込情報</v-card-title>
 
-            <v-row dense>
-              <v-col cols="12" sm="4" md="4" class="pa-2">
-                <p>
-                  <span class="text-body-2">申込乗車人員</span>
-                  <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
-                    必須
-                  </v-chip>
-                </p>
-                <v-text-field v-model.number="passengers" label="申込乗車人数" type="number" outlined min="0" step="1" />
-              </v-col>
-            </v-row>
+          <v-row dense class="pa-2">
+            <v-col cols="12" sm="4" md="4" class="pa-2">
+              <p>
+                <span class="text-body-2">申込乗車人員</span>
+                <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                  必須
+                </v-chip>
+              </p>
+              <v-text-field v-model.number="passengers" label="申込乗車人数" type="number" outlined min="0" step="1" />
+            </v-col>
+          </v-row>
 
 
-            <v-row justify="center" dense>
-              <v-col cols="3" class="pa-2">
-                <p>
-                  <span class="text-body-2">乗車定員別又は車種別車両数</span>
-                  <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
-                    必須
-                  </v-chip>
-                </p>
+          <v-row justify="center" dense class="pa-2">
+            <v-col cols="12" align="left" >
+              <p>
+                <span class="text-body-2">乗車定員別又は車種別車両数</span>
+                <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                  必須
+                </v-chip>
+              </p>
+            </v-col>
+          </v-row>
 
-                <v-text-field
+          <v-row justify="center" dense class="pa-2">
+            <v-col cols="2" class="pa-2">
+
+              <v-text-field
 v-model.number="vehicleTypeLiftAmount" label="リフト-車両数" type="number" outlined min="0"
-                  step="1" suffix="両" />
-              </v-col>
-              <v-col cols="3" class="pa-9">
-                <v-text-field
+                step="1" suffix="両" />
+            </v-col>
+            <v-col cols="2" class="pa-2">
+              <v-text-field
 v-model.number="vehicleTypeMediumAmount" label="中型車-車両数" type="number" outlined min="0"
-                  step="1" suffix="両" />
-              </v-col>
-              <v-col cols="3" class="pa-9">
-                <v-text-field
+                step="1" suffix="両" />
+            </v-col>
+            <v-col cols="2" class="pa-2">
+              <v-text-field
 v-model.number="vehicleTypeSmallAmount" label="小型車-車両数" type="number" outlined min="0"
-                  step="1" suffix="両" />
-              </v-col>
-              <v-col cols="3" class="pa-9">
-                <v-text-field
+                step="1" suffix="両" />
+            </v-col>
+            <v-col cols="2" class="pa-2">
+              <v-text-field
 v-model.number="vehicleTypeMicroAmount" label="マイクロ-車両数" type="number" outlined min="0"
-                  step="1" suffix="両" />
-              </v-col>
-            </v-row>
+                step="1" suffix="両" />
+            </v-col>
+            <v-col cols="4" align="left" class="text-h6 justify-center">車両合計 {{ totalvehicleAmount
+            }} 両</v-col>
 
-            <v-row no-gutters dense>
-              <v-col cols="12" sm="2" md="2" class="text-body-2">車両合計 </v-col>
-              <v-col cols="12" sm="2" md="2">{{ totalvehicleAmount
-              }}両</v-col>
-            </v-row>
-            <v-row no-gutters dense>
-              <v-col cols="12" sm="8" md="8">
-                <p>
-                  <span class="text-body-2">配車場所</span>
-                  <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
-                    必須
-                  </v-chip>
-                </p>
+          </v-row>
 
-                <v-text-field v-model="deliveryLocation" type="text" />
-              </v-col>
-            </v-row>
+          <v-row no-gutters dense class="pa-2">
+            <v-col cols="12" sm="8" md="8">
+              <p>
+                <span class="text-body-2">配車場所</span>
+                <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                  必須
+                </v-chip>
+              </p>
 
-            <v-row no-gutters dense>
-              <v-col cols="12" sm="3" md="3">
-                <p>
-                  <span class="text-body-2">配車日時</span>
-                  <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
-                    必須
-                  </v-chip>
-                </p>
+              <v-text-field v-model="deliveryLocation" type="text" />
+            </v-col>
+          </v-row>
 
-                <datepicker
+          <v-row no-gutters dense class="pa-2">
+            <v-col cols="12" sm="3" md="3">
+              <p>
+                <span class="text-body-2">配車日時</span>
+                <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                  必須
+                </v-chip>
+              </p>
+
+              <datepicker
 v-model="dispatchDate" :teleport="true" locale="jp" auto-apply :enable-time-picker="false"
-                  format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
-              </v-col>
-              <v-col cols="12" sm="2" md="2" class="mt-8">
-                <v-select
+                format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
+
+            </v-col>
+            <v-col cols="12" sm="2" md="2" class="mt-8 px-2">
+              <v-select
 v-model="dispatchTimeHour" label="時間" item-title="disp" item-value="code"
-                  :items="$Const.TIME_HOUR_LIST" />
-              </v-col>
-              <v-col cols="12" sm="2" md="2" class="mt-8 px-2">
+                :items="$Const.TIME_HOUR_LIST" />
+            </v-col>
+            <v-col cols="12" sm="2" md="2" class="mt-8 px-2">
 
-                <v-select
+              <v-select
 v-model="dispatchTimeMinute" label="分" item-title="disp" item-value="code"
-                  :items="$Const.TIME_MINUTE_LIST" />
-              </v-col>
-            </v-row>
+                :items="$Const.TIME_MINUTE_LIST" />
+            </v-col>
+          </v-row>
 
-            <v-row dense>
-              <v-col cols="12" sm="2" md="2">
-                <p>
-                  <span class="text-body-2">出発時間</span>
-                  <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
-                    必須
-                  </v-chip>
-                </p>
+          <v-row dense class="pa-2">
+            <v-col cols="12" sm="2" md="2">
+              <p>
+                <span class="text-body-2">出発時間</span>
+                <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
+                  必須
+                </v-chip>
+              </p>
 
-                <v-select
+              <v-select
 v-model="departureTimeHour" label="時間" item-title="disp" item-value="code"
-                  :items="$Const.TIME_HOUR_LIST" />
-              </v-col>
-              <v-col cols="12" sm="2" md="2" class="mt-6">
+                :items="$Const.TIME_HOUR_LIST" />
+            </v-col>
+            <v-col cols="12" sm="2" md="2" class="mt-6">
 
-                <v-select
+              <v-select
 v-model="departureTimeMinute" label="分" item-title="disp" item-value="code"
-                  :items="$Const.TIME_MINUTE_LIST" />
-              </v-col>
-            </v-row>
+                :items="$Const.TIME_MINUTE_LIST" />
+            </v-col>
+          </v-row>
 
-          </v-container>
         </v-card>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
+        <v-card flat rounded="xl" variant="outlined" class="color-outline">
           <v-container fluid>
 
             <v-row>
@@ -265,9 +259,7 @@ v-model="departureTimeMinute" label="分" item-title="disp" item-value="code"
                 <div v-if="keydispatchId != null && keydispatchId != ''">
                   <v-row v-if="dispatchInfo.busList.length > 0" class="mb-4">
                     <!-- 配車情報 -->
-                    <v-col
-v-for="(bus) in dispatchInfo.busList" :key="bus.id" cols="12" sm="6" md="4"
-                      class="py-2">
+                    <v-col v-for="(bus) in dispatchInfo.busList" :key="bus.id" cols="12" sm="6" md="4" class="py-2">
                       <v-card
 outlined prepend-icon="mdi-bus" :title="$Const.VEHICLE_TYPE_DISP[bus.vehicleType].text"
                         :subtitle="bus.vehicleNo" color="background" class="text-body-2">
@@ -315,7 +307,7 @@ outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName" color="b
     <!-- TODO:以下 運行情報 については一旦日帰りで実装。数日の旅程の場合はデータの持ち方や表示を検討必要 -->
     <v-row>
       <v-col>
-        <v-card variant="outlined" class="color-outline" elevation="3">
+        <v-card flat rounded="xl" variant="outlined" class="color-outline">
           <v-container fluid>
             <v-card-title class="color-title">旅程</v-card-title>
             <v-row>
@@ -410,7 +402,7 @@ v-model="endingTimeMinute" label="分" item-title="disp" item-value="code"
     <v-row dense>
       <v-col>
 
-        <v-card variant="outlined" class="color-outline" elevation="3">
+        <v-card flat rounded="xl" variant="outlined" class="color-outline">
           <!-- <v-container fluid> -->
           <v-card-title class="color-title">支払い</v-card-title>
 
@@ -525,20 +517,20 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
 
     <v-row>
       <v-col align="center">
-        <v-btn rounded dark color="grey" class="mb-2 pr-8 pl-8" @click="back">
+        <v-btn rounded dark size="large" color="grey" class="mb-2 pr-8 pl-8" @click="back">
           戻 る
         </v-btn>
       </v-col>
 
       <v-col v-if="orderState == $Const.STATUS_DRAFT || orderState == ''" align="center">
-        <v-btn rounded dark  color="secondary" class="mb-2 pr-8 pl-8" @click="draft">
+        <v-btn rounded dark size="large" color="secondary" class="mb-2 pr-8 pl-8" @click="draft">
           一次保存
         </v-btn>
       </v-col>
       <v-col
         v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE || orderInfo.state == $Const.STATUS_PAYMENT_METHOD_CONFIRMED"
         align="center">
-        <v-btn rounded dark  color="secondary" class="mb-2 pr-8 pl-8" @click="edit">
+        <v-btn rounded dark size="large" color="secondary" class="mb-2 pr-8 pl-8" @click="edit">
           内容を修正する
         </v-btn>
       </v-col>
@@ -548,18 +540,18 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
       <v-col
         v-if="orderInfo.state == $Const.STATUS_DRAFT || orderInfo.state == $Const.STATUS_ORDER_DENY || orderInfo.state == ''"
         align="center">
-        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="entry">
+        <v-btn rounded dark size="large" color="primary" class="mb-2 pr-8 pl-8" @click="entry">
           運送引受会社へ依頼する
         </v-btn>
       </v-col>
       <v-col v-else-if="orderInfo.state == $Const.STATUS_UNDERTAKE" align="center">
-        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="payment">
+        <v-btn rounded dark size="large" color="primary" class="mb-2 pr-8 pl-8" @click="payment">
           金額と支払方法を確定し、手配を完了する
         </v-btn>
       </v-col>
 
       <v-col v-else-if="orderInfo.state == $Const.STATUS_PAYMENT_COMPLETED" align="center">
-        <v-btn rounded dark  color="primary" class="mb-2 pr-8 pl-8" @click="completed">
+        <v-btn rounded dark size="large" color="primary" class="mb-2 pr-8 pl-8" @click="completed">
           案件を完了する
         </v-btn>
       </v-col>

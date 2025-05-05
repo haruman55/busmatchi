@@ -135,14 +135,14 @@
     <br>
     <v-row justify="center" no-gutters>
       <v-col align="center">
-        <v-btn rounded dark color="secondary" class="mb-2 pr-8 pl-8" @click="back">
+        <v-btn rounded dark  size="large" color="secondary" class="mb-2 pr-8 pl-8" @click="back">
           戻 る
         </v-btn>
       </v-col>
       <v-spacer />
 
       <v-col align="center">
-        <v-btn rounded dark color="primary" class="mb-2 pr-8 pl-8" @click="dispatch">
+        <v-btn rounded dark  size="large" color="primary" class="mb-2 pr-8 pl-8" @click="dispatch">
           配車登録する
         </v-btn>
       </v-col>

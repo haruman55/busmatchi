@@ -18,7 +18,7 @@
     </v-row>
     <v-row no-gutters>
       <v-col align="right">
-        <v-btn rounded color="primary" @click="entry">
+        <v-btn  size="large" rounded color="primary" @click="entry">
           バス登録
         </v-btn>
     </v-col></v-row>

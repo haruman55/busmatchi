@@ -72,7 +72,7 @@ v-else v-model="form.value" :prepend-inner-icon="form.icon" :placeholder="form.p
     <v-row justify="center" no-gutters>
       <v-col align="center">
         <div>
-          <v-btn class="ml-4" color="primary"  flat rounded @click="entry">更 新</v-btn>
+          <v-btn size="large"  class="ml-4" color="primary"  flat rounded @click="entry">更 新</v-btn>
         </div>
 
       </v-col>
