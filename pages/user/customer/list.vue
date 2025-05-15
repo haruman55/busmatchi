@@ -10,7 +10,10 @@
             <v-icon icon="mdi-chevron-right" />
           </template>
           <template #item="{ item }">
-            <v-breadcrumbs-item :disabled="item.disabled" @click="item.to && router.push(item.to)">
+            <v-breadcrumbs-item
+:disabled="item.disabled" :class="{
+              'breadcrumb-link': !item.disabled,
+            }" @click="item.to && router.push(item.to)">
               {{ item.title }}
             </v-breadcrumbs-item>
           </template>

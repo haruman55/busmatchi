@@ -14,7 +14,10 @@
             <v-icon icon="mdi-chevron-right" />
           </template>
           <template #item="{ item }">
-            <v-breadcrumbs-item :disabled="item.disabled" @click="item.click && item.click()">
+            <v-breadcrumbs-item
+:disabled="item.disabled" :class="{
+              'breadcrumb-link': !item.disabled,
+            }" @click="item.click && item.click()">
               {{ item.title }}
             </v-breadcrumbs-item>
           </template>
@@ -117,6 +120,16 @@ const companyForms = ref([
     placeholder: '',
     cols: 6,
   },
+    {
+    title: '代表Emailアドレス',
+    key: 'companyEmail',
+    value: userInfo.value.companyEmail,
+    required: false,
+    icon: 'mdi-email-outline',
+    placeholder: '',
+    cols: 6,
+  },
+
   {
     title: 'FAX',
     key: 'companyFax',
@@ -197,7 +210,6 @@ const registData = async () => {
   const getValue = (forms, key) => utils.toBlank(forms.value.find((f) => f.key === key).value)
   const items = []
 
-console.log('userInfo.value.id', userInfo.value.id)
   // ユーザ情報更新
   items.push({
     method: 'update',
@@ -239,8 +251,8 @@ console.log('userInfo.value.id', userInfo.value.id)
     icon: 'success'
   })
 
-  
-  
+
+
 }
 
 /** 前の画面へ戻る */

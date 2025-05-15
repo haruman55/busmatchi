@@ -1,0 +1,11 @@
+/* assets/css/global.css */
+.breadcrumb-link {
+  color: var(--v-theme-primary);
+  cursor: pointer;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+}
+
+.breadcrumb-link:hover {
+  text-decoration: underline;
+}

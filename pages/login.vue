@@ -117,7 +117,7 @@ const login = async () => {
     companyAddr: loginCompany.companyAddr,
     companyTel: loginCompany.companyTel,
     companyFax: loginCompany.companyFax,
-    companyEmail: loginUser.email,
+    companyEmail: loginCompany.companyEmail,
     businessPermitDate: '',
     businessPermitNo: '',
     businessLicenseArea: '',

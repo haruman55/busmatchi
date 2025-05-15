@@ -136,6 +136,16 @@ const companyForms = ref([
     placeholder: '',
     cols: 6,
   },
+    {
+    title: '代表Emailアドレス',
+    key: 'companyEmail',
+    value: memberInfo.value.companyEmail,
+    required: false,
+    icon: 'mdi-email-outline',
+    placeholder: '',
+    cols: 6,
+  },
+
   {
     title: 'FAX',
     key: 'companyFax',

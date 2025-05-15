@@ -14,7 +14,10 @@
             <v-icon icon="mdi-chevron-right" />
           </template>
           <template #item="{ item }">
-            <v-breadcrumbs-item :disabled="item.disabled" @click="item.click && item.click()">
+            <v-breadcrumbs-item
+:disabled="item.disabled" :class="{
+              'breadcrumb-link': !item.disabled,
+            }" @click="item.click && item.click()">
               {{ item.title }}
             </v-breadcrumbs-item>
           </template>
@@ -122,7 +125,7 @@ const companyForms = ref([
     cols: 6,
   },
   {
-    title: 'Emailアドレス',
+    title: '代表Emailアドレス',
     key: 'companyEmail',
     value: companyInfo.companyEmail,
     required: false,
@@ -199,6 +202,7 @@ const entry = () => {
  * @param {Object} item - 利用者情報
  */
 const selectMember = (item) => {
+
   const selectMember = {
     id: item.id,
     category: userInfo.value.category,
