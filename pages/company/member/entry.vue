@@ -3,11 +3,10 @@
     <v-row no-gutters>
       <v-col>
         <v-breadcrumbs
-          :items="[
-            { title: '会社情報', disabled: false, to: '/company' },
-            { title: '利用者登録', disabled: true },
-          ]"
-        >
+:items="[
+          { title: '会社情報', disabled: false, to: '/company' },
+          { title: '利用者登録', disabled: true },
+        ]">
           <template #prepend>
             <v-icon icon="mdi-home" size="small" />
           </template>
@@ -36,15 +35,9 @@
                     </v-chip>
                   </p>
                   <v-text-field
-                    v-model="form.value"
-                    :placeholder="form.placeholder"
-                    :prepend-inner-icon="form.icon"
-                    :type="form.type"
-                    :hint="form.hint"
-                    persistent-hint
-                    :error-messages="form.errorMessage"
-                    density="comfortable"
-                  />
+v-model="form.value" :placeholder="form.placeholder" :prepend-inner-icon="form.icon"
+                    :type="form.type" :hint="form.hint" persistent-hint :error-messages="form.errorMessage"
+                    density="comfortable" />
                 </v-col>
               </v-row>
             </v-form>
@@ -73,10 +66,8 @@
             <p class="mt-10 mb-2 font-weight-bold">利用者情報</p>
             <v-divider class="mb-2 border-opacity-100" />
             <div
-              v-for="form in userForms.filter((e) => e.key !== 'pass2')"
-              :key="form.key"
-              class="py-2 d-flex justify-space-between"
-            >
+v-for="form in userForms.filter((e) => e.key !== 'pass2')" :key="form.key"
+              class="py-2 d-flex justify-space-between">
               <span>{{ form.title }}</span>
               <span>{{ form.type === 'password' ? '•'.repeat(form.value.length) : form.value }}</span>
             </div>
@@ -135,6 +126,16 @@ const companyForms = ref([
     cols: 6,
   },
   {
+    title: '代表Emailアドレス',
+    key: 'companyEmail',
+    value: userInfo.value.companyEmail,
+    required: false,
+    icon: 'mdi-email-outline',
+    placeholder: '',
+    cols: 6,
+  },
+
+  {
     title: 'FAX',
     key: 'companyFax',
     value: userInfo.value.companyFax,
@@ -143,6 +144,7 @@ const companyForms = ref([
     placeholder: '',
     cols: 6,
   },
+
 ])
 
 const userForms = ref([
@@ -253,7 +255,7 @@ const registData = async () => {
       name: getValue(userForms, 'name'),
       email: getValue(userForms, 'email'),
       pass: getValue(userForms, 'pass'),
-      auth:0,
+      auth: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     },

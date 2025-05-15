@@ -10,7 +10,9 @@
             <v-icon icon="mdi-chevron-right" />
           </template>
           <template #item="{ item }">
-            <v-breadcrumbs-item :disabled="item.disabled" @click="item.click && item.click()">
+            <v-breadcrumbs-item
+:disabled="item.disabled" :class="{
+              'breadcrumb-link': !item.disabled,}" @click="item.click && item.click()">
               {{ item.title }}
             </v-breadcrumbs-item>
           </template>
@@ -67,7 +69,7 @@ v-model="dispatchDate" :teleport="true" locale="jp" auto-apply :enable-time-pick
     <v-row v-for="(busInfo) in busInfoList" :key="busInfo.id">
       <v-col cols="12" sm="2" md="2" class="borderline"><span>{{ busInfo.vehicleNo }} {{
         $Const.VEHICLE_TYPE_DISP[busInfo.vehicleType].text
-          }}</span></v-col>
+      }}</span></v-col>
       <v-col
 v-for="(reservation, index) in busInfo.reservationTimeArray" :key="reservation.id" class="borderline"
         :class="{ 'bg-secondary': reservation != '' }"
@@ -132,7 +134,7 @@ v-if="isOpenReservation" :dispatch-date="dispatchDate" :category="selectedCatego
     <br>
     <v-row justify="center" no-gutters>
       <v-col align="center">
-        <v-btn  size="large" rounded dark color="secondary" class="mb-2 pr-8 pl-8" @click="back">
+        <v-btn size="large" rounded dark color="secondary" class="mb-2 pr-8 pl-8" @click="back">
           閉じる
         </v-btn>
       </v-col>
