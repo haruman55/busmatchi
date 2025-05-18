@@ -43,6 +43,7 @@
 const router = useRouter()
 const { $Const } = useNuxtApp()
 const userData = useUserData();
+const db = useFirestore()
 
 // ユーザ情報を保持
 const { userInfo } = useUserInfo()
@@ -116,7 +117,9 @@ const getContractList = async () => {
       payment = '支払期日:' + contractList[i].paymentDueDate
     }
     // 申込会社の情報取得
-    const deliveryCompanyData = await userData.getUserData(companyId)
+    // const deliveryCompanyData = await userData.getUserData(companyId)
+    const deliveryCompanyData = await db.getDocument({ path: 'company', docId: companyId })
+
     const orderInfoObj = {
       id: contractList[i].id,
       state: state,
@@ -288,7 +291,9 @@ const selectContract = async (order) => {
   const { editOrderDeliveryUserInfo } = useOrderDeliveryUserInfo()
   if (order.deliveryCompanyId != null && order.deliveryCompanyId != '') {
     const deliveryCompanyDocId = order.deliveryCompanyId
-    const orderDeliveryUser = await userData.getUserData(deliveryCompanyDocId)
+    // const orderDeliveryUser = await userData.getUserData(deliveryCompanyDocId)
+    const orderDeliveryUser = await db.getDocument({ path: 'company', docId: deliveryCompanyDocId })
+
     const deliveryUser = {
       id: deliveryCompanyDocId,
       companyId: orderDeliveryUser.companyId,

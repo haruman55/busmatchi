@@ -105,7 +105,7 @@ const selectOrder = async (order) => {
   const orderInfo = {
     id: order.id,
     state: order.state,
-    companyId: keyUserId,
+    companyId: order.companyId,
     applicant: order.applicant,
     applicantCompanyName: userInfo.value.companyName,
     applicantCompanyTel: userInfo.value.companyTel,
@@ -229,9 +229,4 @@ const selectOrder = async (order) => {
 
 }
 
-
-
-definePageMeta({
-  layout: 'user'
-})
 </script>

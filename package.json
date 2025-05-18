@@ -12,6 +12,7 @@
     "format": "eslint --fix . "
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.8",
     "@vuepic/vue-datepicker": "^11.0.0",
     "chart.js": "^4.4.7",
     "chartjs-adapter-date-fns": "^3.0.0",
