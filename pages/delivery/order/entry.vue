@@ -966,171 +966,172 @@ const undertake = async () => {
 }
 
 /** 運送依頼を引き受ける */
-const _undertake = async () => {
-  // 必須選択チェック
-  if (dispatchInfo.value.busList.length == 0) {
-    $swal.fire({
-      text: '配車情報を登録してください。',
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning',
-    })
-    return
-  }
-  if (utils.toBlank(counterPersonMain.value) == '') {
-    $swal.fire({
-      text: 'ご担当者様を入力してください。',
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning',
-    })
-    return
-  }
+// しばらく稼働確認して問題なければ削除
+// const _undertake = async () => {
+//   // 必須選択チェック
+//   if (dispatchInfo.value.busList.length == 0) {
+//     $swal.fire({
+//       text: '配車情報を登録してください。',
+//       showCancelButton: false,
+//       confirmButtonText: 'OK',
+//       icon: 'warning',
+//     })
+//     return
+//   }
+//   if (utils.toBlank(counterPersonMain.value) == '') {
+//     $swal.fire({
+//       text: 'ご担当者様を入力してください。',
+//       showCancelButton: false,
+//       confirmButtonText: 'OK',
+//       icon: 'warning',
+//     })
+//     return
+//   }
 
-  if (utils.toBlank(orderAmount.value) == '') {
-    $swal.fire({
-      text: '運賃・料金を入力してください。',
-      showCancelButton: false,
-      confirmButtonText: 'OK',
-      icon: 'warning',
-    })
-    return
-  }
+//   if (utils.toBlank(orderAmount.value) == '') {
+//     $swal.fire({
+//       text: '運賃・料金を入力してください。',
+//       showCancelButton: false,
+//       confirmButtonText: 'OK',
+//       icon: 'warning',
+//     })
+//     return
+//   }
 
-  // 案件情報を保存
-  let confirmRes = false
-  await $swal
-    .fire({
-      text: '運送引受を申込会社へ通知します。よろしいですか？',
-      showCancelButton: true,
-      confirmButtonColor: '#00BCD4',
-      cancelButtonColor: '#CFD8DC',
-      confirmButtonText: 'はい。',
-      cancelButtonText: 'キャンセル',
-      icon: 'info',
-    })
-    .then((res) => {
-      confirmRes = res.isConfirmed
-    })
-  if (!confirmRes) {
-    return
-  }
+//   // 案件情報を保存
+//   let confirmRes = false
+//   await $swal
+//     .fire({
+//       text: '運送引受を申込会社へ通知します。よろしいですか？',
+//       showCancelButton: true,
+//       confirmButtonColor: '#00BCD4',
+//       cancelButtonColor: '#CFD8DC',
+//       confirmButtonText: 'はい。',
+//       cancelButtonText: 'キャンセル',
+//       icon: 'info',
+//     })
+//     .then((res) => {
+//       confirmRes = res.isConfirmed
+//     })
+//   if (!confirmRes) {
+//     return
+//   }
 
-  // オーダー(案件)に紐付く配車情報のDB保存
-  if (keydispatchId.value != null && keydispatchId.value != '') {
-    // 更新
-    const updateDispatchObj = {
-      id: keydispatchId.value,
-      orderId: dispatchInfo.value.orderId,
-      busList: dispatchInfo.value.busList,
-      driverList: dispatchInfo.value.driverList,
-      guideList: dispatchInfo.value.guideList,
-      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
-      updatedAt: new Date(),
-    }
-    await userData.updateDispatch(updateDispatchObj)
-  } else {
-    const insertDispatchObj = {
-      orderId: dispatchInfo.value.orderId,
-      busList: dispatchInfo.value.busList,
-      driverList: dispatchInfo.value.driverList,
-      guideList: dispatchInfo.value.guideList,
-      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    keydispatchId.value = await userData.addDispatch(insertDispatchObj)
-  }
-  // 運送引受会社の追加情報(配車情報のdocIdとの紐付けも)とステータス更新
-  const updateObject = {
-    id: keyOrderId,
-    // 運送手配引受：3
-    state: $Const.STATUS_UNDERTAKE,
-    counterPersonMain: counterPersonMain.value,
-    counterPersonSub: counterPersonSub.value,
-    orderAmount: utils.toBlank(orderAmount.value),
-    actualCost: utils.toBlank(actualCost.value),
-    paymentDueDate: utils.toBlank(paymentDueDate.value),
-    dispatchId: keydispatchId.value,
-    updatedAt: new Date(),
-  }
-  await userData.updateOrder(updateObject)
+//   // オーダー(案件)に紐付く配車情報のDB保存
+//   if (keydispatchId.value != null && keydispatchId.value != '') {
+//     // 更新
+//     const updateDispatchObj = {
+//       id: keydispatchId.value,
+//       orderId: dispatchInfo.value.orderId,
+//       busList: dispatchInfo.value.busList,
+//       driverList: dispatchInfo.value.driverList,
+//       guideList: dispatchInfo.value.guideList,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       updatedAt: new Date(),
+//     }
+//     await userData.updateDispatch(updateDispatchObj)
+//   } else {
+//     const insertDispatchObj = {
+//       orderId: dispatchInfo.value.orderId,
+//       busList: dispatchInfo.value.busList,
+//       driverList: dispatchInfo.value.driverList,
+//       guideList: dispatchInfo.value.guideList,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//     }
+//     keydispatchId.value = await userData.addDispatch(insertDispatchObj)
+//   }
+//   // 運送引受会社の追加情報(配車情報のdocIdとの紐付けも)とステータス更新
+//   const updateObject = {
+//     id: keyOrderId,
+//     // 運送手配引受：3
+//     state: $Const.STATUS_UNDERTAKE,
+//     counterPersonMain: counterPersonMain.value,
+//     counterPersonSub: counterPersonSub.value,
+//     orderAmount: utils.toBlank(orderAmount.value),
+//     actualCost: utils.toBlank(actualCost.value),
+//     paymentDueDate: utils.toBlank(paymentDueDate.value),
+//     dispatchId: keydispatchId.value,
+//     updatedAt: new Date(),
+//   }
+//   await userData.updateOrder(updateObject)
 
-  //バス、運転手、ガイドに対する指定日時の予約設定をDB保存
-  const busList = dispatchInfo.value.busList
-  for (let i = 0; i < busList.length; i++) {
-    const busId = busList[i].id
-    // 新規登録
-    const reservationInfoObj = {
-      category: $Const.CATEGORY_BUS,
-      itemId: busId,
-      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
-      orderId: dispatchInfo.value.orderId,
-      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    await userData.addReservation(reservationInfoObj)
-  }
+//   //バス、運転手、ガイドに対する指定日時の予約設定をDB保存
+//   const busList = dispatchInfo.value.busList
+//   for (let i = 0; i < busList.length; i++) {
+//     const busId = busList[i].id
+//     // 新規登録
+//     const reservationInfoObj = {
+//       category: $Const.CATEGORY_BUS,
+//       itemId: busId,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       orderId: dispatchInfo.value.orderId,
+//       title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//     }
+//     await userData.addReservation(reservationInfoObj)
+//   }
 
-  const driverList = dispatchInfo.value.driverList
-  for (let i = 0; i < driverList.length; i++) {
-    const driverId = driverList[i].id
-    // 新規登録
-    const reservationInfoObj = {
-      category: $Const.CATEGORY_DRIVER,
-      itemId: driverId,
-      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
-      orderId: dispatchInfo.value.orderId,
-      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    await userData.addReservation(reservationInfoObj)
-  }
+//   const driverList = dispatchInfo.value.driverList
+//   for (let i = 0; i < driverList.length; i++) {
+//     const driverId = driverList[i].id
+//     // 新規登録
+//     const reservationInfoObj = {
+//       category: $Const.CATEGORY_DRIVER,
+//       itemId: driverId,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       orderId: dispatchInfo.value.orderId,
+//       title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//     }
+//     await userData.addReservation(reservationInfoObj)
+//   }
 
-  const guideList = dispatchInfo.value.guideList
-  for (let i = 0; i < guideList.length; i++) {
-    const guideId = guideList[i].id
+//   const guideList = dispatchInfo.value.guideList
+//   for (let i = 0; i < guideList.length; i++) {
+//     const guideId = guideList[i].id
 
-    // 新規登録
-    const reservationInfoObj = {
-      category: $Const.CATEGORY_GUIDE,
-      itemId: guideId,
-      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
-      orderId: dispatchInfo.value.orderId,
-      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    await userData.addReservation(reservationInfoObj)
-  }
+//     // 新規登録
+//     const reservationInfoObj = {
+//       category: $Const.CATEGORY_GUIDE,
+//       itemId: guideId,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       orderId: dispatchInfo.value.orderId,
+//       title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//     }
+//     await userData.addReservation(reservationInfoObj)
+//   }
 
-  // informationを登録
-  await addInformation(
-    $Const.INFORMATION_CODE_ARRANGEMENTS,
-    keyOrderId,
-    orderInfo.value.companyId,
-    orderInfo.value.applicantCompanyName,
-    keyUserId,
-    userInfo.value.companyName
-  )
+//   // informationを登録
+//   await addInformation(
+//     $Const.INFORMATION_CODE_ARRANGEMENTS,
+//     keyOrderId,
+//     orderInfo.value.companyId,
+//     orderInfo.value.applicantCompanyName,
+//     keyUserId,
+//     userInfo.value.companyName
+//   )
 
-  // stateのクリア
-  clearOrderInfo(orderInfo)
-  clearApplicantCustomerInfo(applicantCustomerInfo)
-  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
-  clearOrderOperationInfo(orderOperationInfo)
-  clearDispatchInfo(dispatchInfo)
+//   // stateのクリア
+//   clearOrderInfo(orderInfo)
+//   clearApplicantCustomerInfo(applicantCustomerInfo)
+//   clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+//   clearOrderOperationInfo(orderOperationInfo)
+//   clearDispatchInfo(dispatchInfo)
 
-  // 画面遷移
-  router.push('/delivery/order/list')
-}
+//   // 画面遷移
+//   router.push('/delivery/order/list')
+// }
 
 /**
  * 一時保存、運送手配引受、運送手配内容変更のDB保存の共通化
