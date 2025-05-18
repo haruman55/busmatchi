@@ -1114,6 +1114,22 @@ export const useUserData = () => {
   };
 
   /**
+   * 案件に紐付く予約情報を削除する.
+   * @param orderId 
+   */
+  const deleteReservationByOrder = async (orderId: string) => {
+    // 指定データの削除
+    const q = query(
+      collection(db, "reservation"),
+      where("orderId", "==", orderId),
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      deleteDoc(doc.ref);
+    });
+  } 
+
+  /**
    * 案件登録に紐付く期間での、配車可能なリソースの予約状況を検索する
    * @param category 
    * @param itemId 
@@ -1334,6 +1350,7 @@ export const useUserData = () => {
     getReservationList,
     addReservation,
     deleteReservation,
+    deleteReservationByOrder,
     searchReservationFromBase,
     searchReservationToBase,
     getReservationData,

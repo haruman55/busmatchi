@@ -180,5 +180,40 @@ export const USER_ACTION_CONTRACT = '3'
 // 操作(導線入口)：配送引受会社(4)
 export const USER_ACTION_DELIVERY = '4'
 
+// インフォメーションコードの定数 ダイレクトメッセージ
+export const INFORMATION_CODE_DM = '0'
+// インフォメーションコードの定数 運送依頼
+export const INFORMATION_CODE_APPLICATION = '1'
+// インフォメーションコードの定数 運送依頼の引受
+export const INFORMATION_CODE_ARRANGEMENTS = '2'
+// インフォメーションコードの定数 運送手配内容の確認完了
+export const INFORMATION_CODE_CONTENT_CONFIRMATION = '3'
+// インフォメーションコードの定数 運送手配の完了
+export const INFORMATION_CODE_ARRANGEMENTS_COMPLETED = '4'
+// インフォメーションコードの定数 入金完了
+export const INFORMATION_CODE_PAYMENT = '5'
+// インフォメーションコードの定数 運送申込内容の修正
+export const INFORMATION_CODE_CHANGE_APPLICATION = '6'
+// インフォメーションコードの定数 運送手配内容の修正
+export const INFORMATION_CODE_CHANGE_ARRANGEMENTS = '7'
+// インフォメーションコードの定数 運送依頼の引受不可
+export const INFORMATION_CODE_DENY_ARRANGEMENTS = '8'
+// インフォメーションコードの定数 依頼完了
+export const INFORMATION_CODE_ORDER_COMPLETED = '9'
 
+  /**
+   * インフォメーションコードの連想配列
+   */
+  export  const INFORMATION_CODE = [
+    { code: '0', title: 'ダイレクトメッセージ',icon: 'mdi-chat-outline' },
+    { code: '1', title: '運送依頼',icon: 'mdi-pencil-circle-outline' },
+    { code: '2', title: '運送依頼の引受',icon: 'mdi-pencil-circle-outline'  },
+    { code: '3', title: '運送手配内容の確認完了',icon: 'mdi-check-circle-outline'  },
+    { code: '4', title: '運送手配の完了',icon: 'mdi-check-circle-outline'  },
+    { code: '5', title: '入金完了',icon: 'mdi-cash-check'  },
+    { code: '6', title: '運送申込内容の修正',icon: 'mdi-pencil-circle-outline'  },
+    { code: '7', title: '運送手配内容の修正',icon: 'mdi-pencil-circle-outline'  },
+    { code: '8', title: '運送依頼の引受不可',icon: 'mdi-close-circle-outline'  },
+    { code: '9', title: '依頼完了' ,icon: 'mdi-check-circle-outline' },
+  ]
 

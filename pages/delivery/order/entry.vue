@@ -3,11 +3,12 @@
     <v-row no-gutters>
       <v-col>
         <v-breadcrumbs
-:items="[
-          { title: 'マイページ', disabled: true },
-          { title: '案件管理', disabled: false, click: () => back() },
-          { title: '案件登録 ', disabled: true },
-        ]">
+          :items="[
+            { title: 'マイページ', disabled: true },
+            { title: '案件管理', disabled: false, click: () => back() },
+            { title: '案件登録 ', disabled: true },
+          ]"
+        >
           <template #prepend>
             <v-icon icon="mdi-home" size="small" />
           </template>
@@ -139,8 +140,6 @@
               <span>座席</span>
               <span>前向き</span>
             </div>
-
-
           </v-sheet>
         </div>
       </v-col>
@@ -178,13 +177,11 @@
               <span>ガイド</span>
               <span>有</span>
             </div>
-
           </v-sheet>
         </div>
       </v-col>
     </v-row>
     <v-row no-gutters>
-
       <v-col cols="12" sm="6" md="6">
         <div>
           <v-sheet class="py-10 mx-auto text-start" max-width="500" color="transparent">
@@ -218,7 +215,6 @@
                     <td>場所</td>
                     <td>{{ orderOperationInfo.terminalLocation }}</td>
                   </tr>
-
                 </tbody>
               </v-table>
             </div>
@@ -245,9 +241,7 @@
           </v-sheet>
         </div>
       </v-col>
-
     </v-row>
-
 
     <!-- TODO:以下 運行情報 については一旦日帰りで実装。数日の旅程の場合はデータの持ち方や表示を検討必要 -->
     <!-- <v-row>
@@ -307,11 +301,9 @@
       <v-col col="12">
         <v-card flat rounded="xl" variant="outlined" class="color-outline">
           <v-container fluid>
-            <v-card-title class="color-title">運送引受会社
-              <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
-                必須
-              </v-chip>
-
+            <v-card-title class="color-title"
+              >運送引受会社
+              <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning"> 必須 </v-chip>
             </v-card-title>
             <v-row>
               <v-col cols="12" sm="6" md="6">
@@ -323,8 +315,14 @@
             </v-row>
 
             <v-btn
-v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE" rounded
-              dark color="yellow" size="large" class="mb-2 pr-8 pl-8" @click="entry">
+              v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STATUS_UNDERTAKE"
+              rounded
+              dark
+              color="yellow"
+              size="large"
+              class="mb-2 pr-8 pl-8"
+              @click="entry"
+            >
               配車情報を登録する
             </v-btn>
             <v-overlay :model-value="loading" class="align-center justify-center">
@@ -335,12 +333,15 @@ v-if="orderInfo.state == $Const.STATUS_REQUEST || orderInfo.state == $Const.STAT
               <!-- 配車情報 -->
               <v-col v-for="(bus, index) in dispatchInfo.busList" :key="bus.id" cols="12" sm="6" md="4" class="py-2">
                 <v-card
-outlined prepend-icon="mdi-bus" :title="$Const.VEHICLE_TYPE_DISP[bus.vehicleType].text"
-                  :subtitle="bus.vehicleNo" color="background" class="text-body-2">
+                  outlined
+                  prepend-icon="mdi-bus"
+                  :title="$Const.VEHICLE_TYPE_DISP[bus.vehicleType].text"
+                  :subtitle="bus.vehicleNo"
+                  color="background"
+                  class="text-body-2"
+                >
                   <template #append>
-                    <v-icon size="small" @click="removeBus(index)">
-                      mdi-close
-                    </v-icon>
+                    <v-icon size="small" @click="removeBus(index)"> mdi-close </v-icon>
                   </template>
                 </v-card>
               </v-col>
@@ -349,15 +350,23 @@ outlined prepend-icon="mdi-bus" :title="$Const.VEHICLE_TYPE_DISP[bus.vehicleType
             <v-row v-if="dispatchInfo.driverList.length > 0" class="mb-4">
               <!-- 乗務員情報 -->
               <v-col
-v-for="(driver, index) in dispatchInfo.driverList" :key="driver.id" cols="12" sm="6" md="4"
-                class="py-2">
+                v-for="(driver, index) in dispatchInfo.driverList"
+                :key="driver.id"
+                cols="12"
+                sm="6"
+                md="4"
+                class="py-2"
+              >
                 <v-card
-outlined prepend-icon="mdi-card-account-details-outline" :title="driver.driverName"
-                  :subtitle="driver.contact" color="background" class="text-body-2">
+                  outlined
+                  prepend-icon="mdi-card-account-details-outline"
+                  :title="driver.driverName"
+                  :subtitle="driver.contact"
+                  color="background"
+                  class="text-body-2"
+                >
                   <template #append>
-                    <v-icon size="small" @click="removeDriver(index)">
-                      mdi-close
-                    </v-icon>
+                    <v-icon size="small" @click="removeDriver(index)"> mdi-close </v-icon>
                   </template>
                 </v-card>
               </v-col>
@@ -366,22 +375,27 @@ outlined prepend-icon="mdi-card-account-details-outline" :title="driver.driverNa
             <v-row v-if="dispatchInfo.guideList.length > 0" class="mb-4">
               <!-- ガイド情報 -->
               <v-col
-v-for="(guide, index) in dispatchInfo.guideList" :key="guide.id" cols="12" sm="6" md="4"
-                class="py-2">
+                v-for="(guide, index) in dispatchInfo.guideList"
+                :key="guide.id"
+                cols="12"
+                sm="6"
+                md="4"
+                class="py-2"
+              >
                 <v-card
-outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName"
-                  :subtitle="guide.contact" color="background" class="text-body-2">
+                  outlined
+                  prepend-icon="mdi-human-female-dance"
+                  :title="guide.guideName"
+                  :subtitle="guide.contact"
+                  color="background"
+                  class="text-body-2"
+                >
                   <template #append>
-                    <v-icon size="small" @click="removeGuide(index)">
-                      mdi-close
-                    </v-icon>
+                    <v-icon size="small" @click="removeGuide(index)"> mdi-close </v-icon>
                   </template>
-
                 </v-card>
-
               </v-col>
             </v-row>
-
           </v-container>
         </v-card>
       </v-col>
@@ -390,38 +404,33 @@ outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName"
       <v-col col="12">
         <v-card flat rounded="xl" variant="outlined" class="color-outline">
           <v-container fluid>
-            <v-card-title class="color-title">支払い方法
-            <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning">
-                必須
-              </v-chip>
+            <v-card-title class="color-title"
+              >支払い方法
+              <v-chip class="ml-2 mb-1" variant="flat" size="x-small" label color="warning"> 必須 </v-chip>
             </v-card-title>
             <v-row>
               <v-col cols="12" sm="6" md="6">
                 <v-card flat rounded="xl" class="mx-auto" color="background">
-
                   <v-card-text>
                     <p>
                       <span class="font-weight-bold">運賃及び料金の支払い方法</span>
                     </p>
                     <v-divider class="mb-2 border-opacity-100" />
-                    <span>
-                      {{ dispPaymentType }}</span>
+                    <span> {{ dispPaymentType }}</span>
                   </v-card-text>
                   <v-card-text>
                     <p>
                       <span class="font-weight-bold">適用を受けようとする割引</span>
                     </p>
                     <v-divider class="mb-2 border-opacity-100" />
-                    <span>
-                      {{ dispDiscount }}</span>
+                    <span> {{ dispDiscount }}</span>
                   </v-card-text>
                   <v-card-text>
                     <p>
                       <span class="font-weight-bold">特約事項</span>
                     </p>
                     <v-divider class="mb-2 border-opacity-100" />
-                    <span>
-                      {{ orderInfo.specialTerms }}</span>
+                    <span> {{ orderInfo.specialTerms }}</span>
                   </v-card-text>
                   <v-card-text>
                     <p>
@@ -429,11 +438,8 @@ outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName"
                     </p>
                     <v-divider class="mb-2 border-opacity-100" />
 
-                    <span>
-                      {{ orderInfo.remarks }}</span>
+                    <span> {{ orderInfo.remarks }}</span>
                   </v-card-text>
-
-
                 </v-card>
               </v-col>
               <v-col cols="12" sm="6" md="6">
@@ -445,13 +451,23 @@ outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName"
                       <p>
                         <span class="text-body-2">料金</span>
                       </p>
-                      <v-text-field v-model="orderAmount" suffix="円" label="料金" @update:model-value="editOrderAmount" />
+                      <v-text-field
+                        v-model="orderAmount"
+                        suffix="円"
+                        label="料金"
+                        @update:model-value="editOrderAmount"
+                      />
                     </v-col>
                     <v-col cols="6" class="pa-2">
                       <p>
                         <span class="text-body-2">実費</span>
                       </p>
-                      <v-text-field v-model="actualCost" suffix="円" label="実費" @update:model-value="editActualCost" />
+                      <v-text-field
+                        v-model="actualCost"
+                        suffix="円"
+                        label="実費"
+                        @update:model-value="editActualCost"
+                      />
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -476,9 +492,14 @@ outlined prepend-icon="mdi-human-female-dance" :title="guide.guideName"
                       </p>
 
                       <datepicker
-v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
-                        :enable-time-picker="false" format="yyyy/MM/dd" model-type="yyyy/MM/dd" />
-
+                        v-model="paymentDueDate"
+                        :teleport="true"
+                        locale="jp"
+                        auto-apply
+                        :enable-time-picker="false"
+                        format="yyyy/MM/dd"
+                        model-type="yyyy/MM/dd"
+                      />
                     </v-col>
                   </v-row>
                 </v-card>
@@ -495,6 +516,33 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
       <v-col align="center">
         <v-btn rounded dark color="grey" size="large" class="mb-2 pr-8 pl-8" @click="back"> 戻 る </v-btn>
       </v-col>
+      <v-col>
+        <v-btn
+          v-if="orderInfo.state == $Const.STATUS_REQUEST"
+          rounded
+          dark
+          color="secondary"
+          size="large"
+          class="mb-2 pr-8 pl-8"
+          @click="draft"
+        >
+          一時保存
+        </v-btn>
+      </v-col>
+      <v-col>
+        <v-btn
+          v-if="orderInfo.state == $Const.STATUS_PAYMENT_METHOD_CONFIRMED || orderInfo.state == $Const.STATUS_UNDERTAKE"
+          rounded
+          dark
+          color="secondary"
+          size="large"
+          class="mb-2 pr-8 pl-8"
+          @click="edit"
+        >
+          運送手配内容を変更する
+        </v-btn>
+      </v-col>
+
       <v-spacer />
 
       <v-col v-if="orderInfo.state == $Const.STATUS_REQUEST" align="center">
@@ -517,8 +565,14 @@ v-model="paymentDueDate" :teleport="true" locale="jp" auto-apply
       <v-spacer />
       <v-col align="center">
         <v-btn
-v-if="orderInfo.state == $Const.STATUS_REQUEST" rounded dark color="secondary" size="large"
-          class="mb-2 pr-8 pl-8" @click="deny">
+          v-if="orderInfo.state == $Const.STATUS_REQUEST"
+          rounded
+          dark
+          color="secondary"
+          size="large"
+          class="mb-2 pr-8 pl-8"
+          @click="deny"
+        >
           運送手配を断る
         </v-btn>
       </v-col>
@@ -536,6 +590,9 @@ const utils = useUtils()
 // DB接続の呼び出し
 const userData = useUserData()
 const masterData = useMasterData()
+const db = useFirestore()
+// インフォメーション操作の呼び出し
+const { addInformation } = useInformation()
 
 // state保持情報 //
 // ログインユーザーのキーID
@@ -728,22 +785,120 @@ const entry = () => {
  * 配車情報を削除する関数
  */
 const removeBus = (index) => {
-  dispatchInfo.value.busList.splice(index, 1); // 指定したインデックスの配車情報を削除
-};
+  dispatchInfo.value.busList.splice(index, 1) // 指定したインデックスの配車情報を削除
+}
 
 /**
  * 乗務員情報を削除する関数
  */
 const removeDriver = (index) => {
-  dispatchInfo.value.driverList.splice(index, 1); // 指定したインデックスの乗務員情報を削除
-};
+  dispatchInfo.value.driverList.splice(index, 1) // 指定したインデックスの乗務員情報を削除
+}
 /**
  * ガイド情報を削除する関数
  */
 const removeGuide = (index) => {
-  dispatchInfo.value.guideList.splice(index, 1); // 指定したインデックスのガイド情報を削除
-};
+  dispatchInfo.value.guideList.splice(index, 1) // 指定したインデックスのガイド情報を削除
+}
+/** 運送手配内容を一時保存する */
+const draft = async () => {
+  // 案件情報を保存
+  let confirmRes = false
+  await $swal
+    .fire({
+      text: '設定内容を一時保存します。よろしいですか？',
+      showCancelButton: true,
+      confirmButtonColor: '#00BCD4',
+      cancelButtonColor: '#CFD8DC',
+      confirmButtonText: 'はい。',
+      cancelButtonText: 'キャンセル',
+      icon: 'info',
+    })
+    .then((res) => {
+      confirmRes = res.isConfirmed
+    })
+  if (!confirmRes) {
+    return
+  }
 
+  // 入力した内容で一時保存
+  await saveOrderAndReservations($Const.STATUS_REQUEST, '', false)
+
+  // stateのクリア
+  clearOrderInfo(orderInfo)
+  clearApplicantCustomerInfo(applicantCustomerInfo)
+  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+  clearOrderOperationInfo(orderOperationInfo)
+  clearDispatchInfo(dispatchInfo)
+
+  // 画面遷移
+  router.push('/delivery/order/list')
+}
+
+/** 運送手配内容を変更する */
+const edit = async () => {
+  // 必須選択チェック
+  if (dispatchInfo.value.busList.length == 0) {
+    $swal.fire({
+      text: '配車情報を登録してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning',
+    })
+    return
+  }
+  if (utils.toBlank(counterPersonMain.value) == '') {
+    $swal.fire({
+      text: 'ご担当者様を入力してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning',
+    })
+    return
+  }
+
+  if (utils.toBlank(orderAmount.value) == '') {
+    $swal.fire({
+      text: '運賃・料金を入力してください。',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      icon: 'warning',
+    })
+    return
+  }
+
+  // 案件情報を保存
+  let confirmRes = false
+  await $swal
+    .fire({
+      text: '運送引受内容を修正します。よろしいですか？',
+      showCancelButton: true,
+      confirmButtonColor: '#00BCD4',
+      cancelButtonColor: '#CFD8DC',
+      confirmButtonText: 'はい。',
+      cancelButtonText: 'キャンセル',
+      icon: 'info',
+    })
+    .then((res) => {
+      confirmRes = res.isConfirmed
+    })
+  if (!confirmRes) {
+    return
+  }
+
+  // 入力した内容でDB保存
+  await saveOrderAndReservations(orderInfo.value.state, $Const.INFORMATION_CODE_CHANGE_ARRANGEMENTS, true)
+
+  // stateのクリア
+  clearOrderInfo(orderInfo)
+  clearApplicantCustomerInfo(applicantCustomerInfo)
+  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+  clearOrderOperationInfo(orderOperationInfo)
+  clearDispatchInfo(dispatchInfo)
+
+  // 画面遷移
+  router.push('/delivery/order/list')
+}
 
 /** 運送依頼を引き受ける */
 const undertake = async () => {
@@ -796,9 +951,195 @@ const undertake = async () => {
     return
   }
 
-  // オーダー(案件)に紐付く配車情報のDB保存
-  if (keydispatchId.value != null && keydispatchId.value != '') {
-    // 更新
+  // 入力した内容でDB保存
+  await saveOrderAndReservations($Const.STATUS_UNDERTAKE, $Const.INFORMATION_CODE_ARRANGEMENTS, true)
+
+  // stateのクリア
+  clearOrderInfo(orderInfo)
+  clearApplicantCustomerInfo(applicantCustomerInfo)
+  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+  clearOrderOperationInfo(orderOperationInfo)
+  clearDispatchInfo(dispatchInfo)
+
+  // 画面遷移
+  router.push('/delivery/order/list')
+}
+
+/** 運送依頼を引き受ける */
+// しばらく稼働確認して問題なければ削除
+// const _undertake = async () => {
+//   // 必須選択チェック
+//   if (dispatchInfo.value.busList.length == 0) {
+//     $swal.fire({
+//       text: '配車情報を登録してください。',
+//       showCancelButton: false,
+//       confirmButtonText: 'OK',
+//       icon: 'warning',
+//     })
+//     return
+//   }
+//   if (utils.toBlank(counterPersonMain.value) == '') {
+//     $swal.fire({
+//       text: 'ご担当者様を入力してください。',
+//       showCancelButton: false,
+//       confirmButtonText: 'OK',
+//       icon: 'warning',
+//     })
+//     return
+//   }
+
+//   if (utils.toBlank(orderAmount.value) == '') {
+//     $swal.fire({
+//       text: '運賃・料金を入力してください。',
+//       showCancelButton: false,
+//       confirmButtonText: 'OK',
+//       icon: 'warning',
+//     })
+//     return
+//   }
+
+//   // 案件情報を保存
+//   let confirmRes = false
+//   await $swal
+//     .fire({
+//       text: '運送引受を申込会社へ通知します。よろしいですか？',
+//       showCancelButton: true,
+//       confirmButtonColor: '#00BCD4',
+//       cancelButtonColor: '#CFD8DC',
+//       confirmButtonText: 'はい。',
+//       cancelButtonText: 'キャンセル',
+//       icon: 'info',
+//     })
+//     .then((res) => {
+//       confirmRes = res.isConfirmed
+//     })
+//   if (!confirmRes) {
+//     return
+//   }
+
+//   // オーダー(案件)に紐付く配車情報のDB保存
+//   if (keydispatchId.value != null && keydispatchId.value != '') {
+//     // 更新
+//     const updateDispatchObj = {
+//       id: keydispatchId.value,
+//       orderId: dispatchInfo.value.orderId,
+//       busList: dispatchInfo.value.busList,
+//       driverList: dispatchInfo.value.driverList,
+//       guideList: dispatchInfo.value.guideList,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       updatedAt: new Date(),
+//     }
+//     await userData.updateDispatch(updateDispatchObj)
+//   } else {
+//     const insertDispatchObj = {
+//       orderId: dispatchInfo.value.orderId,
+//       busList: dispatchInfo.value.busList,
+//       driverList: dispatchInfo.value.driverList,
+//       guideList: dispatchInfo.value.guideList,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//     }
+//     keydispatchId.value = await userData.addDispatch(insertDispatchObj)
+//   }
+//   // 運送引受会社の追加情報(配車情報のdocIdとの紐付けも)とステータス更新
+//   const updateObject = {
+//     id: keyOrderId,
+//     // 運送手配引受：3
+//     state: $Const.STATUS_UNDERTAKE,
+//     counterPersonMain: counterPersonMain.value,
+//     counterPersonSub: counterPersonSub.value,
+//     orderAmount: utils.toBlank(orderAmount.value),
+//     actualCost: utils.toBlank(actualCost.value),
+//     paymentDueDate: utils.toBlank(paymentDueDate.value),
+//     dispatchId: keydispatchId.value,
+//     updatedAt: new Date(),
+//   }
+//   await userData.updateOrder(updateObject)
+
+//   //バス、運転手、ガイドに対する指定日時の予約設定をDB保存
+//   const busList = dispatchInfo.value.busList
+//   for (let i = 0; i < busList.length; i++) {
+//     const busId = busList[i].id
+//     // 新規登録
+//     const reservationInfoObj = {
+//       category: $Const.CATEGORY_BUS,
+//       itemId: busId,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       orderId: dispatchInfo.value.orderId,
+//       title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//     }
+//     await userData.addReservation(reservationInfoObj)
+//   }
+
+//   const driverList = dispatchInfo.value.driverList
+//   for (let i = 0; i < driverList.length; i++) {
+//     const driverId = driverList[i].id
+//     // 新規登録
+//     const reservationInfoObj = {
+//       category: $Const.CATEGORY_DRIVER,
+//       itemId: driverId,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       orderId: dispatchInfo.value.orderId,
+//       title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//     }
+//     await userData.addReservation(reservationInfoObj)
+//   }
+
+//   const guideList = dispatchInfo.value.guideList
+//   for (let i = 0; i < guideList.length; i++) {
+//     const guideId = guideList[i].id
+
+//     // 新規登録
+//     const reservationInfoObj = {
+//       category: $Const.CATEGORY_GUIDE,
+//       itemId: guideId,
+//       reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+//       reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+//       orderId: dispatchInfo.value.orderId,
+//       title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//     }
+//     await userData.addReservation(reservationInfoObj)
+//   }
+
+//   // informationを登録
+//   await addInformation(
+//     $Const.INFORMATION_CODE_ARRANGEMENTS,
+//     keyOrderId,
+//     orderInfo.value.companyId,
+//     orderInfo.value.applicantCompanyName,
+//     keyUserId,
+//     userInfo.value.companyName
+//   )
+
+//   // stateのクリア
+//   clearOrderInfo(orderInfo)
+//   clearApplicantCustomerInfo(applicantCustomerInfo)
+//   clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
+//   clearOrderOperationInfo(orderOperationInfo)
+//   clearDispatchInfo(dispatchInfo)
+
+//   // 画面遷移
+//   router.push('/delivery/order/list')
+// }
+
+/**
+ * 一時保存、運送手配引受、運送手配内容変更のDB保存の共通化
+ */
+const saveOrderAndReservations = async (state, informationCode, showInfo) => {
+  console.log(state, informationCode, showInfo)
+  // 配車情報保存
+  if (keydispatchId.value) {
     const updateDispatchObj = {
       id: keydispatchId.value,
       orderId: dispatchInfo.value.orderId,
@@ -823,11 +1164,11 @@ const undertake = async () => {
     }
     keydispatchId.value = await userData.addDispatch(insertDispatchObj)
   }
-  // 運送引受会社の追加情報(配車情報のdocIdとの紐付けも)とステータス更新
+
+  // order情報更新
   const updateObject = {
     id: keyOrderId,
-    // 運送手配引受：3
-    state: $Const.STATUS_UNDERTAKE,
+    state,
     counterPersonMain: counterPersonMain.value,
     counterPersonSub: counterPersonSub.value,
     orderAmount: utils.toBlank(orderAmount.value),
@@ -838,68 +1179,39 @@ const undertake = async () => {
   }
   await userData.updateOrder(updateObject)
 
-  //バス、運転手、ガイドに対する指定日時の予約設定をDB保存
-  const busList = dispatchInfo.value.busList
-  for (let i = 0; i < busList.length; i++) {
-    const busId = busList[i].id
-    // 新規登録
-    const reservationInfoObj = {
-      category: $Const.CATEGORY_BUS,
-      itemId: busId,
-      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
-      orderId: dispatchInfo.value.orderId,
-      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    await userData.addReservation(reservationInfoObj)
+  // 予約情報再登録
+  await userData.deleteReservationByOrder(dispatchInfo.value.orderId)
+
+  const reservationCommon = {
+    reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
+    reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
+    orderId: dispatchInfo.value.orderId,
+    title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   }
 
-  const driverList = dispatchInfo.value.driverList
-  for (let i = 0; i < driverList.length; i++) {
-    const driverId = driverList[i].id
-    // 新規登録
-    const reservationInfoObj = {
-      category: $Const.CATEGORY_DRIVER,
-      itemId: driverId,
-      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
-      orderId: dispatchInfo.value.orderId,
-      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    await userData.addReservation(reservationInfoObj)
+  for (const bus of dispatchInfo.value.busList) {
+    await userData.addReservation({ ...reservationCommon, category: $Const.CATEGORY_BUS, itemId: bus.id })
+  }
+  for (const driver of dispatchInfo.value.driverList) {
+    await userData.addReservation({ ...reservationCommon, category: $Const.CATEGORY_DRIVER, itemId: driver.id })
+  }
+  for (const guide of dispatchInfo.value.guideList) {
+    await userData.addReservation({ ...reservationCommon, category: $Const.CATEGORY_GUIDE, itemId: guide.id })
   }
 
-  const guideList = dispatchInfo.value.guideList
-  for (let i = 0; i < guideList.length; i++) {
-    const guideId = guideList[i].id
-
-    // 新規登録
-    const reservationInfoObj = {
-      category: $Const.CATEGORY_GUIDE,
-      itemId: guideId,
-      reservationFrom: new Date(`${orderInfo.value.dispatchDate} ${orderInfo.value.dispatchTime}`),
-      reservationTo: new Date(`${orderOperationInfo.value.endDate} ${orderOperationInfo.value.endingTime}`),
-      orderId: dispatchInfo.value.orderId,
-      title: `[配車依頼]${orderInfo.value.applicantCompanyName} : ${orderInfo.value.tourOrganization} `,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    await userData.addReservation(reservationInfoObj)
+  // information登録
+  if (showInfo && informationCode) {
+    await addInformation(
+      informationCode,
+      keyOrderId,
+      orderInfo.value.companyId,
+      orderInfo.value.applicantCompanyName,
+      keyUserId,
+      userInfo.value.companyName
+    )
   }
-
-  // stateのクリア
-  clearOrderInfo(orderInfo)
-  clearApplicantCustomerInfo(applicantCustomerInfo)
-  clearOrderDeliveryUserInfo(orderDeliveryUserInfo)
-  clearOrderOperationInfo(orderOperationInfo)
-  clearDispatchInfo(dispatchInfo)
-
-  // 画面遷移
-  router.push('/delivery/order/list')
 }
 
 /**
@@ -954,6 +1266,16 @@ const settlement = async () => {
   }
   await userData.updateOrder(updateObject)
 
+  // informationを登録
+  await addInformation(
+    $Const.INFORMATION_CODE_ARRANGEMENTS_COMPLETED,
+    keyOrderId,
+    orderInfo.value.companyId,
+    orderInfo.value.applicantCompanyName,
+    keyUserId,
+    userInfo.value.companyName
+  )
+
   // stateのクリア
   clearOrderInfo(orderInfo)
   clearApplicantCustomerInfo(applicantCustomerInfo)
@@ -995,6 +1317,16 @@ const confirmation = async () => {
     updatedAt: new Date(),
   }
   await userData.updateOrder(updateObject)
+
+  // informationを登録
+  await addInformation(
+    $Const.INFORMATION_CODE_PAYMENT,
+    keyOrderId,
+    orderInfo.value.companyId,
+    orderInfo.value.applicantCompanyName,
+    keyUserId,
+    userInfo.value.companyName
+  )
 
   // stateのクリア
   clearOrderInfo(orderInfo)
@@ -1051,6 +1383,16 @@ const deny = async () => {
     await userData.deleteDispatch(keydispatchId.value)
   }
 
+  // informationを登録
+  await addInformation(
+    $Const.INFORMATION_CODE_DENY_ARRANGEMENTS,
+    keyOrderId,
+    orderInfo.value.companyId,
+    orderInfo.value.applicantCompanyName,
+    keyUserId,
+    userInfo.value.companyName
+  )
+
   // stateのクリア
   clearOrderInfo(orderInfo)
   clearApplicantCustomerInfo(applicantCustomerInfo)
@@ -1074,10 +1416,6 @@ const back = () => {
   // 画面遷移
   router.push('/delivery/order/list')
 }
-
-definePageMeta({
-  layout: 'user',
-})
 </script>
 
 <style>
